@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.springframework'
+version = '5.3.14-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation(project(':spring-context'), {
+        transitive = true
+    })
+}
