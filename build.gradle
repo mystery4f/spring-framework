@@ -431,3 +431,7 @@ configure(rootProject) {
 		}
 	}
 }
+allprojects {
+	sourceCompatibility=11
+	targetCompatibility=11
+}
