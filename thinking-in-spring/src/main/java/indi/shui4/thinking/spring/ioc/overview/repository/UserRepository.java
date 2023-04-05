@@ -14,8 +14,26 @@ public class UserRepository {
     private Collection<User> users;
 
     private BeanFactory beanFactory;
+    private ApplicationContext applicationContext;
     private ObjectFactory<User> userObjectFactory;
     private ObjectFactory<ApplicationContext> applicationContextObjectFactory;
+    private ObjectFactory<BeanFactory> beanFactoryObjectFactory;
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    public ObjectFactory<BeanFactory> getBeanFactoryObjectFactory() {
+        return beanFactoryObjectFactory;
+    }
+
+    public void setBeanFactoryObjectFactory(ObjectFactory<BeanFactory> beanFactoryObjectFactory) {
+        this.beanFactoryObjectFactory = beanFactoryObjectFactory;
+    }
 
     public ObjectFactory<ApplicationContext> getApplicationContextObjectFactory() {
         return applicationContextObjectFactory;
