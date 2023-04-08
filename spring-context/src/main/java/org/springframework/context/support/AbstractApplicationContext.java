@@ -576,11 +576,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
      * active flag as well as performing any initialization of property sources.
      */
     protected void prepareRefresh() {
-        // Switch to active.
+        // 将上下文状态切换为活动状态
         this.startupDate = System.currentTimeMillis();
         this.closed.set(false);
         this.active.set(true);
 
+        // 根据日志级别输出准备刷新操作的日志信息
         if (logger.isDebugEnabled()) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Refreshing " + this);
@@ -589,24 +590,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
             }
         }
 
-        // Initialize any placeholder property sources in the context environment.
+        // 初始化环境中的占位符属性源，例如从外部配置文件中解析占位符
         initPropertySources();
 
-        // Validate that all properties marked as required are resolvable:
-        // see ConfigurablePropertyResolver#setRequiredProperties
+        // 校验所有标记为必需的属性是否可解析，如果校验失败则抛出异常
         getEnvironment().validateRequiredProperties();
 
-        // Store pre-refresh ApplicationListeners...
+        // 存储先前的 ApplicationListeners，以便于在引导过程中发布早期 ApplicationEvents
         if (this.earlyApplicationListeners == null) {
             this.earlyApplicationListeners = new LinkedHashSet<>(this.applicationListeners);
         } else {
-            // Reset local application listeners to pre-refresh state.
+            // 如果之前已经存储了 ApplicationListeners，将当前 ApplicationListeners 重置为先前的状态
             this.applicationListeners.clear();
             this.applicationListeners.addAll(this.earlyApplicationListeners);
         }
 
-        // Allow for the collection of early ApplicationEvents,
-        // to be published once the multicaster is available...
+        // 创建一个 LinkedHashSet 用于存储早期 ApplicationEvents，以便在持有多路广播器时发布这些事件
         this.earlyApplicationEvents = new LinkedHashSet<>();
     }
 
