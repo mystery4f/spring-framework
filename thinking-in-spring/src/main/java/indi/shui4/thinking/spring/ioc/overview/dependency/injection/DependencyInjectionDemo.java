@@ -35,17 +35,16 @@ public class DependencyInjectionDemo {
         // BeanFactory 可以理解为内置依赖，在依赖注入Spring能够注入，查找需要通过ObjectFactory的方式来做
         //System.out.println(beanFactory.getBean(BeanFactory.class));
 
-        System.out.println(userRepository.getUserObjectFactory().getObject());
+        System.out.println(userRepository.getUserObjectFactory()
+                .getObject());
         System.out.println(userRepository.getApplicationContext() == beanFactory);
-        System.out.println(userRepository.getApplicationContextObjectFactory().getObject() == beanFactory);
-        System.out.println(userRepository.getBeanFactoryObjectFactory().getObject() == beanFactory);
+        System.out.println(userRepository.getApplicationContextObjectFactory()
+                .getObject() == beanFactory);
+        System.out.println(userRepository.getBeanFactoryObjectFactory()
+                .getObject() == beanFactory);
 
         // 容器内建Bean，但也不绝对，比如这个内置Bean能够直接获取
         Environment environment = beanFactory.getBean(Environment.class);
         System.out.println("获取Environment类型Bean:" + environment);
-    }
-
-    private static void whoIsIocContainer(UserRepository userRepository, BeanFactory beanFactory) {
-
     }
 }
