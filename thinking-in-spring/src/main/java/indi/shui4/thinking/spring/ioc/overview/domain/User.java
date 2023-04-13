@@ -9,6 +9,13 @@ public class User {
     private String id;
     private String name;
 
+    public static User createUser() {
+        User user = new User();
+        user.setId("1");
+        user.setName("shui4");
+        return user;
+    }
+
     public String getId() {
         return id;
     }
