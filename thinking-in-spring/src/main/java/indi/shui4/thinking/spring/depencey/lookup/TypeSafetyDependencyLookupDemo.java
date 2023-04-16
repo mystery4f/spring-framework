@@ -13,10 +13,10 @@ import static java.lang.System.*;
  *
  * @author shui4
  */
-public class TypeSafeDependencyLookupDemo {
+public class TypeSafetyDependencyLookupDemo {
     public static void main(String[] args) {
         try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
-            applicationContext.register(TypeSafeDependencyLookupDemo.class);
+            applicationContext.register(TypeSafetyDependencyLookupDemo.class);
             applicationContext.refresh();
             // 演示 ApplicationContext#getBean 方法安全性
             displayBeanFactoryGetBean(applicationContext);
