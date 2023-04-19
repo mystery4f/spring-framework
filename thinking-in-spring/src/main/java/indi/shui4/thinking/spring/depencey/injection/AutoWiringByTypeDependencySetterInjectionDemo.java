@@ -3,8 +3,6 @@ package indi.shui4.thinking.spring.depencey.injection;
 import indi.shui4.thinking.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 
 /**
  * "byType" Autowiring 依赖 Setter 方法注入示例
@@ -19,8 +17,8 @@ public class AutoWiringByTypeDependencySetterInjectionDemo {
         System.out.println(beanFactory.getBean(UserHolder.class));
     }
 
-    @Bean
-    @Primary
+//    @Bean
+//    @Primary
     public UserHolder userHolder(User user) {
         return new UserHolder(user);
     }

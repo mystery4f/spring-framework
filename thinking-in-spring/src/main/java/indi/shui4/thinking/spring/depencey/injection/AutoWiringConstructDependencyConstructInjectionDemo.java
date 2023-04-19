@@ -5,19 +5,18 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
 /**
- * "byName" Autowiring 依赖 Setter 方法注入示例
- *
+ *  "construct" Autowiring 依赖构造器注入
  * @author shui4
  */
-public class AutoWiringByNameDependencySetterInjectionDemo {
+public class AutoWiringConstructDependencyConstructInjectionDemo {
     public static void main(String[] args) {
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
-        reader.loadBeanDefinitions("classpath:/META-INF/autowiring-dependency-setter.xml");
+        reader.loadBeanDefinitions("classpath:/META-INF/autowiring-dependency-construct.xml");
         System.out.println(beanFactory.getBean(UserHolder.class));
     }
 
-    //    @Bean
+//    @Bean
 //    @Primary
     public UserHolder userHolder(User user) {
         return new UserHolder(user);
