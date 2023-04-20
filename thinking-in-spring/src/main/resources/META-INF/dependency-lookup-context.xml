@@ -9,6 +9,14 @@
 		<property name="name" value="张三"/>
 		<property name="city" value="BEIJING"/>
 		<property name="configFileLocation" value="classpath:META-INF/user-config.properties"/>
+		<property name="workCities" value="BEIJING"/>
+		<!--<property name="liteCities" value="BEIJING,SHANGHAI"/>-->
+		<property name="liteCities">
+			<list>
+				<value>BEIJING</value>
+				<value>SHANGHAI</value>
+			</list>
+		</property>
 	</bean>
 	<!--子类-->
 	<!--在使用按类型依赖查找的时候 一个类型存在多个此时会报错，加上 属性： primary="true" 即可解决-->
