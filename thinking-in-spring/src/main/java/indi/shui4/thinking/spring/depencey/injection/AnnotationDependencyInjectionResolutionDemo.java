@@ -17,7 +17,7 @@ import java.util.Optional;
 public class AnnotationDependencyInjectionResolutionDemo {
 
     @Lazy
-    @Autowired
+//    @Autowired
     private User lazyUser;
 
     // org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency
@@ -31,10 +31,10 @@ public class AnnotationDependencyInjectionResolutionDemo {
     private User user;  // DependencyDescriptor ->
 
     // 集合类型依赖注入
-    @Autowired
+//    @Autowired
     private Map<String, User> users;
 
-    @Autowired
+//    @Autowired
     private Optional<User> userOptional; //supperUser
 
     public static void main(String[] args) {
