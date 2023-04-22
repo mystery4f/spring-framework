@@ -1,3 +1,6 @@
+*.log
+.fastRequest
+build
 *.java.hsp
 *.sonarj
 *.sw*
