@@ -16,19 +16,8 @@
 
 package org.springframework.beans.factory.config;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Optional;
-
 import kotlin.reflect.KProperty;
 import kotlin.reflect.jvm.ReflectJvmMapping;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InjectionPoint;
@@ -41,6 +30,16 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Descriptor for a specific dependency that is about to be injected.
  * Wraps a constructor parameter, a method parameter or a field,
@@ -52,31 +51,64 @@ import org.springframework.util.ObjectUtils;
 @SuppressWarnings("serial")
 public class DependencyDescriptor extends InjectionPoint implements Serializable {
 
+	/**
+	 * 依赖项所声明的类。
+	 */
 	private final Class<?> declaringClass;
 
+	/**
+	 * 方法参数的名称。
+	 */
 	@Nullable
 	private String methodName;
 
+	/**
+	 * 参数类型数组。
+	 */
 	@Nullable
 	private Class<?>[] parameterTypes;
 
+	/**
+	 * 参数的序号。
+	 */
 	private int parameterIndex;
 
+	/**
+	 * 字段的名称。
+	 */
 	@Nullable
 	private String fieldName;
 
+	/**
+	 * 依赖是否是必须的。
+	 */
 	private final boolean required;
 
+	/**
+	 * 是否对可能的目标 bean 进行急切的解析以进行类型匹配。
+	 */
 	private final boolean eager;
 
+	/**
+	 * 嵌套级别，默认为 1。
+	 */
 	private int nestingLevel = 1;
 
+	/**
+	 * 包含此依赖关系的具体类，可能与声明该参数 / 字段的类不同。
+	 */
 	@Nullable
 	private Class<?> containingClass;
 
+	/**
+	 * 依赖项的可解析类型，通常是从基于类的 ResolvableType 的工厂方法构建的。
+	 */
 	@Nullable
 	private transient volatile ResolvableType resolvableType;
 
+	/**
+	 * 依赖项的类型描述符，通常是从基于类的 TypeDescriptor 的工厂方法构建的。
+	 */
 	@Nullable
 	private transient volatile TypeDescriptor typeDescriptor;
 
@@ -174,8 +206,7 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 					(KotlinDetector.isKotlinReflectPresent() &&
 							KotlinDetector.isKotlinType(this.field.getDeclaringClass()) &&
 							KotlinDelegate.isNullable(this.field)));
-		}
-		else {
+		} else {
 			return !obtainMethodParameter().isOptional();
 		}
 	}
@@ -394,20 +425,17 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 				}
 				if (type instanceof Class) {
 					return (Class<?>) type;
-				}
-				else if (type instanceof ParameterizedType) {
+				} else if (type instanceof ParameterizedType) {
 					Type arg = ((ParameterizedType) type).getRawType();
 					if (arg instanceof Class) {
 						return (Class<?>) arg;
 					}
 				}
 				return Object.class;
-			}
-			else {
+			} else {
 				return this.field.getType();
 			}
-		}
-		else {
+		} else {
 			return obtainMethodParameter().getNestedParameterType();
 		}
 	}
@@ -432,9 +460,9 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 	}
 
 
-	//---------------------------------------------------------------------
+	// ---------------------------------------------------------------------
 	// Serialization support
-	//---------------------------------------------------------------------
+	// ---------------------------------------------------------------------
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		// Rely on default serialization; just initialize state after deserialization.
@@ -444,13 +472,11 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 		try {
 			if (this.fieldName != null) {
 				this.field = this.declaringClass.getDeclaredField(this.fieldName);
-			}
-			else {
+			} else {
 				if (this.methodName != null) {
 					this.methodParameter = new MethodParameter(
 							this.declaringClass.getDeclaredMethod(this.methodName, this.parameterTypes), this.parameterIndex);
-				}
-				else {
+				} else {
 					this.methodParameter = new MethodParameter(
 							this.declaringClass.getDeclaredConstructor(this.parameterTypes), this.parameterIndex);
 				}
@@ -458,8 +484,7 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 					this.methodParameter = this.methodParameter.nested();
 				}
 			}
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException("Could not find original class structure", ex);
 		}
 	}
