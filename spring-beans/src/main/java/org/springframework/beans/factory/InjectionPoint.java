@@ -16,15 +16,15 @@
 
 package org.springframework.beans.factory;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 
 /**
  * A simple descriptor for an injection point, pointing to a method/constructor
@@ -38,19 +38,26 @@ import org.springframework.util.ObjectUtils;
  * @see org.springframework.beans.factory.config.DependencyDescriptor
  */
 public class InjectionPoint {
-
+	/**
+	 * 要包装的MethodParameter，可为null。
+	 */
 	@Nullable
 	protected MethodParameter methodParameter;
-
+	/**
+	 * 要包装的Field，可为null。
+	 */
 	@Nullable
 	protected Field field;
-
+	/**
+	 * 缓存了field的注释。
+	 */
 	@Nullable
 	private volatile Annotation[] fieldAnnotations;
 
 
 	/**
 	 * Create an injection point descriptor for a method or constructor parameter.
+	 *
 	 * @param methodParameter the MethodParameter to wrap
 	 */
 	public InjectionPoint(MethodParameter methodParameter) {
@@ -127,8 +134,7 @@ public class InjectionPoint {
 				this.fieldAnnotations = fieldAnnotations;
 			}
 			return fieldAnnotations;
-		}
-		else {
+		} else {
 			return obtainMethodParameter().getParameterAnnotations();
 		}
 	}
