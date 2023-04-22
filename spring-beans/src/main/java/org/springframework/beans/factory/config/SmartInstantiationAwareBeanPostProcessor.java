@@ -16,24 +16,21 @@
 
 package org.springframework.beans.factory.config;
 
-import java.lang.reflect.Constructor;
-
 import org.springframework.beans.BeansException;
 import org.springframework.lang.Nullable;
 
+import java.lang.reflect.Constructor;
+
 /**
- * Extension of the {@link InstantiationAwareBeanPostProcessor} interface,
- * adding a callback for predicting the eventual type of a processed bean.
- *
- * <p><b>NOTE:</b> This interface is a special purpose interface, mainly for
- * internal use within the framework. In general, application-provided
- * post-processors should simply implement the plain {@link BeanPostProcessor}
- * interface or derive from the {@link InstantiationAwareBeanPostProcessorAdapter}
- * class. New methods might be added to this interface even in point releases.
+ * 该接口是 {@link InstantiationAwareBeanPostProcessor} 接口的扩展，添加了一个用于预测已处理 `Bean` 对象最终类型的回调函数。
+ * <p>
+ * 需要注意的是，该接口是一个专用的接口，主要供框架内部使用。通常情况下，应用程序提供的后置处理器应该只实现普通的 {@link BeanPostProcessor} 接口或继承 {@link InstantiationAwareBeanPostProcessorAdapter} 类。在点版本中甚至可能会添加新的方法到该接口中。
+ * <p>
+ * 该接口是 Spring IoC 容器在创建 `Bean` 对象过程中的一个扩展点，能够让开发人员拓展 `Bean` 对象实例化和初始化的过程，并添加自定义的操作以适应各种需求。
  *
  * @author Juergen Hoeller
- * @since 2.0.3
  * @see InstantiationAwareBeanPostProcessorAdapter
+ * @since 2.0.3
  */
 public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationAwareBeanPostProcessor {
 
@@ -41,8 +38,9 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * Predict the type of the bean to be eventually returned from this
 	 * processor's {@link #postProcessBeforeInstantiation} callback.
 	 * <p>The default implementation returns {@code null}.
+	 *
 	 * @param beanClass the raw class of the bean
-	 * @param beanName the name of the bean
+	 * @param beanName  the name of the bean
 	 * @return the type of the bean, or {@code null} if not predictable
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
@@ -54,8 +52,9 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	/**
 	 * Determine the candidate constructors to use for the given bean.
 	 * <p>The default implementation returns {@code null}.
+	 *
 	 * @param beanClass the raw class of the bean (never {@code null})
-	 * @param beanName the name of the bean
+	 * @param beanName  the name of the bean
 	 * @return the candidate constructors, or {@code null} if none specified
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
@@ -81,7 +80,8 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * for the affected bean has been built for a call to this method already,
 	 * it will be exposes as final bean reference by default).
 	 * <p>The default implementation returns the given {@code bean} as-is.
-	 * @param bean the raw bean instance
+	 *
+	 * @param bean     the raw bean instance
 	 * @param beanName the name of the bean
 	 * @return the object to expose as bean reference
 	 * (typically with the passed-in bean instance as default)

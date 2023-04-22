@@ -139,6 +139,9 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 
 	private boolean requiredParameterValue = true;
 
+	/**
+	 * 倒数第三位
+	 */
 	private int order = Ordered.LOWEST_PRECEDENCE - 2;
 
 	@Nullable

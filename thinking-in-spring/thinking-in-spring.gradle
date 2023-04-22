@@ -16,7 +16,10 @@ dependencies {
         transitive = true
     }
     implementation 'javax.annotation:javax.annotation-api:1.3.2', {
-        transitive= true
+        transitive = true
+    }
+    implementation 'javax.inject:javax.inject:1', {
+                transitive = true
     }
 }
 
