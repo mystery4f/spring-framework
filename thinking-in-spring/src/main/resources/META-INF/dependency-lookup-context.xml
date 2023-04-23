@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans
+		xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+
+">
+	<!--激活JSR-250-->
+	<!--AnnotationConfigUtils.registerAnnotationConfigProcessors-->
+	<context:annotation-config/>
+
+	<!--扫描-->
+	<context:component-scan base-package="xxxx"/>
+
 	<bean class="indi.shui4.thinking.spring.ioc.overview.domain.User"
 		  id="user">
 		<property name="id" value="1"/>
