@@ -938,7 +938,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		Assert.hasText(beanName, "Bean name must not be empty");
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
-
+		// 先会对beanName和beanDefinition进行非空校验和有效性校验
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
 				((AbstractBeanDefinition) beanDefinition).validate();
@@ -947,8 +947,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						"Validation of bean definition failed", ex);
 			}
 		}
-
+		// 后根据beanName在beanDefinitionMap中查找是否已经有相同的定义
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+		// 如果存在，则判断允许覆盖或者需要抛出异常或者进行相应的日志输出；如果不存在，则将新的beanDefinition添加到map中
 		if (existingDefinition != null) {
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
@@ -992,7 +993,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			this.frozenBeanDefinitionNames = null;
 		}
-
+		// 最后，会判断是否需要重置beanName的相关定义。如果存在，则进行相关处理；如果不存在则清除相应的缓存
 		if (existingDefinition != null || containsSingleton(beanName)) {
 			resetBeanDefinition(beanName);
 		} else if (isConfigurationFrozen()) {

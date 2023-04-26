@@ -31,6 +31,7 @@ public class DependencySourceDemo {
 			applicationContext.register(DependencySourceDemo.class);
 			applicationContext.refresh();
 			DependencySourceDemo demo = applicationContext.getBean(DependencySourceDemo.class);
+
 		}
 
 
