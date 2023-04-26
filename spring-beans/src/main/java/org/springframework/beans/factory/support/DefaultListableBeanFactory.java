@@ -951,6 +951,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		// 如果存在，则判断允许覆盖或者需要抛出异常或者进行相应的日志输出；如果不存在，则将新的beanDefinition添加到map中
 		if (existingDefinition != null) {
+			// 在spring中认为为true，但是在spring boot 2.1+ 被人为改为 false
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			} else if (existingDefinition.getRole() < beanDefinition.getRole()) {
@@ -975,8 +976,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		} else {
+			// ? 已经有 Bean 开始创建了
 			if (hasBeanCreationStarted()) {
-				// Cannot modify startup-time collection elements anymore (for stable iteration)
+				// 无法再修改启动时集合元素（为了稳定迭代）
 				synchronized (this.beanDefinitionMap) {
 					this.beanDefinitionMap.put(beanName, beanDefinition);
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
@@ -985,8 +987,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					this.beanDefinitionNames = updatedDefinitions;
 					removeManualSingletonName(beanName);
 				}
-			} else {
-				// Still in startup registration phase
+			}
+			// 还在启动注册阶段
+			else {
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
 				removeManualSingletonName(beanName);
