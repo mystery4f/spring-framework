@@ -12,9 +12,11 @@ import javax.annotation.PostConstruct;
  */
 public class ResolvableDependencySourceDemo {
 
+	@SuppressWarnings("unused")
 	@Autowired
 	private String value;
 
+	@SuppressWarnings("squid:S1602")
 	public static void main(String[] args) {
 
 		// 创建 BeanFactory 容器
@@ -22,7 +24,8 @@ public class ResolvableDependencySourceDemo {
 
 		// 注册 Configuration Class（配置类） -> Spring Bean
 		applicationContext.register(ResolvableDependencySourceDemo.class);
-
+		// 注意：无法在 AbstractApplicationContext#refresh 之后  执行 registerResolvableDependency
+		// 只能通过这种事件回调的方式去应用 registerResolvableDependency
 		applicationContext.addBeanFactoryPostProcessor(beanFactory -> {
 			// 注册 Resolvable Dependency
 			beanFactory.registerResolvableDependency(String.class, "Hello,World");
