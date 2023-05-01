@@ -177,7 +177,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private volatile String[] frozenBeanDefinitionNames;
 
 	/**
-	 * 是否可以缓存所有bean的bean定义元数据。
+	 * 是否可以缓存所有bean的bean定义元数据。配置冻结
 	 */
 	private volatile boolean configurationFrozen;
 
