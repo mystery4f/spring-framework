@@ -894,60 +894,72 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return (this.configurationFrozen || super.isBeanEligibleForMetadataCaching(beanName));
 	}
 
+	/**
+	 * 预先实例化所有单例bean的方法。
+	 * @throws BeansException 如果预先实例化失败，抛出异常。
+	 */
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
+		// 如果开启了跟踪日志，则打印当前工厂类进行单例Bean预实例化的指令。
 		if (logger.isTraceEnabled()) {
 			logger.trace("Pre-instantiating singletons in " + this);
 		}
 
-		// Iterate over a copy to allow for init methods which in turn register new bean definitions.
-		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+		// 使用一个副本迭代遍历所有的bean名称，允许init方法注册新的bean定义。
+		// 尽管这不属于常规工厂引导流程，但在其他情况下也能很好地工作。
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
-		// Trigger initialization of all non-lazy singleton beans...
+		// 触发所有非懒加载单例bean的初始化...
 		for (String beanName : beanNames) {
+			// 获取当前bean的合并后定义。
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+			// 如果当前bean不是抽象类，是单例且不是懒加载，则进行初始化。
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
-				if (isFactoryBean(beanName)) {
+				if (isFactoryBean(beanName)) { // 如果当前bean是工厂bean。
+					// 通过工厂bean前缀和工厂bean名称获取bean
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
+					// 如果当前bean是FactoryBean的一个实例。
 					if (bean instanceof FactoryBean) {
 						FactoryBean<?> factory = (FactoryBean<?>) bean;
 						boolean isEagerInit;
+						// 如果系统安全管理器不为空并且工厂bean实现了SmartFactoryBean接口
 						if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
-							isEagerInit = AccessController.doPrivileged(
+							isEagerInit = AccessController.doPrivileged( // 使用访问控制上下文获取是否急切初始化的特权。
 									(PrivilegedAction<Boolean>) ((SmartFactoryBean<?>) factory)::isEagerInit,
 									getAccessControlContext());
-						} else {
+						} else { // 否则判断是不是SmartFactoryBean的实例并且急切初始化返回值为true。
 							isEagerInit = (factory instanceof SmartFactoryBean &&
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
+						// 如果需要进行急切初始化则创造bean。
 						if (isEagerInit) {
 							getBean(beanName);
 						}
 					}
-				} else {
+				} else { // 如果当前bean不是工厂bean则进行初始化。
 					getBean(beanName);
 				}
 			}
 		}
 
-		// Trigger post-initialization callback for all applicable beans...
+		// 触发所有合适bean的post-initialization回调...
 		for (String beanName : beanNames) {
 			Object singletonInstance = getSingleton(beanName);
+			// 如果当前bean是SmartInitializingSingleton的实例。
 			if (singletonInstance instanceof SmartInitializingSingleton) {
-				StartupStep smartInitialize = this.getApplicationStartup()
+				StartupStep smartInitialize = this.getApplicationStartup() // 记录应用程序启动的性能指标
 						.start("spring.beans.smart-initialize")
 						.tag("beanName", beanName);
 				SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;
-				if (System.getSecurityManager() != null) {
+				if (System.getSecurityManager() != null) { // 如果当前系统安全管理器不为空则使用doPrivileged方法进行特权操作。
 					AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 						smartSingleton.afterSingletonsInstantiated();
 						return null;
 					}, getAccessControlContext());
-				} else {
+				} else { // 否则直接进行操作
 					smartSingleton.afterSingletonsInstantiated();
 				}
-				smartInitialize.end();
+				smartInitialize.end(); // 结束性能指标的记录
 			}
 		}
 	}
