@@ -660,21 +660,40 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return getBeansOfType(type, true, true);
 	}
 
+	/**
+	 * 重写getBeansOfType方法，用于获取指定类型T的所有bean
+	 *
+	 * @param type                 指定类型
+	 * @param includeNonSingletons 是否包括非单例模式的bean
+	 * @param allowEagerInit       是否允许早期初始化
+	 * @return 包含所有指定类型T的bean的Map
+	 * @throws BeansException 如果bean获取失败
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> Map<String, T> getBeansOfType(
 			@Nullable Class<T> type, boolean includeNonSingletons, boolean allowEagerInit) throws BeansException {
 
+		// 获取指定类型T的所有bean的名字
 		String[] beanNames = getBeanNamesForType(type, includeNonSingletons, allowEagerInit);
+
+		// 创建一个LinkedHashMap，用于存放所有符合条件的bean
 		Map<String, T> result = CollectionUtils.newLinkedHashMap(beanNames.length);
+
+		// 遍历所有符合条件的bean，将其加入result中
 		for (String beanName : beanNames) {
 			try {
+				// 获取bean
 				Object beanInstance = getBean(beanName);
+
+				// 如果bean不是NullBean的实例，则加入result中
 				if (!(beanInstance instanceof NullBean)) {
 					result.put(beanName, (T) beanInstance);
 				}
 			} catch (BeanCreationException ex) {
 				Throwable rootCause = ex.getMostSpecificCause();
+
+				// 如果是BeanCurrentlyInCreationException异常，则忽略该bean，并继续遍历其他bean
 				if (rootCause instanceof BeanCurrentlyInCreationException) {
 					BeanCreationException bce = (BeanCreationException) rootCause;
 					String exBeanName = bce.getBeanName();
@@ -684,8 +703,6 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 									ex.getMessage());
 						}
 						onSuppressedException(ex);
-						// Ignore: indicates a circular reference when autowiring constructors.
-						// We want to find matches other than the currently created bean itself.
 						continue;
 					}
 				}
@@ -735,24 +752,28 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				.orElse(null);
 	}
 
+	/**
+	 * 查找bean上的合并注解
+	 *
+	 * @param beanName       bean的名称
+	 * @param annotationType 注解的类型
+	 * @param <A>            注解的泛型
+	 * @return 合并后的注解
+	 */
 	private <A extends Annotation> MergedAnnotation<A> findMergedAnnotationOnBean(
 			String beanName, Class<A> annotationType) {
 
+		//获取bean的类型
 		Class<?> beanType = getType(beanName);
-		if (beanType != null) {
-			MergedAnnotation<A> annotation =
-					MergedAnnotations.from(beanType, SearchStrategy.TYPE_HIERARCHY)
-							.get(annotationType);
-			if (annotation.isPresent()) {
-				return annotation;
-			}
-		}
+
 		if (containsBeanDefinition(beanName)) {
+			//获取合并的本地bean定义
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
-			// Check raw bean class, e.g. in case of a proxy.
+			// 检查原始bean类，例如代理的情况。
 			if (bd.hasBeanClass()) {
 				Class<?> beanClass = bd.getBeanClass();
 				if (beanClass != beanType) {
+					//获取工厂方法上的注解
 					MergedAnnotation<A> annotation =
 							MergedAnnotations.from(beanClass, SearchStrategy.TYPE_HIERARCHY)
 									.get(annotationType);
@@ -761,9 +782,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 			}
-			// Check annotations declared on factory method, if any.
+			// 检查工厂方法上声明的注解（如果有的话）。
 			Method factoryMethod = bd.getResolvedFactoryMethod();
 			if (factoryMethod != null) {
+				//获取工厂方法上的注解
 				MergedAnnotation<A> annotation =
 						MergedAnnotations.from(factoryMethod, SearchStrategy.TYPE_HIERARCHY)
 								.get(annotationType);
@@ -772,8 +794,17 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 			}
 		}
+		//获取bean上的注解
+		MergedAnnotation<A> annotation =
+				MergedAnnotations.from(beanType, SearchStrategy.TYPE_HIERARCHY)
+						.get(annotationType);
+		if (annotation.isPresent()) {
+			//如果注解存在，则返回注解
+			return annotation;
+		}
 		return MergedAnnotation.missing();
 	}
+
 
 	@Override
 	public boolean containsBeanDefinition(String beanName) {
