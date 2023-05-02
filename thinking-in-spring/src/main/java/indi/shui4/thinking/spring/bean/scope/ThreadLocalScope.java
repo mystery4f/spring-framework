@@ -15,50 +15,50 @@ import java.util.Map;
  */
 public class ThreadLocalScope implements Scope {
 
-    public static final String SCOPE_NAME = "thread-local";
+	public static final String SCOPE_NAME = "thread-local";
 
-    private final NamedThreadLocal<Map<String, Object>> threadLocal = new NamedThreadLocal<>("thread-local-scope") {
+	private final NamedThreadLocal<Map<String, Object>> threadLocal = new NamedThreadLocal<>("thread-local-scope") {
 
 		@Override
-        public Map<String, Object> initialValue() {
-            return new HashMap<>();
-        }
-    };
+		public Map<String, Object> initialValue() {
+			return new HashMap<>();
+		}
+	};
 
-    @Override
-    public Object get(String name, ObjectFactory<?> objectFactory) {
+	@Override
+	public Object get(@NonNull String name, ObjectFactory<?> objectFactory) {
 
-        // 非空
-        Map<String, Object> context = getContext();
+		// 非空
+		Map<String, Object> context = getContext();
 
 		return context.computeIfAbsent(name, k -> objectFactory.getObject());
-    }
+	}
 
-    @NonNull
-    private Map<String, Object> getContext() {
-        return threadLocal.get();
-    }
+	@NonNull
+	private Map<String, Object> getContext() {
+		return threadLocal.get();
+	}
 
-    @Override
-    public Object remove(String name) {
-        Map<String, Object> context = getContext();
-        return context.remove(name);
-    }
+	@Override
+	public Object remove(String name) {
+		Map<String, Object> context = getContext();
+		return context.remove(name);
+	}
 
-    @Override
-    public void registerDestructionCallback(String name, Runnable callback) {
+	@Override
+	public void registerDestructionCallback(String name, Runnable callback) {
 		throw new UnsupportedOperationException();
-    }
+	}
 
-    @Override
-    public Object resolveContextualObject(String key) {
-        Map<String, Object> context = getContext();
-        return context.get(key);
-    }
+	@Override
+	public Object resolveContextualObject(String key) {
+		Map<String, Object> context = getContext();
+		return context.get(key);
+	}
 
-    @Override
-    public String getConversationId() {
-        Thread thread = Thread.currentThread();
-        return String.valueOf(thread.getId());
-    }
+	@Override
+	public String getConversationId() {
+		Thread thread = Thread.currentThread();
+		return String.valueOf(thread.getId());
+	}
 }
