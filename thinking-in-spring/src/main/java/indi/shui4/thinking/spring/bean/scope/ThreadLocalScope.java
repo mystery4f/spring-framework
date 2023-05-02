@@ -26,7 +26,7 @@ public class ThreadLocalScope implements Scope {
 	};
 
 	@Override
-	public Object get(@NonNull String name, ObjectFactory<?> objectFactory) {
+	public Object get(String name, ObjectFactory<?> objectFactory) {
 
 		// 非空
 		Map<String, Object> context = getContext();
@@ -45,9 +45,10 @@ public class ThreadLocalScope implements Scope {
 		return context.remove(name);
 	}
 
+	// 注册销毁回调
 	@Override
 	public void registerDestructionCallback(String name, Runnable callback) {
-		throw new UnsupportedOperationException();
+		threadLocal.remove();
 	}
 
 	@Override
@@ -56,6 +57,7 @@ public class ThreadLocalScope implements Scope {
 		return context.get(key);
 	}
 
+	// 获取对话 ID
 	@Override
 	public String getConversationId() {
 		Thread thread = Thread.currentThread();
