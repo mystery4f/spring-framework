@@ -12,6 +12,11 @@ dependencies {
     implementation(project(':spring-context'), {
         transitive = true
     })
+
+    implementation(project(':spring-webmvc'), {
+        transitive = true
+    })
+
     implementation 'cn.hutool:hutool-all:5.8.15', {
         transitive = true
     }

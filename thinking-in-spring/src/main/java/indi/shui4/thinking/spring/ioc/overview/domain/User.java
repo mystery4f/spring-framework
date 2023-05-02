@@ -1,8 +1,11 @@
 package indi.shui4.thinking.spring.ioc.overview.domain;
 
 import indi.shui4.thinking.spring.ioc.overview.enums.City;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.core.io.Resource;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,80 +14,101 @@ import java.util.List;
  *
  * @author shui4
  */
-public class User {
-    private String id;
-    private String name;
-    private City city;
-    private Resource configFileLocation;
+public class User implements BeanNameAware {
+	private String id;
+	private String name;
+	private City city;
+	private Resource configFileLocation;
 
-    private City[] workCities;
-    private List<City> liteCities;
+	private City[] workCities;
+	private List<City> liteCities;
+	private String beanName;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", city=" + city +
-                ", configFileLocation=" + configFileLocation +
-                ", workCities=" + Arrays.toString(workCities) +
-                ", liteCities=" + liteCities +
-                '}';
-    }
+	public static User createUser() {
+		User user = new User();
+		user.setId(System.nanoTime());
+		user.setName("shui4");
+		return user;
+	}
 
-    public List<City> getLiteCities() {
-        return liteCities;
-    }
+	@Override
+	public String toString() {
+		return "User{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", city=" + city +
+				", configFileLocation=" + configFileLocation +
+				", workCities=" + Arrays.toString(workCities) +
+				", liteCities=" + liteCities +
+				'}';
+	}
 
-    public void setLiteCities(List<City> liteCities) {
-        this.liteCities = liteCities;
-    }
+	public List<City> getLiteCities() {
+		return liteCities;
+	}
 
-    public City[] getWorkCities() {
-        return workCities;
-    }
+	public void setLiteCities(List<City> liteCities) {
+		this.liteCities = liteCities;
+	}
 
-    public void setWorkCities(City[] workCities) {
-        this.workCities = workCities;
-    }
+	public City[] getWorkCities() {
+		return workCities;
+	}
 
-    public Resource getConfigFileLocation() {
-        return configFileLocation;
-    }
+	public void setWorkCities(City[] workCities) {
+		this.workCities = workCities;
+	}
 
-    public void setConfigFileLocation(Resource configFileLocation) {
-        this.configFileLocation = configFileLocation;
-    }
+	public Resource getConfigFileLocation() {
+		return configFileLocation;
+	}
 
-    public City getCity() {
-        return city;
-    }
+	public void setConfigFileLocation(Resource configFileLocation) {
+		this.configFileLocation = configFileLocation;
+	}
 
-    public void setCity(City city) {
-        this.city = city;
-    }
+	public City getCity() {
+		return city;
+	}
 
-    public static User createUser() {
-        User user = new User();
-        user.setId("1");
-        user.setName("shui4");
-        return user;
-    }
+	public void setCity(City city) {
+		this.city = city;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setId(Long id) {
+		this.id = id.toString();
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	@PostConstruct
+	public void init() {
+		System.out.println(beanName + "用户对象初始化...");
+	}
+
+	@PreDestroy
+	public void destroy() {
+		System.out.println(beanName + ":用户对象销毁...");
+	}
+
+	@Override
+	public void setBeanName(String name) {
+		this.beanName = name;
+	}
 }
