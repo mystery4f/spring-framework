@@ -58,7 +58,7 @@ public class ThreadLocalScopeDemo {
 		}
 	}
 
-	@SuppressWarnings("squid:S1144")
+	@SuppressWarnings({"squid:S1144", "unused"})
 	private static void scopedBeansByInjection(AnnotationConfigApplicationContext applicationContext) {
 		throw new UnsupportedOperationException();
 	}

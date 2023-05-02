@@ -125,7 +125,7 @@ public class BeanScopeDemo implements DisposableBean {
 	}
 
 	@Override
-	public void destroy() throws Exception {
+	public void destroy() {
 
 		System.out.println("当前 BeanScopeDemo Bean 正在销毁中...");
 
