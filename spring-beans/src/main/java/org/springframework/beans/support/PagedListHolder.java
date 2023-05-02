@@ -54,33 +54,56 @@ import org.springframework.util.Assert;
 public class PagedListHolder<E> implements Serializable {
 
 	/**
-	 * The default page size.
+	 * 默认页面大小。
 	 */
 	public static final int DEFAULT_PAGE_SIZE = 10;
 
 	/**
-	 * The default maximum number of page links.
+	 * 默认的最大页面链接数。
 	 */
 	public static final int DEFAULT_MAX_LINKED_PAGES = 10;
 
-
+	/**
+	 * 数据源列表。
+	 */
 	private List<E> source = Collections.emptyList();
 
+	/**
+	 * 刷新日期。
+	 */
 	@Nullable
 	private Date refreshDate;
 
+	/**
+	 * 排序定义。
+	 */
 	@Nullable
 	private SortDefinition sort;
 
+	/**
+	 * 已使用的排序定义。
+	 */
 	@Nullable
 	private SortDefinition sortUsed;
 
+	/**
+	 * 页面大小。
+	 */
 	private int pageSize = DEFAULT_PAGE_SIZE;
 
+	/**
+	 * 当前页数。
+	 */
 	private int page = 0;
 
+	/**
+	 * 是否设置了新的页数。
+	 */
 	private boolean newPageSet;
 
+	/**
+	 * 最大链接页面数。
+	 */
 	private int maxLinkedPages = DEFAULT_MAX_LINKED_PAGES;
 
 
