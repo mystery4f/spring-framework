@@ -727,20 +727,28 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Override
 	public String[] getBeanNamesForAnnotation(Class<? extends Annotation> annotationType) {
+		// 创建结果列表
 		List<String> result = new ArrayList<>();
+		// 遍历beanDefinitionNames
 		for (String beanName : this.beanDefinitionNames) {
+			// 获取BeanDefinition
 			BeanDefinition bd = this.beanDefinitionMap.get(beanName);
+			// 如果BeanDefinition不为空，且不是抽象类，并且能够在bean中找到注解，则将其加入到结果列表中
 			if (bd != null && !bd.isAbstract() && findAnnotationOnBean(beanName, annotationType) != null) {
 				result.add(beanName);
 			}
 		}
+		// 遍历manualSingletonNames
 		for (String beanName : this.manualSingletonNames) {
+			// 如果结果列表中不包含beanName，并且能够在bean中找到注解，则将其加入到结果列表中
 			if (!result.contains(beanName) && findAnnotationOnBean(beanName, annotationType) != null) {
 				result.add(beanName);
 			}
 		}
+		// 将结果转换为数组并返回
 		return StringUtils.toStringArray(result);
 	}
+
 
 	@Override
 	@Nullable
