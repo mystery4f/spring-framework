@@ -1525,17 +1525,23 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private Class<?> doResolveBeanClass(RootBeanDefinition mbd, Class<?>... typesToMatch)
 			throws ClassNotFoundException {
 
+		// 获取bean的ClassLoader
 		ClassLoader beanClassLoader = getBeanClassLoader();
+		// 保存动态加载类的ClassLoader
 		ClassLoader dynamicLoader = beanClassLoader;
+		// 判断是否需要重新加载
 		boolean freshResolve = false;
 
+		// 如果存在类型匹配，则使用临时ClassLoader来进行类型检查（而不创建实例）。
+		// 用于方法织入等特定场景下。
 		if (!ObjectUtils.isEmpty(typesToMatch)) {
-			// When just doing type checks (i.e. not creating an actual instance yet),
-			// use the specified temporary class loader (e.g. in a weaving scenario).
 			ClassLoader tempClassLoader = getTempClassLoader();
 			if (tempClassLoader != null) {
+				// 如果存在临时ClassLoader，将动态加载类的ClassLoader指向临时ClassLoader
 				dynamicLoader = tempClassLoader;
+				// 将freshResolve设置为true，表示需要重新加载
 				freshResolve = true;
+				// 如果临时ClassLoader是DecoratorClassLoader，则排除所有typesToMatch
 				if (tempClassLoader instanceof DecoratingClassLoader) {
 					DecoratingClassLoader dcl = (DecoratingClassLoader) tempClassLoader;
 					for (Class<?> typeToMatch : typesToMatch) {
@@ -1545,39 +1551,44 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 		}
 
+		// 获取bean的全类名
 		String className = mbd.getBeanClassName();
 		if (className != null) {
+			// 对全类名进行表达式求值
 			Object evaluated = evaluateBeanDefinitionString(className, mbd);
 			if (!className.equals(evaluated)) {
-				// A dynamically resolved expression, supported as of 4.2...
+				// 如果表达式求值得到Class，则返回该Class
 				if (evaluated instanceof Class) {
 					return (Class<?>) evaluated;
+					// 如果表达式求值得到String，则重新赋值className
 				} else if (evaluated instanceof String) {
 					className = (String) evaluated;
+					// 将freshResolve设置为true，表示需要重新加载
 					freshResolve = true;
 				} else {
 					throw new IllegalStateException("Invalid class name expression result: " + evaluated);
 				}
 			}
-			if (freshResolve) {
-				// When resolving against a temporary class loader, exit early in order
-				// to avoid storing the resolved Class in the bean definition.
-				if (dynamicLoader != null) {
-					try {
-						return dynamicLoader.loadClass(className);
-					} catch (ClassNotFoundException ex) {
-						if (logger.isTraceEnabled()) {
-							logger.trace("Could not load class [" + className + "] from " + dynamicLoader + ": " + ex);
-						}
+			// 如果freshResolve为true，则尝试使用动态ClassLoader来进行类加载。
+			// 避免将加载到的类对象存储在BeanDefinition中
+			if (freshResolve && dynamicLoader != null) {
+				try {
+					return dynamicLoader.loadClass(className);
+				} catch (ClassNotFoundException ex) {
+					// 如果找不到类，则记录日志
+					if (logger.isTraceEnabled()) {
+						logger.trace("Could not load class [" + className + "] from " + dynamicLoader + ": " + ex);
 					}
 				}
-				return ClassUtils.forName(className, dynamicLoader);
 			}
+			// 否则使用常规方式进行类加载
+			return ClassUtils.forName(className, dynamicLoader);
 		}
 
-		// Resolve regularly, caching the result in the BeanDefinition...
+		// 如果无法获取全类名，则设置使用bean的ClassLoader进行类加载，并在BeanDefinition中缓存结果
 		return mbd.resolveBeanClass(beanClassLoader);
 	}
+
 
 	/**
 	 * Evaluate the given String as contained in a bean definition,
