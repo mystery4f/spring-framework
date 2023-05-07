@@ -39,27 +39,18 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * Abstract base class for {@link org.springframework.beans.factory.BeanFactory}
- * implementations, providing the full capabilities of the
- * {@link org.springframework.beans.factory.config.ConfigurableBeanFactory} SPI.
- * Does <i>not</i> assume a listable bean factory: can therefore also be used
- * as base class for bean factory implementations which obtain bean definitions
- * from some backend resource (where bean definition access is an expensive operation).
- *
- * <p>This class provides a singleton cache (through its base class
- * {@link org.springframework.beans.factory.support.DefaultSingletonBeanRegistry},
- * singleton/prototype determination, {@link org.springframework.beans.factory.FactoryBean}
- * handling, aliases, bean definition merging for child bean definitions,
- * and bean destruction ({@link org.springframework.beans.factory.DisposableBean}
- * interface, custom destroy methods). Furthermore, it can manage a bean factory
- * hierarchy (delegating to the parent in case of an unknown bean), through implementing
- * the {@link org.springframework.beans.factory.HierarchicalBeanFactory} interface.
- *
- * <p>The main template methods to be implemented by subclasses are
- * {@link #getBeanDefinition} and {@link #createBean}, retrieving a bean definition
- * for a given bean name and creating a bean instance for a given bean definition,
- * respectively. Default implementations of those operations can be found in
- * {@link DefaultListableBeanFactory} and {@link AbstractAutowireCapableBeanFactory}.
+ * {@link org.springframework.beans.factory.BeanFactory} 实现的抽象基类，
+ * 提供了全面的 {@link org.springframework.beans.factory.config.ConfigurableBeanFactory} SPI 功能。
+ * 不假定可枚举 Bean 工厂：因此也可以用作从某些后端资源获取 Bean 定义的 Bean 工厂实现的基类
+ * （其中 Bean 定义访问是一个昂贵的操作）。
+ * <p>此类提供了单例缓存（通过其基类 {@link org.springframework.beans.factory.support.DefaultSingletonBeanRegistry}），
+ * 单例/原型确定、{@link org.springframework.beans.factory.FactoryBean} 处理、别名、子 Bean 定义的 Bean 定义合并，
+ * 以及 Bean 销毁（{@link org.springframework.beans.factory.DisposableBean} 接口、自定义销毁方法）。
+ * 此外，它可以通过实现 {@link org.springframework.beans.factory.HierarchicalBeanFactory} 接口来管理 Bean 工厂层次结构
+ * （在未知 Bean 的情况下委托给父级）。
+ * <p>子类需要实现的主要模板方法是 {@link #getBeanDefinition} 和 {@link #createBean}，
+ * 分别为给定的 Bean 名称检索 Bean 定义并创建给定的 Bean 定义的 Bean 实例。
+ * 这些操作的默认实现可以在 {@link DefaultListableBeanFactory} 和 {@link AbstractAutowireCapableBeanFactory} 中找到。
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
@@ -411,66 +402,86 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	@Override
 	public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
+		// 将给定的bean名称转换为形式化的名称
 		String beanName = transformedBeanName(name);
 
+		// 获取给定名称的单例实例对象（如果存在）
 		Object beanInstance = getSingleton(beanName, false);
+		// 如果单例实例对象不为空
 		if (beanInstance != null) {
+			// 如果单例实例对象是FactoryBean类型
 			if (beanInstance instanceof FactoryBean) {
+				// 如果给定名称是FactoryDereference，或者单例实例对象是单例模式，则返回true
 				return (BeanFactoryUtils.isFactoryDereference(name) || ((FactoryBean<?>) beanInstance).isSingleton());
 			} else {
+				// 如果给定名称不是FactoryDereference，则返回true
 				return !BeanFactoryUtils.isFactoryDereference(name);
 			}
 		}
 
-		// No singleton instance found -> check bean definition.
+		// 如果未找到给定名称的单例实例对象，则检查bean定义
 		BeanFactory parentBeanFactory = getParentBeanFactory();
+		// 如果此工厂中没有找到bean定义，则委托给父BeanFactory
 		if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
-			// No bean definition found in this factory -> delegate to parent.
 			return parentBeanFactory.isSingleton(originalBeanName(name));
 		}
 
+		// 获取合并的本地bean定义
 		RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 
-		// In case of FactoryBean, return singleton status of created object if not a dereference.
+		// 如果bean定义是单例模式
 		if (mbd.isSingleton()) {
+			// 如果bean实例是FactoryBean类型
 			if (isFactoryBean(beanName, mbd)) {
+				// 如果给定名称是FactoryDereference，则返回true
 				if (BeanFactoryUtils.isFactoryDereference(name)) {
 					return true;
 				}
+				// 获取FactoryBean的实例对象，并返回其是否为单例模式
 				FactoryBean<?> factoryBean = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
 				return factoryBean.isSingleton();
 			} else {
+				// 如果bean实例不是FactoryBean类型，则返回true
 				return !BeanFactoryUtils.isFactoryDereference(name);
 			}
 		} else {
+			// 如果bean定义不是单例模式，则返回false
 			return false;
 		}
 	}
 
 	@Override
 	public boolean isPrototype(String name) throws NoSuchBeanDefinitionException {
+
+		// 将bean名称转换为指定格式
 		String beanName = transformedBeanName(name);
 
+		// 获取当前工厂的父工厂
 		BeanFactory parentBeanFactory = getParentBeanFactory();
+
+		// 如果当前工厂不包含指定名称的bean，则代理给父工厂进行判断
 		if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
-			// No bean definition found in this factory -> delegate to parent.
 			return parentBeanFactory.isPrototype(originalBeanName(name));
 		}
 
+		// 获取指定名称bean的合成bean定义信息
 		RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+
+		// 如果该bean为原型bean，则根据情况返回true或false
 		if (mbd.isPrototype()) {
-			// In case of FactoryBean, return singleton status of created object if not a dereference.
+			// 如果不是FactoryBean，则直接返回true；如果是FactoryBean，则需要进一步判断它所创建对象的实例类型
 			return (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(beanName, mbd));
 		}
 
-		// Singleton or scoped - not a prototype.
-		// However, FactoryBean may still produce a prototype object...
+		// 如果该bean不是原型bean，则返回false
+		// 如果该bean是FactoryBean，则还需进一步判断它所创建对象的实例类型
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			return false;
 		}
 		if (isFactoryBean(beanName, mbd)) {
 			FactoryBean<?> fb = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
 			if (System.getSecurityManager() != null) {
+				// 如果有安全管理器，则通过doPrivileged()方法执行判断原型bean的操作
 				return AccessController.doPrivileged(
 						(PrivilegedAction<Boolean>) () ->
 								((fb instanceof SmartFactoryBean && ((SmartFactoryBean<?>) fb).isPrototype()) ||
@@ -493,8 +504,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/**
 	 * 这是一个BeanFactory中的方法，用于检查给定的bean名称和类类型是否匹配，同时应用额外的约束条件以确保不会提早创建bean
 	 *
-	 * @param name              要查询的bean的名称
-	 * @param typeToMatch       要匹配的类类型(作为ResolvableType)
+	 * @param name                 要查询的bean的名称
+	 * @param typeToMatch          要匹配的类类型(作为ResolvableType)
 	 * @param allowFactoryBeanInit 是否允许初始化FactoryBean
 	 * @return 如果bean类型匹配，则为true；如果不匹配或不能确定，则为false
 	 * @throws NoSuchBeanDefinitionException 如果没有找到匹配的bean
@@ -644,32 +655,38 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return getType(name, true);
 	}
 
+	// 如果 name 对应的 Bean 存在，获取该 Bean 的类型；否则尝试在父 BeanFactory 中查找
+	// allowFactoryBeanInit 代表是否允许工厂 Bean 初始化
 	@Override
 	@Nullable
 	public Class<?> getType(String name, boolean allowFactoryBeanInit) throws NoSuchBeanDefinitionException {
+		// 获取规范化后的 beanName（去掉 & 前缀和 FactoryBean 后缀）
 		String beanName = transformedBeanName(name);
 
-		// Check manually registered singletons.
+		// 尝试从当前 BeanFactory 中获取 singleton 实例
 		Object beanInstance = getSingleton(beanName, false);
 		if (beanInstance != null && beanInstance.getClass() != NullBean.class) {
+			// 如果该 singleton 实例存在且不是 NullBean，则返回该实例的类型信息
 			if (beanInstance instanceof FactoryBean && !BeanFactoryUtils.isFactoryDereference(name)) {
+				// 如果 beanInstance 是 FactoryBean 类型，则返回该 FactoryBean 创建的 bean 的类型信息
 				return getTypeForFactoryBean((FactoryBean<?>) beanInstance);
 			} else {
+				// 否则，返回 beanInstance 的 Class 对象
 				return beanInstance.getClass();
 			}
 		}
 
-		// No singleton instance found -> check bean definition.
+		// 如果在当前 BeanFactory 中没有查找到该 singleton 实例，则从父 BeanFactory 中查找
 		BeanFactory parentBeanFactory = getParentBeanFactory();
 		if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
-			// No bean definition found in this factory -> delegate to parent.
+			// 如果 BeanFactory 存在 && 当前 BeanFactory 中不存在该 Bean 的 beanDefinition，则递归查询父 BeanFactory
 			return parentBeanFactory.getType(originalBeanName(name));
 		}
 
+		// 从当前 BeanFactory 中获取合并后的 beanDefinition
 		RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 
-		// Check decorated bean definition, if any: We assume it'll be easier
-		// to determine the decorated bean's type than the proxy's type.
+		// 如果该 Bean 是被修饰的 Bean，则获取被修饰的 Bean 的类型信息
 		BeanDefinitionHolder dbd = mbd.getDecoratedDefinition();
 		if (dbd != null && !BeanFactoryUtils.isFactoryDereference(name)) {
 			RootBeanDefinition tbd = getMergedBeanDefinition(dbd.getBeanName(), dbd.getBeanDefinition(), mbd);
@@ -679,33 +696,45 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 		}
 
+		// 获取当前 Bean 的原始类型信息（即 predictBeanType(beanName, mbd)）
 		Class<?> beanClass = predictBeanType(beanName, mbd);
 
-		// Check bean class whether we're dealing with a FactoryBean.
+		// 如果当前 Bean 是 FactoryBean 实例，需要获取其创建的 Bean 的类型信息
 		if (beanClass != null && FactoryBean.class.isAssignableFrom(beanClass)) {
 			if (!BeanFactoryUtils.isFactoryDereference(name)) {
-				// If it's a FactoryBean, we want to look at what it creates, not at the factory class.
+				// 如果当前 Bean 是 FactoryBean 实例，则返回该 FactoryBean 创建的 bean 的类型信息
 				return getTypeForFactoryBean(beanName, mbd, allowFactoryBeanInit).resolve();
 			} else {
+				// 否则，返回当前 Bean 的 Class 对象
 				return beanClass;
 			}
 		} else {
+			// 如果当前 Bean 不是 FactoryBean 实例，则直接返回当前 Bean 的类型信息
 			return (!BeanFactoryUtils.isFactoryDereference(name) ? beanClass : null);
 		}
 	}
 
+	// 根据 beanName 获取与其对应的所有 alias 值
 	@Override
 	public String[] getAliases(String name) {
+		// 获取规范化后的 beanName
 		String beanName = transformedBeanName(name);
 		List<String> aliases = new ArrayList<>();
+
+		// 判断name前缀是否是 "&"、是否含有 FactoryBean 前缀
 		boolean factoryPrefix = name.startsWith(FACTORY_BEAN_PREFIX);
 		String fullBeanName = beanName;
 		if (factoryPrefix) {
 			fullBeanName = FACTORY_BEAN_PREFIX + beanName;
 		}
+
+		// 如果 name 对应的 beanName 不等于 fullBeanName 则添加到 alias 列表中
+		// （fullBeanName 为添加了 FACTORY_BEAN_PREFIX 前缀的 beanName）
 		if (!fullBeanName.equals(name)) {
 			aliases.add(fullBeanName);
 		}
+
+		// 获取当前 beanName 所有的 alias 值
 		String[] retrievedAliases = super.getAliases(beanName);
 		String prefix = factoryPrefix ? FACTORY_BEAN_PREFIX : "";
 		for (String retrievedAlias : retrievedAliases) {
@@ -714,12 +743,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				aliases.add(alias);
 			}
 		}
+
+		// 如果当前 BeanFactory 中没有该 Bean 的实例并且它也没有注册过 BeanDefinition，则尝试查找其父 BeanFactory 中的 alias
 		if (!containsSingleton(beanName) && !containsBeanDefinition(beanName)) {
 			BeanFactory parentBeanFactory = getParentBeanFactory();
 			if (parentBeanFactory != null) {
 				aliases.addAll(Arrays.asList(parentBeanFactory.getAliases(fullBeanName)));
 			}
 		}
+
+		// 将 alias 列表转换为 String 数组返回
 		return StringUtils.toStringArray(aliases);
 	}
 
@@ -1820,9 +1853,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * 获取给定bean实例的对象，可以是bean实例本身，也可以是FactoryBean创建的对象。
 	 *
 	 * @param beanInstance 共享的bean实例
-	 * @param name 包含工厂解引用前缀的名称
-	 * @param beanName 规范的bean名称
-	 * @param mbd 合并的bean定义
+	 * @param name         包含工厂解引用前缀的名称
+	 * @param beanName     规范的bean名称
+	 * @param mbd          合并的bean定义
 	 * @return 要暴露给bean的对象
 	 */
 	protected Object getObjectForBeanInstance(Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
