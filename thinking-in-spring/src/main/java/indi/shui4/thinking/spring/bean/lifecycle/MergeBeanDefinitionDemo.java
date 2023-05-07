@@ -8,7 +8,7 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
  *
  * @author shui4
  */
-public class MergeBeanDefinitionMDemo {
+public class MergeBeanDefinitionDemo {
 	public static void main(String[] args) {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		int beanDefinitionCountBegin = beanFactory.getBeanDefinitionCount();
