@@ -1262,32 +1262,32 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
-	 * Initialize the given PropertyEditorRegistry with the custom editors
-	 * that have been registered with this BeanFactory.
-	 * <p>To be called for BeanWrappers that will create and populate bean
-	 * instances, and for SimpleTypeConverter used for constructor argument
-	 * and factory method type conversion.
+	 * 将已经在此BeanFactory中注册的自定义编辑器初始化到给定的PropertyEditorRegistry中。
+	 * 要调用用于创建和填充bean实例的BeanWrapper，以及用于构造函数参数和工厂方法类型转换的SimpleTypeConverter。
 	 *
-	 * @param registry the PropertyEditorRegistry to initialize
+	 * @param registry 要初始化的PropertyEditorRegistry
 	 */
 	protected void registerCustomEditors(PropertyEditorRegistry registry) {
+		// 如果注册表是PropertyEditorRegistrySupport类型，则使用配置值编辑器。
 		if (registry instanceof PropertyEditorRegistrySupport) {
 			((PropertyEditorRegistrySupport) registry).useConfigValueEditors();
 		}
+		// 如果存在PropertyEditorRegistrar，则遍历其并调用其自定义编辑器注册方法。
 		if (!this.propertyEditorRegistrars.isEmpty()) {
 			for (PropertyEditorRegistrar registrar : this.propertyEditorRegistrars) {
 				try {
 					registrar.registerCustomEditors(registry);
 				} catch (BeanCreationException ex) {
+					// 如果异常根本原因是BeanCurrentlyInCreationException，则忽略该异常并继续执行注册。
 					Throwable rootCause = ex.getMostSpecificCause();
 					if (rootCause instanceof BeanCurrentlyInCreationException) {
 						BeanCreationException bce = (BeanCreationException) rootCause;
 						String bceBeanName = bce.getBeanName();
 						if (bceBeanName != null && isCurrentlyInCreation(bceBeanName)) {
 							if (logger.isDebugEnabled()) {
-								logger.debug("PropertyEditorRegistrar [" + registrar.getClass().getName() +
-										"] failed because it tried to obtain currently created bean '" +
-										ex.getBeanName() + "': " + ex.getMessage());
+								logger.debug("PropertyEditorRegistrar [" + registrar.getClass().getName()
+										+ "] failed because it tried to obtain currently created bean '"
+										+ ex.getBeanName() + "': " + ex.getMessage());
 							}
 							onSuppressedException(ex);
 							continue;
@@ -1297,6 +1297,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 		}
+		// 循环遍历保存在customEditors中的键值对，其中键是要设置编辑器的类型，值是编辑器类。
+		// 然后实例化给定类中的新对象并注册到给定的registry中。
 		if (!this.customEditors.isEmpty()) {
 			this.customEditors.forEach((requiredType, editorClass) ->
 					registry.registerCustomEditor(requiredType, BeanUtils.instantiateClass(editorClass)));
@@ -1824,19 +1826,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
-	 * Get the object for the given bean instance, either the bean
-	 * instance itself or its created object in case of a FactoryBean.
+	 * 获取给定bean实例的对象，可以是bean实例本身，也可以是FactoryBean创建的对象。
 	 *
-	 * @param beanInstance the shared bean instance
-	 * @param name         the name that may include factory dereference prefix
-	 * @param beanName     the canonical bean name
-	 * @param mbd          the merged bean definition
-	 * @return the object to expose for the bean
+	 * @param beanInstance 共享的bean实例
+	 * @param name 包含工厂解引用前缀的名称
+	 * @param beanName 规范的bean名称
+	 * @param mbd 合并的bean定义
+	 * @return 要暴露给bean的对象
 	 */
-	protected Object getObjectForBeanInstance(
-			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
+	protected Object getObjectForBeanInstance(Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
-		// Don't let calling code try to dereference the factory if the bean isn't a factory.
+		// 如果bean不是一个工厂，则不要让调用代码尝试进行工厂解引用。
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
@@ -1850,9 +1850,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			return beanInstance;
 		}
 
-		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
-		// If it's a FactoryBean, we use it to create a bean instance, unless the
-		// caller actually wants a reference to the factory.
+		// 现在我们有了bean实例，它可能是一个普通的bean或者是一个FactoryBean。
+		// 如果它是FactoryBean，则会使用它创建一个bean实例，除非调用者实际上想要一个引用工厂。
 		if (!(beanInstance instanceof FactoryBean)) {
 			return beanInstance;
 		}
@@ -1864,9 +1863,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {
-			// Return bean instance from factory.
+			// 从工厂中返回bean实例。
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
-			// Caches object obtained from FactoryBean if it is a singleton.
+			// 如果是单例的，则从FactoryBean中获取对象并缓存起来。
 			if (mbd == null && containsBeanDefinition(beanName)) {
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}

@@ -286,43 +286,69 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T createBean(Class<T> beanClass) throws BeansException {
-		// Use prototype bean definition, to avoid registering bean as dependent bean.
+
+		// 使用原型Bean定义，以避免注册Bean为依赖Bean
 		RootBeanDefinition bd = new RootBeanDefinition(beanClass);
 		bd.setScope(SCOPE_PROTOTYPE);
+
+		// 允许Bean缓存，如果Bean类型不安全，则不允许缓存
 		bd.allowCaching = ClassUtils.isCacheSafe(beanClass, getBeanClassLoader());
+
+		//创建Bean
 		return (T) createBean(beanClass.getName(), bd, null);
 	}
 
 	@Override
 	public void autowireBean(Object existingBean) {
-		// Use non-singleton bean definition, to avoid registering bean as dependent bean.
+
+		// 使用非单例Bean定义，以避免注册Bean为依赖Bean
 		RootBeanDefinition bd = new RootBeanDefinition(ClassUtils.getUserClass(existingBean));
 		bd.setScope(SCOPE_PROTOTYPE);
+
+		// 允许Bean缓存，如果Bean类型不安全，则不允许缓存
 		bd.allowCaching = ClassUtils.isCacheSafe(bd.getBeanClass(), getBeanClassLoader());
+
+		// 使用BeanWrapper封装已有的Bean
 		BeanWrapper bw = new BeanWrapperImpl(existingBean);
 		initBeanWrapper(bw);
+
+		// 填充Bean属性
 		populateBean(bd.getBeanClass().getName(), bd, bw);
 	}
 
 	@Override
 	public Object configureBean(Object existingBean, String beanName) throws BeansException {
+
+		// 标记Bean已经被创建
 		markBeanAsCreated(beanName);
+
+		// 获取BeanDefinition并克隆一个新的RootBeanDefinition
 		BeanDefinition mbd = getMergedBeanDefinition(beanName);
 		RootBeanDefinition bd = null;
 		if (mbd instanceof RootBeanDefinition) {
 			RootBeanDefinition rbd = (RootBeanDefinition) mbd;
 			bd = (rbd.isPrototype() ? rbd : rbd.cloneBeanDefinition());
 		}
+
+		// 如果克隆后的BeanDefinition为null，创建一个新的BeanDefinition
 		if (bd == null) {
 			bd = new RootBeanDefinition(mbd);
 		}
+
+		// 如果BeanDefinition不是原型，则设置为原型，并且允许Bean缓存，如果Bean类型不安全，则不允许缓存
 		if (!bd.isPrototype()) {
 			bd.setScope(SCOPE_PROTOTYPE);
 			bd.allowCaching = ClassUtils.isCacheSafe(ClassUtils.getUserClass(existingBean), getBeanClassLoader());
 		}
+
+		// 使用BeanWrapper封装已有的Bean
 		BeanWrapper bw = new BeanWrapperImpl(existingBean);
 		initBeanWrapper(bw);
+
+		// 填充Bean属性
 		populateBean(beanName, bd, bw);
+
+		// 初始化Bean
 		return initializeBean(beanName, existingBean, bd);
 	}
 
@@ -1119,37 +1145,40 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
-	 * Create a new instance for the specified bean, using an appropriate instantiation strategy:
-	 * factory method, constructor autowiring, or simple instantiation.
+	 * 使用适当的实例化策略（工厂方法，构造函数自动装配或简单实例化）为指定的bean创建一个新实例。
 	 *
-	 * @param beanName the name of the bean
-	 * @param mbd      the bean definition for the bean
-	 * @param args     explicit arguments to use for constructor or factory method invocation
-	 * @return a BeanWrapper for the new instance
+	 * @param beanName Bean的名称
+	 * @param mbd      Bean的BeanDefinition
+	 * @param args     用于构造函数或工厂方法调用的显式参数
+	 * @return 新实例的BeanWrapper
 	 * @see #obtainFromSupplier
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
 	 * @see #instantiateBean
 	 */
 	protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
-		// Make sure bean class is actually resolved at this point.
+
+		// 确保此时Bean类实际上已解析。
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
 
+		// 如果Bean类不是public，而且非public访问不允许，则抛出BeanCreationException异常。
 		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName,
-					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
+					"Bean类不是public，且不允许非public访问:" + beanClass.getName());
 		}
 
+		// 如果存在instanceSupplier，则使用该实例。
 		Supplier<?> instanceSupplier = mbd.getInstanceSupplier();
 		if (instanceSupplier != null) {
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 
+		// 如果存在factoryMethodName，则使用该方法进行实例化。
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
-		// Shortcut when re-creating the same bean...
+		// 重新创建同一个Bean时的快捷方式...
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
@@ -1168,20 +1197,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		// Candidate constructors for autowiring?
+		// 从BeanPostProcessor中确定构造函数？
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
 			return autowireConstructor(beanName, mbd, ctors, args);
 		}
 
-		// Preferred constructors for default construction?
+		// 默认构造函数的优先级？
 		ctors = mbd.getPreferredConstructors();
 		if (ctors != null) {
 			return autowireConstructor(beanName, mbd, ctors, null);
 		}
 
-		// No special handling: simply use no-arg constructor.
+		// 没有特殊处理：直接使用无参数构造函数。
 		return instantiateBean(beanName, mbd);
 	}
 
