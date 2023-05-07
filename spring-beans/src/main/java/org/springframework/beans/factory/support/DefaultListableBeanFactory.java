@@ -135,7 +135,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private String serializationId;
 
 	/**
-	 * 是否允许重新注册具有相同名称但不同定义的bean
+	 * 是否允许重新注册具有相同名称但不同定义的bean。
+	 * <p>
+	 * 在 spring boot 显示的改为false
+	 * </p>
 	 */
 	private boolean allowBeanDefinitionOverriding = true;
 
@@ -1101,6 +1104,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// 还在启动注册阶段
 			else {
 				this.beanDefinitionMap.put(beanName, beanDefinition);
+				// 注册顺序
 				this.beanDefinitionNames.add(beanName);
 				removeManualSingletonName(beanName);
 			}
