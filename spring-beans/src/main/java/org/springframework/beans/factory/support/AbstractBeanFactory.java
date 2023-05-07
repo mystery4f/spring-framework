@@ -75,85 +75,84 @@ import java.util.function.UnaryOperator;
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
 	/**
-	 * Custom PropertyEditorRegistrars to apply to the beans of this factory.
+	 * CustomPropertyEditorRegistrar集合，用于应用于此工厂bean。
 	 */
 	private final Set<PropertyEditorRegistrar> propertyEditorRegistrars = new LinkedHashSet<>(4);
 	/**
-	 * Custom PropertyEditors to apply to the beans of this factory.
+	 * Custom PropertyEditors映射，用于应用于此工厂bean的bean。
 	 */
 	private final Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new HashMap<>(4);
 	/**
-	 * String resolvers to apply e.g. to annotation attribute values.
+	 * String解析器集合，用于解析注解属性值等。
 	 */
 	private final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
 	/**
-	 * BeanPostProcessors to apply.
+	 * 应用的BeanPostProcessor集合。
 	 */
 	private final List<BeanPostProcessor> beanPostProcessors = new BeanPostProcessorCacheAwareList();
 	/**
-	 * Map from scope identifier String to corresponding Scope.
+	 * 作用域对象的Map，从范围身份标识字符串映射至Scope对象实例。
 	 */
 	private final Map<String, Scope> scopes = new LinkedHashMap<>(8);
 	/**
-	 * Map from bean name to merged RootBeanDefinition.
+	 * 已合并的RootBeanDefinition的Map，从bean名称映射至相应的合并RootBeanDefinition。
 	 */
 	private final Map<String, RootBeanDefinition> mergedBeanDefinitions = new ConcurrentHashMap<>(256);
 	/**
-	 * Names of beans that have already been created at least once.
+	 * 至少已创建一次的bean名称的集合。
 	 */
 	private final Set<String> alreadyCreated = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
 	/**
-	 * Names of beans that are currently in creation.
+	 * 正在创建中的bean名称集合。
 	 */
-	private final ThreadLocal<Object> prototypesCurrentlyInCreation =
-			new NamedThreadLocal<>("Prototype beans currently in creation");
+	private final ThreadLocal<Object> prototypesCurrentlyInCreation = new NamedThreadLocal<>("Prototype beans currently in creation");
 	/**
-	 * Parent bean factory, for bean inheritance support.
+	 * 父BeanFactory，用于支持bean继承。
 	 */
 	@Nullable
 	private BeanFactory parentBeanFactory;
 	/**
-	 * ClassLoader to resolve bean class names with, if necessary.
+	 * 用于解析bean类名的ClassLoader，如果需要的话。
 	 */
 	@Nullable
 	private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 	/**
-	 * ClassLoader to temporarily resolve bean class names with, if necessary.
+	 * 临时用于解析bean类名的ClassLoader，如果需要的话。
 	 */
 	@Nullable
 	private ClassLoader tempClassLoader;
 	/**
-	 * Whether to cache bean metadata or rather reobtain it for every access.
+	 * 是否缓存bean元数据，或对每个访问重新获取元数据。
 	 */
 	private boolean cacheBeanMetadata = true;
 	/**
-	 * Resolution strategy for expressions in bean definition values.
+	 * 表达式解析器用于解析bean定义值中的表达式。
 	 */
 	@Nullable
 	private BeanExpressionResolver beanExpressionResolver;
 	/**
-	 * Spring ConversionService to use instead of PropertyEditors.
+	 * 要使用的Spring ConversionService，而非PropertyEditors。
 	 */
 	@Nullable
 	private ConversionService conversionService;
 	/**
-	 * A custom TypeConverter to use, overriding the default PropertyEditor mechanism.
+	 * 要使用的自定义TypeConverter，覆盖默认的PropertyEditor机制。
 	 */
 	@Nullable
 	private TypeConverter typeConverter;
 	/**
-	 * Cache of pre-filtered post-processors.
+	 * 预过滤的BeanPostProcessor缓存。
 	 */
 	@Nullable
 	private volatile BeanPostProcessorCache beanPostProcessorCache;
 	/**
-	 * Security context used when running with a SecurityManager.
+	 * 在使用SecurityManager运行时使用的安全上下文。
 	 */
 	@Nullable
 	private SecurityContextProvider securityContextProvider;
 	/**
-	 * Application startup metrics.
-	 **/
+	 * 应用启动度量。
+	 */
 	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
 
 	/**
