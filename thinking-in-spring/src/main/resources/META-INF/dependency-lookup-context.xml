@@ -16,7 +16,8 @@
 
 	<!--扫描-->
 	<context:component-scan base-package="xxxx"/>
-
+	<!--RootBeanDefinition-->
+	<!--也可以是普通的 BeanDefinition GenericBeanDefinition-->
 	<bean class="indi.shui4.thinking.spring.ioc.overview.domain.User"
 		  id="user">
 		<property name="id" value="1"/>
@@ -32,6 +33,7 @@
 			</list>
 		</property>
 	</bean>
+	<!--普通的 BeanDefinition GenericBeanDefinition-->
 	<!--子类-->
 	<!--在使用按类型依赖查找的时候 一个类型存在多个此时会报错，加上 属性： primary="true" 即可解决-->
 	<bean id="superUser" class="indi.shui4.thinking.spring.ioc.overview.domain.SuperUser" parent="user"
