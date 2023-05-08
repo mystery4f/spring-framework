@@ -79,49 +79,55 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		implements AutowireCapableBeanFactory {
 
 	/**
-	 * Dependency types to ignore on dependency check and autowire, as Set of
-	 * Class objects: for example, String. Default is none.
+	 * 忽略在依赖检查和自动装配时需要忽略的依赖类型的集合，格式为 Class 对象的 Set，
+	 * 例如：String。默认值为 none。
 	 */
 	private final Set<Class<?>> ignoredDependencyTypes = new HashSet<>();
+
 	/**
-	 * Dependency interfaces to ignore on dependency check and autowire, as Set of
-	 * Class objects. By default, only the BeanFactory interface is ignored.
+	 * 在依赖检查和自动装配中需要忽略的依赖接口的集合，格式为 Class 对象的 Set。
+	 * 默认情况下，只有 BeanFactory 接口会被忽略。
 	 */
 	private final Set<Class<?>> ignoredDependencyInterfaces = new HashSet<>();
+
 	/**
-	 * The name of the currently created bean, for implicit dependency registration
-	 * on getBean etc invocations triggered from a user-specified Supplier callback.
+	 * 当前创建的 Bean 的名称，在用户指定的 Supplier 回调函数触发的 getBean 等调用中隐式地进行依赖注册。
 	 */
 	private final NamedThreadLocal<String> currentlyCreatedBean = new NamedThreadLocal<>("Currently created bean");
+
 	/**
-	 * Cache of unfinished FactoryBean instances: FactoryBean name to BeanWrapper.
+	 * 未完成的 FactoryBean 实例的缓存：FactoryBean 名称对应 BeanWrapper。
 	 */
 	private final ConcurrentMap<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>();
+
 	/**
-	 * Cache of candidate factory methods per factory class.
+	 * 每个工厂类的候选工厂方法的缓存。
 	 */
 	private final ConcurrentMap<Class<?>, Method[]> factoryMethodCandidateCache = new ConcurrentHashMap<>();
+
 	/**
-	 * Cache of filtered PropertyDescriptors: bean Class to PropertyDescriptor array.
+	 * 过滤后的 PropertyDescriptor 的缓存：bean 类对应 PropertyDescriptor 数组。
 	 */
-	private final ConcurrentMap<Class<?>, PropertyDescriptor[]> filteredPropertyDescriptorsCache =
-			new ConcurrentHashMap<>();
+	private final ConcurrentMap<Class<?>, PropertyDescriptor[]> filteredPropertyDescriptorsCache = new ConcurrentHashMap<>();
+
 	/**
-	 * Strategy for creating bean instances.
+	 * 用于创建 Bean 实例的策略。
 	 */
 	private InstantiationStrategy instantiationStrategy;
+
 	/**
-	 * Resolver strategy for method parameter names.
+	 * 方法参数名称解析器的解析策略。
 	 */
 	@Nullable
 	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+
 	/**
-	 * Whether to automatically try to resolve circular references between beans.
+	 * 是否自动尝试解决 Bean 之间的循环引用。
 	 */
 	private boolean allowCircularReferences = true;
+
 	/**
-	 * Whether to resort to injecting a raw bean instance in case of circular reference,
-	 * even if the injected bean eventually got wrapped.
+	 * 是否在循环引用的情况下使用未封装的 Bean 实例注入，即使注入的 Bean 最终已被封装。
 	 */
 	private boolean allowRawInjectionDespiteWrapping = false;
 
@@ -1261,21 +1267,22 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
-	 * Determine candidate constructors to use for the given bean, checking all registered
-	 * {@link SmartInstantiationAwareBeanPostProcessor SmartInstantiationAwareBeanPostProcessors}.
+	 * 从所有已注册的 `SmartInstantiationAwareBeanPostProcessors` 中确定要用于此Bean的候选构造函数。
 	 *
-	 * @param beanClass the raw class of the bean
-	 * @param beanName  the name of the bean
-	 * @return the candidate constructors, or {@code null} if none specified
-	 * @throws org.springframework.beans.BeansException in case of errors
+	 * @param beanClass Bean的原始类
+	 * @param beanName  Bean的名称
+	 * @return 候选构造函数，如果没有则返回`null`
+	 * @throws BeansException 在出现错误时抛出异常
 	 * @see org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor#determineCandidateConstructors
 	 */
 	@Nullable
 	protected Constructor<?>[] determineConstructorsFromBeanPostProcessors(@Nullable Class<?> beanClass, String beanName)
 			throws BeansException {
 
+		// 如果Bean的原始类型不为null并且存在InstantiationAwareBeanPostProcessor类型的Bean实例，则遍历所有已注册的SmartInstantiationAwareBeanPostProcessor类型的Bean实例
 		if (beanClass != null && hasInstantiationAwareBeanPostProcessors()) {
 			for (SmartInstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().smartInstantiationAware) {
+				// 调用BeanPostProcessor的`determineCandidateConstructors`方法确定此Bean的候选构造函数
 				Constructor<?>[] ctors = bp.determineCandidateConstructors(beanClass, beanName);
 				if (ctors != null) {
 					return ctors;
@@ -1285,27 +1292,32 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		return null;
 	}
 
+
 	/**
-	 * Instantiate the given bean using its default constructor.
+	 * 使用给定的bean定义的默认构造函数实例化Bean。
 	 *
-	 * @param beanName the name of the bean
-	 * @param mbd      the bean definition for the bean
-	 * @return a BeanWrapper for the new instance
+	 * @param beanName Bean的名称
+	 * @param mbd      Bean的定义
+	 * @return 新实例的BeanWrapper
 	 */
 	protected BeanWrapper instantiateBean(String beanName, RootBeanDefinition mbd) {
 		try {
 			Object beanInstance;
 			if (System.getSecurityManager() != null) {
+				// 获取Bean实例化策略并创建新的Bean实例，在特权访问控制的情况下进行访问。
 				beanInstance = AccessController.doPrivileged(
 						(PrivilegedAction<Object>) () -> getInstantiationStrategy().instantiate(mbd, beanName, this),
 						getAccessControlContext());
 			} else {
+				// 获取Bean实例化策略并创建新的Bean实例。
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, this);
 			}
+			// 包装新实例并初始化BeanWrapper。
 			BeanWrapper bw = new BeanWrapperImpl(beanInstance);
 			initBeanWrapper(bw);
 			return bw;
 		} catch (Throwable ex) {
+			// 如果实例化Bean失败，则抛出BeanCreationException异常。
 			throw new BeanCreationException(
 					mbd.getResourceDescription(), beanName, "Instantiation of bean failed", ex);
 		}

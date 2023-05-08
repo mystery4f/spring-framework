@@ -18,8 +18,10 @@ public class BeanInstantiationLifecycleDemo {
 		// 添加BeanPostProcessor 实现（示例）
 		beanFactory.addBeanPostProcessor(new MyInstantiationAwareBeanPostProcessor());
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
-		beanDefinitionReader.loadBeanDefinitions("classpath:META-INF/dependency-lookup-context.xml");
+		String[] locations = {"classpath:META-INF/dependency-lookup-context.xml", "classpath:META-INF/bean-constructor-dependency-injection.xml"};
+		beanDefinitionReader.loadBeanDefinitions(locations);
 		System.out.println(beanFactory.getBean("superUser"));
+		System.out.println(beanFactory.getBean("userHolder"));
 	}
 
 	public static class MyInstantiationAwareBeanPostProcessor implements InstantiationAwareBeanPostProcessor {
@@ -27,7 +29,8 @@ public class BeanInstantiationLifecycleDemo {
 		public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 			if (ObjectUtils.nullSafeEquals("superUser", beanName) && SuperUser.class.equals(beanClass)) {
 				// 把配置完成 superUser 覆盖
-				return new SuperUser();
+//				return new SuperUser();
+				return null;
 			}
 			// 保持 Spring IoC 容器实例化操作
 			return null;
