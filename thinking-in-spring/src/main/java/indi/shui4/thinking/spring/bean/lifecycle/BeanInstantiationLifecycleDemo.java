@@ -21,6 +21,7 @@ public class BeanInstantiationLifecycleDemo {
 		String[] locations = {"classpath:META-INF/dependency-lookup-context.xml", "classpath:META-INF/bean-constructor-dependency-injection.xml"};
 		beanDefinitionReader.loadBeanDefinitions(locations);
 		System.out.println(beanFactory.getBean("superUser"));
+		// 构造器注入按照类型注入，resolveDependency
 		System.out.println(beanFactory.getBean("userHolder"));
 	}
 
