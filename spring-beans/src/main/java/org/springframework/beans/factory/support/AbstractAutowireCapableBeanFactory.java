@@ -553,95 +553,91 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
 	 */
-	protected Object doCreateBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
-			throws BeanCreationException {
-
-		// 实例化BeanWrapper。
+	protected Object doCreateBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) throws BeanCreationException {
+		// 初始化bean的BeanWrapper实例
 		BeanWrapper instanceWrapper = null;
 		if (mbd.isSingleton()) {
+			// 当该bean为单例时，从缓存中获取BeanWrapper实例对象
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
+			// 如果根据bean类型和构造函数参数数组，无法从缓存中获取到BeanWrapper实例对象，那么创建该实例
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
-		Object bean = instanceWrapper.getWrappedInstance();   // 获取bean对象实例
-		Class<?> beanType = instanceWrapper.getWrappedClass(); // 获取bean对象所在的Class类型
+		// 获取bean实例对象和类型
+		Object bean = instanceWrapper.getWrappedInstance();
+		Class<?> beanType = instanceWrapper.getWrappedClass();
 		if (beanType != NullBean.class) {
 			mbd.resolvedTargetType = beanType;
 		}
 
-		// 允许后置处理器修改合并后的bean定义。
+		// 允许后置处理器修改合并后的bean定义信息
 		synchronized (mbd.postProcessingLock) {
+			// 如果该bean还没有被postProcessed，那么执行所有的MergedBeanDefinitionPostProcessor
 			if (!mbd.postProcessed) {
 				try {
-					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName); // 应用后置处理器
+					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				} catch (Throwable ex) {
-					throw new BeanCreationException(mbd.getResourceDescription(), beanName,
-							"Post-processing of merged bean definition failed", ex);
+					throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Post-processing of merged bean definition failed", ex);
 				}
 				mbd.postProcessed = true;
 			}
 		}
 
-		// 对于单例bean，能够早期暴露，以便解决循环引用
-		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
-				isSingletonCurrentlyInCreation(beanName));
+		// 初始化bean实例，如果bean是单例，同时也要进行一些处理
+		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences && isSingletonCurrentlyInCreation(beanName));
 		if (earlySingletonExposure) {
 			if (logger.isTraceEnabled()) {
-				logger.trace("Eagerly caching bean '" + beanName +
-						"' to allow for resolving potential circular references");
+				logger.trace("Eagerly caching bean '" + beanName + "' to allow for resolving potential circular references");
 			}
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
-
-		// 初始化Bean实例
 		Object exposedObject = bean;
 		try {
-			populateBean(beanName, mbd, instanceWrapper);   // 将属性设置到bean里
-			exposedObject = initializeBean(beanName, exposedObject, mbd); // 调用BeanPostProcessor的postProcessBeforeInitialization方法和postProcessAfterInitialization方法
+			// 向bean实例中注入依赖
+			populateBean(beanName, mbd, instanceWrapper);
+			// 对bean实例执行初始化操作
+			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		} catch (Throwable ex) {
+			// 处理bean实例初始化异常
 			if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
 				throw (BeanCreationException) ex;
 			} else {
-				throw new BeanCreationException(
-						mbd.getResourceDescription(), beanName, "Initialization of bean failed", ex);
+				throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Initialization of bean failed", ex);
 			}
 		}
-
+		// 处理单例bean的一些其他特殊情况
 		if (earlySingletonExposure) {
-			Object earlySingletonReference = getSingleton(beanName, false); // 获取bean的早期引用
+			Object earlySingletonReference = getSingleton(beanName, false);
 			if (earlySingletonReference != null) {
 				if (exposedObject == bean) {
 					exposedObject = earlySingletonReference;
 				} else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
-					String[] dependentBeans = getDependentBeans(beanName); // 获取依赖于该bean的Bean名称
+					String[] dependentBeans = getDependentBeans(beanName);
 					Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
 					for (String dependentBean : dependentBeans) {
+						// 如果单例bean是为类型检查而创建的，则删除该bean实例
 						if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) {
 							actualDependentBeans.add(dependentBean);
 						}
 					}
 					if (!actualDependentBeans.isEmpty()) {
-						throw new BeanCurrentlyInCreationException(beanName,
-								"Bean with name '" + beanName + "' has been injected into other beans [" +
-										StringUtils.collectionToCommaDelimitedString(actualDependentBeans) +
-										"] in its raw version as part of a circular reference, but has eventually been " +
-										"wrapped. This means that said other beans do not use the final version of the " +
-										"bean. This is often the result of over-eager type matching - consider using " +
-										"'getBeanNamesForType' with the 'allowEagerInit' flag turned off, for example.");
+						throw new BeanCurrentlyInCreationException(beanName, "Bean with name '" + beanName + "' has been injected into other beans [" + StringUtils.collectionToCommaDelimitedString(actualDependentBeans) +
+								"] in its raw version as part of a circular reference, but has eventually been wrapped. This means that said other beans do not use the final version of the " +
+								"bean. This is often the result of over-eager type matching - consider using 'getBeanNamesForType' with the 'allowEagerInit' flag turned off, for example.");
 					}
 				}
 			}
 		}
 
-		// 将bean注册为可销毁的
+		// 将bean注册为可销毁的对象，如在web环境中可以注册在ServletContext中，在IoC容器关闭时自动销毁
 		try {
 			registerDisposableBeanIfNecessary(beanName, bean, mbd);
 		} catch (BeanDefinitionValidationException ex) {
-			throw new BeanCreationException(
-					mbd.getResourceDescription(), beanName, "Invalid destruction signature", ex);
+			throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Invalid destruction signature", ex);
 		}
 
+		// 返回所创建的bean实例对象
 		return exposedObject;
 	}
 
