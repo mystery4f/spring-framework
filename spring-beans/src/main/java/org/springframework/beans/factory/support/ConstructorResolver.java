@@ -332,31 +332,46 @@ class ConstructorResolver {
 	}
 
 	/**
-	 * Resolve the constructor arguments for this bean into the resolvedValues object.
-	 * This may involve looking up other beans.
-	 * <p>This method is also used for handling invocations of static factory methods.
+	 * 将当前bean的构造函数参数解析为已解析的值的对象。
+	 * 这可能涉及查找其他bean。
+	 * <p>此方法还用于处理静态工厂方法的调用。
+	 *
+	 * @param beanName       bean的名称
+	 * @param mbd            bean定义
+	 * @param bw             BeanWrapper实例
+	 * @param cargs          构造函数参数值
+	 * @param resolvedValues 已解析的构造函数参数值
+	 * @return 构造函数最小参数数目
 	 */
 	private int resolveConstructorArguments(String beanName, RootBeanDefinition mbd, BeanWrapper bw, ConstructorArgumentValues cargs, ConstructorArgumentValues resolvedValues) {
 
+		// 获取自定义类型转换器和转换器
 		TypeConverter customConverter = this.beanFactory.getCustomTypeConverter();
 		TypeConverter converter = (customConverter != null ? customConverter : bw);
+		// 创建bean值解析器
 		BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this.beanFactory, beanName, mbd, converter);
 
+		// 获取传入构造函数的最小参数数目
 		int minNrOfArgs = cargs.getArgumentCount();
 
+		// 处理所有的索引构造函数参数
 		for (Map.Entry<Integer, ConstructorArgumentValues.ValueHolder> entry : cargs.getIndexedArgumentValues()
 				.entrySet()) {
 			int index = entry.getKey();
+			// 如果索引小于0，抛出异常
 			if (index < 0) {
 				throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Invalid constructor argument index: " + index);
 			}
+			// 如果索引比最小参数数目还大，更新最小参数数目
 			if (index + 1 > minNrOfArgs) {
 				minNrOfArgs = index + 1;
 			}
 			ConstructorArgumentValues.ValueHolder valueHolder = entry.getValue();
+			// 如果值已经被转换，加入已解析的参数值中
 			if (valueHolder.isConverted()) {
 				resolvedValues.addIndexedArgumentValue(index, valueHolder);
 			} else {
+				// 否则需要解析该值
 				Object resolvedValue = valueResolver.resolveValueIfNecessary("constructor argument", valueHolder.getValue());
 				ConstructorArgumentValues.ValueHolder resolvedValueHolder = new ConstructorArgumentValues.ValueHolder(resolvedValue, valueHolder.getType(), valueHolder.getName());
 				resolvedValueHolder.setSource(valueHolder);
@@ -364,6 +379,7 @@ class ConstructorResolver {
 			}
 		}
 
+		// 处理所有的非索引构造函数参数
 		for (ConstructorArgumentValues.ValueHolder valueHolder : cargs.getGenericArgumentValues()) {
 			if (valueHolder.isConverted()) {
 				resolvedValues.addGenericArgumentValue(valueHolder);
@@ -375,6 +391,7 @@ class ConstructorResolver {
 			}
 		}
 
+		// 返回构造函数的最小参数数目
 		return minNrOfArgs;
 	}
 
@@ -620,17 +637,17 @@ class ConstructorResolver {
 		// 初始化一个 BeanWrapperImpl 对象用于后续处理 Bean 的属性
 		BeanWrapperImpl bw = new BeanWrapperImpl();
 
-// 初始化 BeanWrapperImpl 对象
+		// 初始化 BeanWrapperImpl 对象
 		this.beanFactory.initBeanWrapper(bw);
 
-// 定义变量 factoryBean、factoryClass 和 isStatic
-// factoryBean 用于保存工厂 Bean，factoryClass 用于保存工厂 Bean 的 Class，isStatic 标识工厂方法是否为 static
+		// 定义变量 factoryBean、factoryClass 和 isStatic
+		// factoryBean 用于保存工厂 Bean，factoryClass 用于保存工厂 Bean 的 Class，isStatic 标识工厂方法是否为 static
 		Object factoryBean;
 		Class<?> factoryClass;
 		boolean isStatic;
 
-// 获取 bean 的 factoryBeanName 属性，如果存在工厂 Bean，则根据 factoryBeanName 属性从 BeanFactory 中获取对应的工厂 Bean，
-// 否则使用 bean 的 Class 中的 static 工厂方法创建 bean 实例
+		// 获取 bean 的 factoryBeanName 属性，如果存在工厂 Bean，则根据 factoryBeanName 属性从 BeanFactory 中获取对应的工厂 Bean，
+		// 否则使用 bean 的 Class 中的 static 工厂方法创建 bean 实例
 		String factoryBeanName = mbd.getFactoryBeanName();
 		if (factoryBeanName != null) {
 			// 如果 factoryBeanName 指向当前的 beanName，则抛出异常，factory-bean 的引用指向了相同的 bean 定义
@@ -907,40 +924,66 @@ class ConstructorResolver {
 	}
 
 	/**
-	 * Private inner class for holding argument combinations.
+	 * 私有内部类，用于保存参数组合。
 	 */
 	private static class ArgumentsHolder {
 
+		// 未经过处理的原始参数数组
 		public final Object[] rawArguments;
 
+		// 经过处理的参数数组
 		public final Object[] arguments;
 
+		// 已准备好的参数数组
 		public final Object[] preparedArguments;
 
+		// 是否需要进一步解析参数
 		public boolean resolveNecessary = false;
 
+		/**
+		 * 通过参数大小构造一个ArgumentsHolder对象并初始化其实例变量数组。
+		 *
+		 * @param size 参数的大小
+		 */
 		public ArgumentsHolder(int size) {
 			this.rawArguments = new Object[size];
 			this.arguments = new Object[size];
 			this.preparedArguments = new Object[size];
 		}
 
+		/**
+		 * 通过给定的参数构造一个ArgumentsHolder对象并初始化其参数数组。
+		 *
+		 * @param args 给定的参数数组
+		 */
 		public ArgumentsHolder(Object[] args) {
 			this.rawArguments = args;
 			this.arguments = args;
 			this.preparedArguments = args;
 		}
 
+		/**
+		 * 获取方法参数的类型差异权重。
+		 *
+		 * @param paramTypes 方法的参数类型数组
+		 * @return 类型差异权重值，较小的值表示更好的匹配
+		 */
 		public int getTypeDifferenceWeight(Class<?>[] paramTypes) {
-			// If valid arguments found, determine type difference weight.
-			// Try type difference weight on both the converted arguments and
-			// the raw arguments. If the raw weight is better, use it.
-			// Decrease raw weight by 1024 to prefer it over equal converted weight.
+			// 如果找到有效的参数组合，则确定类型差异权重。
+			// 尝试在转换后的参数和原始参数上执行类型差异权重。
+			// 如果原始权重更小，则使用它。
+			// 减少原始权重 1024，以使其优于相同的转换权重。
 			int typeDiffWeight = MethodInvoker.getTypeDifferenceWeight(paramTypes, this.arguments);
 			int rawTypeDiffWeight = MethodInvoker.getTypeDifferenceWeight(paramTypes, this.rawArguments) - 1024;
 			return Math.min(rawTypeDiffWeight, typeDiffWeight);
 		}
 
+		/**
+		 * 获取方法参数可分配性权重。
+		 *
+		 * @param paramTypes 方法的参数类型数组
+		 * @return 可分配性权重值，较小的值表示更好的匹配
+		 */
 		public int getAssignabilityWeight(Class<?>[] paramTypes) {
 			for (int i = 0; i < paramTypes.length; i++) {
 				if (!ClassUtils.isAssignableValue(paramTypes[i], this.arguments[i])) {
@@ -955,6 +998,12 @@ class ConstructorResolver {
 			return Integer.MAX_VALUE - 1024;
 		}
 
+		/**
+		 * 将解析结果存储到RootBeanDefinition对象中。
+		 *
+		 * @param mbd                        RootBeanDefinition对象
+		 * @param constructorOrFactoryMethod 构造函数或工厂方法对象
+		 */
 		public void storeCache(RootBeanDefinition mbd, Executable constructorOrFactoryMethod) {
 			synchronized (mbd.constructorArgumentLock) {
 				mbd.resolvedConstructorOrFactoryMethod = constructorOrFactoryMethod;
@@ -968,12 +1017,18 @@ class ConstructorResolver {
 		}
 	}
 
-
 	/**
-	 * Delegate for checking Java 6's {@link ConstructorProperties} annotation.
+	 * Java 6的ConstructorProperties注解的检查委托。
 	 */
 	private static class ConstructorPropertiesChecker {
 
+		/**
+		 * 通过检查ConstructorProperties注解来获取参数名称数组。
+		 *
+		 * @param candidate  要检查的构造函数对象
+		 * @param paramCount 参数数量
+		 * @return 参数名称数组
+		 */
 		@Nullable
 		public static String[] evaluate(Constructor<?> candidate, int paramCount) {
 			ConstructorProperties cp = candidate.getAnnotation(ConstructorProperties.class);
