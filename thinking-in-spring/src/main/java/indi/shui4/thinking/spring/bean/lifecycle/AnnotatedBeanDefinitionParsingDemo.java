@@ -3,6 +3,7 @@ package indi.shui4.thinking.spring.bean.lifecycle;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
+import org.springframework.stereotype.Component;
 
 /**
  * 注解 BeanDefinition 解析示例
