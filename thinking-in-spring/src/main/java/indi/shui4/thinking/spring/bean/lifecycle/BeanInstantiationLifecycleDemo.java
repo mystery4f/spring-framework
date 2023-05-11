@@ -2,6 +2,8 @@ package indi.shui4.thinking.spring.bean.lifecycle;
 
 import indi.shui4.thinking.spring.ioc.overview.domain.SuperUser;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -12,6 +14,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author shui4
  */
+@SuppressWarnings("squid:S125")
 public class BeanInstantiationLifecycleDemo {
 
 	private static final String SUPER_USER = "superUser";
@@ -29,9 +32,13 @@ public class BeanInstantiationLifecycleDemo {
 	}
 
 	public static class MyInstantiationAwareBeanPostProcessor implements InstantiationAwareBeanPostProcessor {
+
+		public static final String FIELD_DESCRIPTION = "description";
+
 		private static boolean isSupperUser(Class<?> beanClass, String beanName) {
 			return ObjectUtils.nullSafeEquals(SUPER_USER, beanName) && SuperUser.class.equals(beanClass);
 		}
+
 
 		@Override
 		public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
@@ -54,6 +61,32 @@ public class BeanInstantiationLifecycleDemo {
 				return false;
 			}
 			return true;
+		}
+
+		@Override
+		public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
+			if (ObjectUtils.nullSafeEquals("userHolder", beanName) && UserHolder.class.equals(bean.getClass())) {
+				MutablePropertyValues propertyValues;
+				if (pvs instanceof MutablePropertyValues) {
+					propertyValues = ((MutablePropertyValues) pvs);
+				} else {
+					propertyValues = new MutablePropertyValues();
+
+				}
+				// 假设 <property name="number" value="1"/> 配置的话，那么在 PropertyValues 就包含一个 PropertyValues(number=1)
+				// 等价于 <property name="number" value="1"/>
+				propertyValues.addPropertyValue("number", "1");
+				// 原始配置 <property name="description" value="test"/>
+
+				if (propertyValues.contains(FIELD_DESCRIPTION)) {
+					// 因为 value 是不可变的
+//					PropertyValue description = propertyValues.getPropertyValue("description");
+					propertyValues.removePropertyValue(FIELD_DESCRIPTION);
+					propertyValues.addPropertyValue(FIELD_DESCRIPTION, "The User Holder V2");
+				}
+				return propertyValues;
+			}
+			return null;
 		}
 	}
 }
