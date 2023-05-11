@@ -443,7 +443,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		// 不强制执行销毁方法
 		setEnforceDestroyMethod(false);
 	}
-	
+
 	/**
 	 * Return the current bean class name of this bean definition.
 	 */
@@ -1096,8 +1096,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
-	 * Return whether this bean definition is 'synthetic', that is,
-	 * not defined by the application itself.
+	 * 返回此bean definition是否为“合成的”。所谓的“合成的”是指这个bean definition不是由应用程序本身定义的。
+	 * 例如：有些bean definition是自动生成的，比如代理bean（AOP）、自动配置bean（Spring Boot等）等，这些bean都不是通过用户程序明确配置定义的，而是由程序自动生成。
+	 * 因此，通过此方法可以判断一个bean definition是否是由程序自动生成的，从而对应用程序的bean管理有更深入的了解。
 	 */
 	public boolean isSynthetic() {
 		return this.synthetic;
