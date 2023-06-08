@@ -23,20 +23,16 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 
 /**
- * A BeanDefinition describes a bean instance, which has property values,
- * constructor argument values, and further information supplied by
- * concrete implementations.
+ * BeanDefinition描述了一个bean实例，包括属性值、构造函数参数值以及其他具体实现所提供的信息。
  *
- * <p>This is just a minimal interface: The main intention is to allow a
- * {@link BeanFactoryPostProcessor} to introspect and modify property values
- * and other bean metadata.
+ * <p>这只是一个最小的接口：主要目的是允许{@link BeanFactoryPostProcessor}内省和修改属性值和其他bean元数据。
  *
  * @author Juergen Hoeller
  * @author Rob Harrop
- * @since 19.03.2004
  * @see ConfigurableListableBeanFactory#getBeanDefinition
  * @see org.springframework.beans.factory.support.RootBeanDefinition
  * @see org.springframework.beans.factory.support.ChildBeanDefinition
+ * @since 19.03.2004
  */
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
@@ -52,6 +48,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 标准原型范围的作用域标识符: {@value}。
 	 * <p>注意，扩展的Bean工厂可能支持更多的范围。
+	 *
 	 * @see #setScope
 	 * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
 	 */
@@ -98,6 +95,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * 此外，这可能只是调用工厂方法的类，或者甚至在调用方法时为空
 	 * 在工厂bean引用上。因此，不要将其视为运行时的定义性bean类型，
 	 * 而只将其用于单个bean定义级别的解析目的。
+	 *
 	 * @see #getParentName()
 	 * @see #getFactoryBeanName()
 	 * @see #getFactoryMethodName()
@@ -108,6 +106,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 指定此bean定义的bean类名称。
 	 * <p>在bean工厂后处理期间，类名可以被修改，通常用解析后的变体替换原始类名。
+	 *
 	 * @see #setParentName
 	 * @see #setFactoryBeanName
 	 * @see #setFactoryMethodName
@@ -122,6 +121,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * 重写此bean的目标范围，指定新的范围名称。
+	 *
 	 * @see #SCOPE_SINGLETON
 	 * @see #SCOPE_PROTOTYPE
 	 */
@@ -135,12 +135,15 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * 设置是否应该懒惰初始化此bean。
+	 *
 	 * <p>如果{@code false}，则bean将由在启动时执行单例的bean工厂实例化。
 	 */
 	void setLazyInit(boolean lazyInit);
 
 	/**
 	 * 返回此bean所依赖的bean的名称。
+	 *
+	 * @see DependsOn
 	 */
 	@Nullable
 	String[] getDependsOn();
@@ -184,6 +187,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 指定要使用的工厂bean（如果有）。
 	 * 这是要在指定的工厂方法上调用的bean的名称。
+	 *
 	 * @see #setFactoryMethodName
 	 */
 	void setFactoryBeanName(@Nullable String factoryBeanName);
@@ -197,6 +201,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 指定工厂方法（如果有）。将使用构造函数参数调用此方法，或者如果未指定参数，则不使用任何参数。
 	 * 如果已指定工厂bean，则将在指定的工厂bean上调用该方法，否则将在本地bean类上作为静态方法调用。
+	 *
 	 * @see #setFactoryBeanName
 	 * @see #setBeanClassName
 	 */
@@ -205,12 +210,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 返回此bean的构造函数参数值。
 	 * <p>返回的实例可以在bean工厂后处理期间修改。
+	 *
 	 * @return ConstructorArgumentValues对象（永远不会为{@code null}）
 	 */
 	ConstructorArgumentValues getConstructorArgumentValues();
 
 	/**
 	 * 返回是否为此bean定义定义了构造函数参数值。
+	 *
 	 * @since 5.0.2
 	 */
 	default boolean hasConstructorArgumentValues() {
@@ -220,12 +227,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 返回要应用于bean的新实例的属性值。
 	 * <p>返回的实例可以在bean工厂后处理期间修改。
+	 *
 	 * @return MutablePropertyValues对象（永远不会为{@code null}）
 	 */
 	MutablePropertyValues getPropertyValues();
 
 	/**
 	 * 返回是否为此bean定义定义了属性值。
+	 *
 	 * @since 5.0.2
 	 */
 	default boolean hasPropertyValues() {
@@ -234,6 +243,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * 返回初始化方法的名称。
+	 *
 	 * @since 5.1
 	 */
 	@Nullable
@@ -241,12 +251,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * 设置初始化方法的名称。
+	 *
 	 * @since 5.1
 	 */
 	void setInitMethodName(@Nullable String initMethodName);
 
 	/**
 	 * 返回销毁方法的名称。
+	 *
 	 * @since 5.1
 	 */
 	@Nullable
@@ -254,6 +266,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * 设置销毁方法的名称。
+	 *
 	 * @since 5.1
 	 */
 	void setDestroyMethodName(@Nullable String destroyMethodName);
@@ -261,6 +274,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 获取此{@code BeanDefinition}的角色提示。角色提示
 	 * 为框架以及工具提供了关于特定{@code BeanDefinition}的角色和重要性的指示。
+	 *
 	 * @see #ROLE_APPLICATION
 	 * @see #ROLE_SUPPORT
 	 * @see #ROLE_INFRASTRUCTURE
@@ -270,10 +284,11 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 设置此{@code BeanDefinition}的角色提示。角色提示
 	 * 为框架以及工具提供了关于特定{@code BeanDefinition}的角色和重要性的指示。
-	 * @since 5.1
+	 *
 	 * @see #ROLE_APPLICATION
 	 * @see #ROLE_SUPPORT
 	 * @see #ROLE_INFRASTRUCTURE
+	 * @since 5.1
 	 */
 	void setRole(int role);
 
@@ -285,6 +300,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * 设置此bean定义的人类可读的描述。
+	 *
 	 * @since 5.1
 	 */
 	void setDescription(@Nullable String description);
@@ -294,22 +310,25 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * 基于bean类或其他特定元数据，返回此bean定义的可解析类型。
 	 * <p>这通常在运行时合并的bean定义上完全解析，但不一定在配置时定义实例上解析。
-	 * @return可解析类型（可能为{@link ResolvableType#NONE}）
-	 * @since 5.2
+	 *
+	 * @return 可解析类型（可能为{@link ResolvableType#NONE}）
 	 * @see ConfigurableBeanFactory#getMergedBeanDefinition
+	 * @since 5.2
 	 */
 	ResolvableType getResolvableType();
 
 	/**
 	 * 返回此是否为<b>Singleton</b>，在所有调用中返回单个共享实例。
+	 *
 	 * @see #SCOPE_SINGLETON
 	 */
 	boolean isSingleton();
 
 	/**
 	 * 返回此是否为<b>Prototype</b>，在每次调用时返回独立实例。
-	 * @since 3.0
+	 *
 	 * @see #SCOPE_PROTOTYPE
+	 * @since 3.0
 	 */
 	boolean isPrototype();
 
