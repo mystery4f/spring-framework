@@ -23,6 +23,6 @@ public class AnnotatedBeanDefinitionParsingDemo {
 		System.out.println(" 已加载 BeanDefinition 数量：" + (beanDefinitionCountAfter - beanDefinitionCountBefore));
 		// 普通的 Class 作为 Component 注册到 Spring IoC 容器后，通常 Bean 名称为 annotatedBeanDefinitionParsingDemo
 		System.out.println(beanFactory.getBean("annotatedBeanDefinitionParsingDemo"));
-	}
+	}   
 
 }
