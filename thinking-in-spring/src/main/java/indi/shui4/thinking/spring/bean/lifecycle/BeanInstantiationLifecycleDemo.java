@@ -26,9 +26,9 @@ public class BeanInstantiationLifecycleDemo {
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 		String[] locations = {"classpath:META-INF/dependency-lookup-context.xml", "classpath:META-INF/bean-constructor-dependency-injection.xml"};
 		beanDefinitionReader.loadBeanDefinitions(locations);
-		System.out.println(beanFactory.getBean(SUPER_USER));
 		// 构造器注入按照类型注入，resolveDependency
 		System.out.println(beanFactory.getBean("userHolder"));
+		System.out.println(beanFactory.getBean(SUPER_USER));
 	}
 
 	public static class MyInstantiationAwareBeanPostProcessor implements InstantiationAwareBeanPostProcessor {
