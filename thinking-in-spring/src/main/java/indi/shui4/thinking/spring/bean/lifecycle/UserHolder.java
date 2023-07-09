@@ -18,50 +18,40 @@ package indi.shui4.thinking.spring.bean.lifecycle;
 
 import indi.shui4.thinking.spring.ioc.overview.domain.User;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.*;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /**
  * User Holder 类
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  */
+@SuppressWarnings("all")
 public class UserHolder implements BeanNameAware, BeanClassLoaderAware,
 		BeanFactoryAware,
-
-
-		EnvironmentAware {
+		EnvironmentAware
+		, InitializingBean, SmartInitializingSingleton, DisposableBean {
 
 	private final User user;
-	/**
-	 * number
-	 */
+
 	private Integer number;
-	/**
-	 * description
-	 */
+
 	private String description;
-	private String beanName;
+
 	private ClassLoader classLoader;
+
 	private BeanFactory beanFactory;
+
+	private String beanName;
+
 	private Environment environment;
 
 	public UserHolder(User user) {
 		this.user = user;
-	}
-
-	@Override
-	public String toString() {
-		return "UserHolder{" +
-				"user=" + user +
-				", number=" + number +
-				", description='" + description + '\'' +
-				", beanName='" + beanName + '\'' +
-				'}';
 	}
 
 	public Integer getNumber() {
@@ -80,9 +70,71 @@ public class UserHolder implements BeanNameAware, BeanClassLoaderAware,
 		this.description = description;
 	}
 
+	/**
+	 * 依赖于注解驱动
+	 * 当前场景：BeanFactory
+	 */
+	@PostConstruct
+	public void initPostConstruct() {
+		// postProcessBeforeInitialization V3 -> initPostConstruct V4
+		this.description = "The user holder V4";
+		System.out.println("initPostConstruct() = " + description);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// initPostConstruct V4 -> afterPropertiesSet V5
+		this.description = "The user holder V5";
+		System.out.println("afterPropertiesSet() = " + description);
+	}
+
+	/**
+	 * 自定义初始化方法
+	 */
+	public void init() {
+		// initPostConstruct V5 -> afterPropertiesSet V6
+		this.description = "The user holder V6";
+		System.out.println("init() = " + description);
+	}
+
+	@PreDestroy
+	public void preDestroy() {
+		// postProcessBeforeDestruction : The user holder V9
+		this.description = "The user holder V10";
+		System.out.println("preDestroy() = " + description);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		// preDestroy : The user holder V10
+		this.description = "The user holder V11";
+		System.out.println("destroy() = " + description);
+	}
+
+	public void doDestroy() {
+		// destroy : The user holder V11
+		this.description = "The user holder V12";
+		System.out.println("doDestroy() = " + description);
+	}
+
+	@Override
+	public String toString() {
+		return "UserHolder{" +
+				"user=" + user +
+				", number=" + number +
+				", description='" + description + '\'' +
+				", beanName='" + beanName + '\'' +
+				'}';
+	}
+
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
 	}
 
 	@Override
@@ -96,7 +148,14 @@ public class UserHolder implements BeanNameAware, BeanClassLoaderAware,
 	}
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
+	public void afterSingletonsInstantiated() {
+		// postProcessAfterInitialization V7 -> afterSingletonsInstantiated V8
+		this.description = "The user holder V8";
+		System.out.println("afterSingletonsInstantiated() = " + description);
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		System.out.println("The UserHolder is finalized...");
 	}
 }
