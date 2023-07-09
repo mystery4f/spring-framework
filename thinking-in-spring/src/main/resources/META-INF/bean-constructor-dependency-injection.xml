@@ -8,6 +8,8 @@
         http://www.springframework.org/schema/context
         https://www.springframework.org/schema/context/spring-context.xsd">
 
+	<bean class="indi.shui4.thinking.spring.bean.lifecycle.MyInstantiationAwareBeanPostProcessor"/>
+
 
 	<bean id="userHolder" class="indi.shui4.thinking.spring.bean.lifecycle.UserHolder" autowire="constructor">
 		<!--<property name="number" value="1"/>-->
