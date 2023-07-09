@@ -75,24 +75,21 @@ public interface BeanPostProcessor {
 	}
 
 	/**
-	 * Apply this {@code BeanPostProcessor} to the given new bean instance <i>after</i> any bean
-	 * initialization callbacks (like InitializingBean's {@code afterPropertiesSet}
-	 * or a custom init-method). The bean will already be populated with property values.
-	 * The returned bean instance may be a wrapper around the original.
-	 * <p>In case of a FactoryBean, this callback will be invoked for both the FactoryBean
-	 * instance and the objects created by the FactoryBean (as of Spring 2.0). The
-	 * post-processor can decide whether to apply to either the FactoryBean or created
-	 * objects or both through corresponding {@code bean instanceof FactoryBean} checks.
-	 * <p>This callback will also be invoked after a short-circuiting triggered by a
-	 * {@link InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation} method,
-	 * in contrast to all other {@code BeanPostProcessor} callbacks.
-	 * <p>The default implementation returns the given {@code bean} as-is.
+	 * 在bean初始化回调之后应用此BeanPostProcessor到给定的新bean实例。
+	 * bean将已经填充了属性值。
+	 * 返回的bean实例可能是原始bean的包装器。
+	 * <p>
+	 * 对于FactoryBean，此回调将为FactoryBean实例和FactoryBean创建的对象（从Spring 2.0开始）调用。
+	 * 后处理器可以通过相应的bean instanceof FactoryBean检查来决定是否应用于FactoryBean或创建的对象或两者。
+	 * <p>
+	 * 与所有其他BeanPostProcessor回调相比，此回调也将在由InstantiationAwareBeanPostProcessor.postProcessBeforeInstantiation方法触发的短路之后调用。
+	 * <p>
+	 * 默认实现将返回给定的bean。
 	 *
-	 * @param bean     the new bean instance
-	 * @param beanName the name of the bean
-	 * @return the bean instance to use, either the original or a wrapped one;
-	 * if {@code null}, no subsequent BeanPostProcessors will be invoked
-	 * @throws org.springframework.beans.BeansException in case of errors
+	 * @param bean     新的bean实例
+	 * @param beanName bean的名称
+	 * @return 使用的bean实例，原始的或包装的；如果为null，则不会调用后续的BeanPostProcessors
+	 * @throws org.springframework.beans.BeansException 如果发生错误
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 * @see org.springframework.beans.factory.FactoryBean
 	 */
@@ -100,5 +97,6 @@ public interface BeanPostProcessor {
 	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
+
 
 }

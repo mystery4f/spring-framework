@@ -23,17 +23,17 @@ public class BeanInstantiationLifecycleDemo {
 
 
 	public static void main(String[] args) {
-//		executeBeanFactory();
-		executeApplicationContext();
+		executeBeanFactory();
+//		executeApplicationContext();
 	}
 
 
 	public static void executeBeanFactory() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		// 添加BeanPostProcessor 实现（示例）
-		// - 方法1
-		// beanFactory.addBeanPostProcessor(new MyInstantiationAwareBeanPostProcessor());
-		// - 方法2
+		 //- 方法1
+		 beanFactory.addBeanPostProcessor(new MyInstantiationAwareBeanPostProcessor());
+		// - 方法2：该方式在 BeanFactory中无效
 		// <bean class="indi.shui4.thinking.spring.bean.lifecycle.MyInstantiationAwareBeanPostProcessor"/>
 
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
