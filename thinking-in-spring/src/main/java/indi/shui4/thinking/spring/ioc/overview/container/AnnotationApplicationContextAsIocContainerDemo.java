@@ -11,26 +11,29 @@ import org.springframework.context.annotation.Bean;
  * @author shui4
  */
 public class AnnotationApplicationContextAsIocContainerDemo {
-    public static void main(String[] args) {
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(AnnotationApplicationContextAsIocContainerDemo.class);
-        // 启动应用上下文
-        applicationContext.refresh();
-        // 依赖查找集合对象
-        lookupByCollectionType(applicationContext);
-        applicationContext.close();
-    }
+	public static void main(String[] args) {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		applicationContext.register(AnnotationApplicationContextAsIocContainerDemo.class);
+		applicationContext.refresh();
+		lookupByCollectionType(applicationContext);
+		applicationContext.close();
+	}
 
-    private static void lookupByCollectionType(ApplicationContext
-                                                       beanFactory) {
-        System.out.println(" 按集合类型依赖查找:" + beanFactory.getBeansOfType(User.class));
-    }
+	/**
+	 * 依赖查找集合对象
+	 *
+	 * @param beanFactory beanFactory
+	 */
+	private static void lookupByCollectionType(ApplicationContext
+													   beanFactory) {
+		System.out.println(" 按集合类型依赖查找:" + beanFactory.getBeansOfType(User.class));
+	}
 
-    @Bean
-    public User user() {
-        User user = new User();
-        user.setId("1");
-        user.setName("shui4");
-        return user;
-    }
+	@Bean
+	public User user() {
+		User user = new User();
+		user.setId("1");
+		user.setName("shui4");
+		return user;
+	}
 }
