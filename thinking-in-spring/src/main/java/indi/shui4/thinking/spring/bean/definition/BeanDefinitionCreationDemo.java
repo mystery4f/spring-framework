@@ -13,29 +13,26 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
  */
 public class BeanDefinitionCreationDemo {
 
-    public static void main(String[] args) {
-        // 1. 通过 BeanDefinitionBuilder 构建
-        // BeanDefinition 并非 Bean 最终状态，可以自定义修改
-        // rootBeanDefinition 的 Bean 不能有 parent
-        // BeanDefinitionBuilder.rootBeanDefinition(User.class);
-        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(User.class)
-                // 通过属性设置
-                .addPropertyValue("id", 1)
-                .addPropertyValue("name", "shui4");
+	public static void main(String[] args) {
+		// 1. 通过 BeanDefinitionBuilder 构建
+		// BeanDefinition 并非 Bean 最终状态，可以自定义修改
+		// rootBeanDefinition 的 Bean 不能有 parent
+		// BeanDefinitionBuilder.rootBeanDefinition(User.class);
+		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(User.class)
+				// 通过属性设置
+				.addPropertyValue("id", 1).addPropertyValue("name", "shui4");
 
-        // 获取 BeanDefinition 对象
-        BeanDefinition beanDefinition = beanDefinitionBuilder.getBeanDefinition();
+		// 获取 BeanDefinition 对象
+		BeanDefinition beanDefinition = beanDefinitionBuilder.getBeanDefinition();
 
-        // 2. 通过AbstractBeanDefinition 以及派生类
-        GenericBeanDefinition genericBeanDefinition = new GenericBeanDefinition();
-        genericBeanDefinition.setBeanClass(User.class);
-        // 通过 MutablePropertyValues 批量操作属性
-        MutablePropertyValues propertyValues = new MutablePropertyValues()
-                .add("id", 1)
-                .add("name", "shui4");
+		// 2. 通过 AbstractBeanDefinition 以及派生类
+		GenericBeanDefinition genericBeanDefinition = new GenericBeanDefinition();
+		genericBeanDefinition.setBeanClass(User.class);
+		// 通过 MutablePropertyValues 批量操作属性
+		MutablePropertyValues propertyValues = new MutablePropertyValues().add("id", 1).add("name", "shui4");
 //        propertyValues.addPropertyValue("id", 1);
 //        propertyValues.addPropertyValue("name", "shui4");
-        genericBeanDefinition.setPropertyValues(propertyValues);
+		genericBeanDefinition.setPropertyValues(propertyValues);
 
-    }
+	}
 }

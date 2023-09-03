@@ -26,7 +26,7 @@ public class AnnotationApplicationContextAsIocContainerDemo {
 	 */
 	private static void lookupByCollectionType(ApplicationContext
 													   beanFactory) {
-		System.out.println(" 按集合类型依赖查找:" + beanFactory.getBeansOfType(User.class));
+		System.out.println("按集合类型依赖查找:" + beanFactory.getBeansOfType(User.class));
 	}
 
 	@Bean
