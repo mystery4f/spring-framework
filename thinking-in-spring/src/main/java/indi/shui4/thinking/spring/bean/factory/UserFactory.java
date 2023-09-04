@@ -8,8 +8,8 @@ import indi.shui4.thinking.spring.ioc.overview.domain.User;
 
 public interface UserFactory {
 
-    default User createUser() {
-        return null;
-    }
+	default User createUser() {
+		return null;
+	}
 
 }
