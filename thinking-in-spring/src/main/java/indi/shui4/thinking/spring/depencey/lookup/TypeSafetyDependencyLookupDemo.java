@@ -28,7 +28,6 @@ public class TypeSafetyDependencyLookupDemo {
             displayListableBeanFactoryGetBeansOfType(applicationContext);
             // 演示 ObjectProvider Stream 操作安全性
             displayObjectProviderStreamOps(applicationContext);
-
         }
     }
 
@@ -47,9 +46,7 @@ public class TypeSafetyDependencyLookupDemo {
     }
 
     private static void displayListableBeanFactoryGetBeansOfType(ListableBeanFactory beanFactory) {
-        printBeansException("displayListableBeanFactoryGetBeansOfType", () -> {
-            beanFactory.getBeansOfType(User.class);
-        });
+        printBeansException("displayListableBeanFactoryGetBeansOfType", () -> beanFactory.getBeansOfType(User.class));
     }
 
     private static void displayObjectProviderStreamOps(AnnotationConfigApplicationContext applicationContext) {
