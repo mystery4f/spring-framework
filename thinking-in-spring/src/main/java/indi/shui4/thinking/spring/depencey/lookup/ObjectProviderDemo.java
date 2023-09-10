@@ -31,6 +31,7 @@ public class ObjectProviderDemo {
     }
 
     private static void lookupByStreamOps(AnnotationConfigApplicationContext applicationContext) {
+		System.out.println("stream");
         ObjectProvider<String> stringObjectProvider = applicationContext.getBeanProvider(String.class);
         /*Iterator<String> iterator = stringObjectProvider.iterator();
         while (iterator.hasNext()) {
