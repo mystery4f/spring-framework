@@ -28,24 +28,24 @@ import org.springframework.lang.Nullable;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @since 07.07.2003
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#setParentBeanFactory
+ * @since 07.07.2003
  */
 public interface HierarchicalBeanFactory extends BeanFactory {
 
 	/**
-	 * Return the parent bean factory, or {@code null} if there is none.
+	 * 返回父Bean工厂，如果没有则返回{@code null}。
 	 */
 	@Nullable
 	BeanFactory getParentBeanFactory();
 
 	/**
-	 * Return whether the local bean factory contains a bean of the given name,
-	 * ignoring beans defined in ancestor contexts.
-	 * <p>This is an alternative to {@code containsBean}, ignoring a bean
-	 * of the given name from an ancestor bean factory.
-	 * @param name the name of the bean to query
-	 * @return whether a bean with the given name is defined in the local factory
+	 * 返回本地Bean工厂是否包含给定名称的Bean，
+	 * 忽略在祖先上下文中定义的Bean。
+	 * <p>这是一个替代方法，忽略祖先Bean工厂中给定名称的Bean。
+	 *
+	 * @param name 要查询的Bean的名称
+	 * @return 本地工厂中是否定义了具有给定名称的Bean
 	 * @see BeanFactory#containsBean
 	 */
 	boolean containsLocalBean(String name);
