@@ -94,7 +94,7 @@ public interface BeanPostProcessor {
 	 * @see org.springframework.beans.factory.FactoryBean
 	 */
 	@Nullable
-	default Object postProcessAfterInitialization(Object bean, String bean3Name) throws BeansException {
+	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 
