@@ -518,7 +518,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// 调用BeanPostProcessors的方法，将实例对象封装为代理对象
+			// 给 BeanPostProcessors 一个返回代理而不是目标 bean 实例的机会。
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -530,7 +530,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// 根据baen的定义创建bean的实例对象，并返回创建好的实例对象
+			// 根据bean的定义创建bean的实例对象，并返回创建好的实例对象
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Finished creating instance of bean '" + beanName + "'");
