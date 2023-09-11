@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.springframework.beans.factory.BeanFactory</OriginalElement>
+  <nodes>
+    <node x="262.2157738095238" y="131.33333333333337">org.springframework.beans.factory.config.ConfigurableListableBeanFactory</node>
+    <node x="314.0" y="51.33333333333337">org.springframework.beans.factory.ListableBeanFactory</node>
+    <node x="51.00000000000006" y="-30.66666666666663">org.springframework.beans.factory.HierarchicalBeanFactory</node>
+    <node x="302.82440476190476" y="-111.33333333333331">org.springframework.beans.factory.BeanFactory</node>
+    <node x="47.0" y="51.33333333333337">org.springframework.beans.factory.config.ConfigurableBeanFactory</node>
+  </nodes>
+  <notes>
+    <note x="99.69940476190487" y="-112.0">
+      <node>org.springframework.beans.factory.HierarchicalBeanFactory</node>
+      <value>支持 层次性 依赖查找</value>
+      <edge>
+        <point x="-59.74999999999994" y="-14.0" />
+        <point x="110.75000000000011" y="-56.66666666666663" />
+        <point x="168.0327380952382" y="-56.66666666666663" />
+        <point x="0.0" y="14.666666666666671" />
+      </edge>
+    </note>
+    <note x="9.5" y="-80.66666666666663">
+      <node>org.springframework.beans.factory.config.ConfigurableBeanFactory</node>
+      <value>支持 配置层次</value>
+      <edge>
+        <point x="0.0" y="0.0" />
+        <point x="0.0" y="0.0" />
+      </edge>
+    </note>
+    <note x="379.08333333333337" y="-30.16666666666663">
+      <node>org.springframework.beans.factory.ListableBeanFactory</node>
+      <value>支持集合类型 依赖查找</value>
+      <edge>
+        <point x="52.0" y="-14.0" />
+        <point x="470.0" y="24.33333333333337" />
+        <point x="467.41666666666663" y="24.33333333333337" />
+        <point x="0.0" y="13.5" />
+      </edge>
+    </note>
+  </notes>
+  <edges>
+    <edge source="org.springframework.beans.factory.HierarchicalBeanFactory" target="org.springframework.beans.factory.BeanFactory" relationship="INTERFACE_GENERALIZATION">
+      <point x="59.75000000000006" y="-14.0" />
+      <point x="230.2500000000001" y="-56.66666666666663" />
+      <point x="376.82440476190476" y="-56.66666666666663" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="org.springframework.beans.factory.config.ConfigurableListableBeanFactory" target="org.springframework.beans.factory.ListableBeanFactory" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-14.0" />
+      <point x="415.7157738095238" y="105.33333333333337" />
+      <point x="418.0" y="105.33333333333337" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="org.springframework.beans.factory.config.ConfigurableListableBeanFactory" target="org.springframework.beans.factory.config.ConfigurableBeanFactory" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-14.0" />
+      <point x="415.7157738095238" y="105.33333333333337" />
+      <point x="170.5" y="105.33333333333337" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="org.springframework.beans.factory.config.ConfigurableListableBeanFactory" target="org.springframework.beans.factory.BeanFactory" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-14.0" />
+      <point x="415.7157738095238" y="105.33333333333337" />
+      <point x="566.25" y="105.33333333333337" />
+      <point x="566.25" y="-56.66666666666663" />
+      <point x="376.82440476190476" y="-56.66666666666663" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="org.springframework.beans.factory.ListableBeanFactory" target="org.springframework.beans.factory.BeanFactory" relationship="INTERFACE_GENERALIZATION">
+      <point x="-52.0" y="-14.0" />
+      <point x="366.0" y="24.33333333333337" />
+      <point x="368.58333333333337" y="24.33333333333337" />
+      <point x="368.58333333333337" y="-56.66666666666663" />
+      <point x="376.82440476190476" y="-56.66666666666663" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="org.springframework.beans.factory.config.ConfigurableBeanFactory" target="org.springframework.beans.factory.HierarchicalBeanFactory" relationship="INTERFACE_GENERALIZATION">
+      <point x="5.6843418860808015E-14" y="-14.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+  </edges>
+  <settings layout="分层" zoom="1.5" showDependencies="true" x="318.5" y="34.0" />
+  <SelectedNodes>
+    <node>org.springframework.beans.factory.config.ConfigurableBeanFactory</node>
+  </SelectedNodes>
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
