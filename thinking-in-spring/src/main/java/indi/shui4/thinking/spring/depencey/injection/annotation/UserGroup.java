@@ -13,6 +13,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@Qualifier("group")
+//@Qualifier("group")
+@Qualifier
 public @interface UserGroup {
 }

@@ -56,7 +56,7 @@ public class QualifierAnnotationDependencyInjectionDemo {
 		System.out.println("demo.namedUser:" + demo.namedUser);
 		// 期待输出 2 个 Bean superUser user
 		System.out.println("demo.allUser.size()：" + demo.allUser.size());
-		// 期待输出 2 个 Bean user1 user2
+		// 期待输出 4 个 Bean user1 user2
 		System.out.println("demo.qualifierUsers.size():" + demo.qualifierUsers.size());
 		// 期待输出 2 个 Bean user3 user4
 		System.out.println("demo.groupedUsers.size():" + demo.groupedUsers.size());
@@ -90,12 +90,12 @@ public class QualifierAnnotationDependencyInjectionDemo {
 	@Bean
 	@UserGroup
 	public User user3() {
-		return createUser("009");
+		return createUser("userGroup-009");
 	}
 
 	@Bean
 	@UserGroup
 	public User user4() {
-		return createUser("010");
+		return createUser("usersGroup-010");
 	}
 }
