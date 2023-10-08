@@ -1431,6 +1431,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// 获取依赖类型
 			Class<?> type = descriptor.getDependencyType();
 			// 获取候选对象的建议值
+			// 例如 @Value 中的 El 表达式字符串
 			Object value = getAutowireCandidateResolver().getSuggestedValue(descriptor);
 			if (value != null) {
 				// 如果候选对象的值是字符串，则解析可能存在的嵌入式值
