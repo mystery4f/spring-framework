@@ -3,110 +3,131 @@
   <ID>JAVA</ID>
   <OriginalElement>org.springframework.beans.factory.config.BeanPostProcessor</OriginalElement>
   <nodes>
-    <node x="34.88602941176464" y="173.0">org.springframework.context.annotation.CommonAnnotationBeanPostProcessor</node>
-    <node x="-16.29044117647061" y="93.0">org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor</node>
-    <node x="-150.0" y="-11.0">org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor</node>
-    <node x="-508.0" y="-15.0">org.springframework.context.support.ApplicationContextAwareProcessor</node>
-    <node x="873.3860294117646" y="-11.0">org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor</node>
-    <node x="37.08455882352939" y="-93.0">org.springframework.beans.factory.config.BeanPostProcessor</node>
-    <node x="512.3860294117646" y="-11.0">org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor</node>
-    <node x="803.7095588235293" y="93.0">org.springframework.context.support.ApplicationListenerDetector</node>
-    <node x="896.7095588235293" y="173.0">org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor</node>
-    <node x="393.7095588235294" y="93.0">org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor</node>
+    <node x="-508.0" y="121.0">org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor</node>
+    <node x="-23.574324324324323" y="18.0">org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor</node>
+    <node x="336.72635135135135" y="121.0">org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor</node>
+    <node x="675.4256756756756" y="18.0">org.springframework.context.support.ApplicationContextAwareProcessor</node>
+    <node x="325.4256756756756" y="18.0">org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor</node>
+    <node x="-464.74324324324334" y="204.0">org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor</node>
+    <node x="79.55743243243239" y="204.0">org.springframework.context.annotation.CommonAnnotationBeanPostProcessor</node>
+    <node x="405.8074324324324" y="-103.5">org.springframework.beans.factory.config.BeanPostProcessor</node>
+    <node x="38.226351351351354" y="121.0">org.springframework.context.support.ApplicationListenerDetector</node>
+    <node x="-381.5743243243244" y="18.0">org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor</node>
   </nodes>
-  <notes />
+  <notes>
+    <note x="-20.074324324324323" y="-114.0">
+      <node>org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor</node>
+      <value>BeanDefinition合并之后后置处理器</value>
+      <edge>
+        <point x="0.0" y="0.0" />
+        <point x="0.0" y="0.0" />
+      </edge>
+    </note>
+    <note x="-363.8175675675676" y="-144.0">
+      <node>org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor</node>
+      <value>实例化：之前、之后、装配</value>
+      <edge>
+        <point x="-84.5" y="-15.5" />
+        <point x="-297.0743243243244" y="-2.0" />
+        <point x="-202.8175675675676" y="-2.0" />
+        <point x="0.0" y="56.0" />
+      </edge>
+    </note>
+  </notes>
   <edges>
     <edge source="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" target="org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor" relationship="REALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="1079.2095588235293" y="142.0" />
-      <point x="178.7095588235294" y="142.0" />
-      <point x="0.0" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="-285.2432432432433" y="173.0" />
+      <point x="-316.5" y="173.0" />
+      <point x="0.0" y="15.5" />
     </edge>
     <edge source="org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor" target="org.springframework.beans.factory.config.BeanPostProcessor" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="682.8860294117646" y="-35.0" />
-      <point x="656.0" y="-35.0" />
-      <point x="656.0" y="-45.0" />
-      <point x="188.5845588235294" y="-45.0" />
-      <point x="50.5" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="490.4256756756756" y="-2.0" />
+      <point x="156.3074324324325" y="-2.0" />
+      <point x="156.3074324324324" y="-12.0" />
+      <point x="454.3074324324324" y="-12.0" />
+      <point x="-48.5" y="15.5" />
     </edge>
     <edge source="org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor" target="org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="178.7095588235294" y="72.0" />
-      <point x="108.75" y="72.0" />
-      <point x="86.25" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="-316.5" y="100.0" />
+      <point x="-297.0743243243244" y="100.0" />
+      <point x="-84.5" y="15.5" />
     </edge>
     <edge source="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" target="org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor" relationship="REALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="1079.2095588235293" y="142.0" />
-      <point x="1112.3860294117646" y="142.0" />
-      <point x="1112.3860294117646" y="52.0" />
-      <point x="1040.8860294117646" y="52.0" />
-      <point x="0.0" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="-285.2432432432433" y="173.0" />
+      <point x="27.72635135135124" y="173.0" />
+      <point x="27.726351351351354" y="100.0" />
+      <point x="140.92567567567562" y="100.0" />
+      <point x="0.0" y="15.5" />
     </edge>
     <edge source="org.springframework.context.support.ApplicationListenerDetector" target="org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor" relationship="REALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="936.2095588235293" y="42.0" />
-      <point x="682.8860294117646" y="42.0" />
-      <point x="0.0" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="168.72635135135135" y="100.0" />
+      <point x="490.4256756756756" y="100.0" />
+      <point x="0.0" y="15.5" />
     </edge>
     <edge source="org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor" target="org.springframework.beans.factory.config.BeanPostProcessor" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="1040.8860294117646" y="-35.0" />
-      <point x="656.0" y="-35.0" />
-      <point x="656.0" y="-45.0" />
-      <point x="188.5845588235294" y="-45.0" />
-      <point x="50.5" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="140.92567567567562" y="-2.0" />
+      <point x="156.3074324324324" y="-2.0" />
+      <point x="156.3074324324324" y="-12.0" />
+      <point x="454.3074324324324" y="-12.0" />
+      <point x="-48.5" y="15.5" />
     </edge>
     <edge source="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" target="org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor" relationship="GENERALIZATION">
-      <point x="88.5" y="-14.0" />
-      <point x="300.38602941176464" y="152.0" />
-      <point x="578.2095588235293" y="152.0" />
-      <point x="0.0" y="14.0" />
+      <point x="87.75" y="-15.5" />
+      <point x="342.8074324324324" y="183.0" />
+      <point x="518.2263513513512" y="183.0" />
+      <point x="0.0" y="15.5" />
     </edge>
     <edge source="org.springframework.context.support.ApplicationContextAwareProcessor" target="org.springframework.beans.factory.config.BeanPostProcessor" relationship="REALIZATION">
-      <point x="0.0" y="-18.0" />
-      <point x="-339.0" y="-45.0" />
-      <point x="87.58455882352939" y="-45.0" />
-      <point x="-50.5" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="833.9256756756756" y="-2.0" />
+      <point x="551.3074324324325" y="-2.0" />
+      <point x="48.5" y="15.5" />
     </edge>
     <edge source="org.springframework.context.support.ApplicationListenerDetector" target="org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor" relationship="REALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="936.2095588235293" y="72.0" />
-      <point x="1040.8860294117646" y="72.0" />
-      <point x="0.0" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="168.72635135135135" y="90.0" />
+      <point x="140.92567567567562" y="90.0" />
+      <point x="0.0" y="15.5" />
     </edge>
     <edge source="org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor" target="org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor" relationship="REALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="578.2095588235293" y="52.0" />
-      <point x="682.8860294117646" y="52.0" />
-      <point x="0.0" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="518.2263513513512" y="70.0" />
+      <point x="490.4256756756756" y="70.0" />
+      <point x="0.0" y="15.5" />
     </edge>
     <edge source="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" target="org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor" relationship="REALIZATION">
-      <point x="-88.5" y="-14.0" />
-      <point x="123.38602941176464" y="152.0" />
-      <point x="-80.25" y="152.0" />
-      <point x="-80.25" y="72.0" />
-      <point x="-63.75" y="72.0" />
-      <point x="-86.25" y="14.0" />
+      <point x="-87.75" y="-15.5" />
+      <point x="167.3074324324324" y="183.0" />
+      <point x="-71.875" y="183.0" />
+      <point x="-71.875" y="100.0" />
+      <point x="-128.07432432432438" y="100.0" />
+      <point x="84.5" y="15.5" />
     </edge>
     <edge source="org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor" target="org.springframework.beans.factory.config.BeanPostProcessor" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="22.5" y="-35.0" />
-      <point x="656.0" y="-35.0" />
-      <point x="656.0" y="-45.0" />
-      <point x="188.5845588235294" y="-45.0" />
-      <point x="50.5" y="14.0" />
+      <point x="84.5" y="-15.5" />
+      <point x="-128.07432432432438" y="-2.0" />
+      <point x="156.3074324324325" y="-2.0" />
+      <point x="156.3074324324324" y="-12.0" />
+      <point x="454.3074324324324" y="-12.0" />
+      <point x="-48.5" y="15.5" />
     </edge>
     <edge source="org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor" target="org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor" relationship="REALIZATION">
-      <point x="0.0" y="-14.0" />
-      <point x="578.2095588235293" y="62.0" />
-      <point x="1040.8860294117646" y="62.0" />
-      <point x="0.0" y="14.0" />
+      <point x="0.0" y="-15.5" />
+      <point x="518.2263513513512" y="80.0" />
+      <point x="140.92567567567562" y="80.0" />
+      <point x="0.0" y="15.5" />
     </edge>
   </edges>
-  <settings layout="分层" zoom="0.8067039106145252" showDependencies="false" x="223.3711911357343" y="76.39612188365635" />
-  <SelectedNodes />
+  <settings layout="分层" zoom="1.2018408941485865" showDependencies="false" x="252.49999999999977" y="55.49999999999994" />
+  <SelectedNodes>
+    <node>org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor</node>
+  </SelectedNodes>
   <Categories />
   <SCOPE>All</SCOPE>
   <VISIBILITY>private</VISIBILITY>
