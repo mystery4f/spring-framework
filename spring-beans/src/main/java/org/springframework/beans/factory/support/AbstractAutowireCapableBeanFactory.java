@@ -519,6 +519,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// 给 BeanPostProcessors 一个返回代理而不是目标 bean 实例的机会。
+			// InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
