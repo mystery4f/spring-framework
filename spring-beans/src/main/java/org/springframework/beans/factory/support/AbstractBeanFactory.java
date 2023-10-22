@@ -370,7 +370,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	@SuppressWarnings("unchecked")
 	<T> T adaptBeanInstance(String name, Object bean, @Nullable Class<?> requiredType) {
-		// Check if required type matches the type of the actual bean instance.
+		// 检查所需类型是否与实际 bean 实例的类型匹配。
 		if (requiredType != null && !requiredType.isInstance(bean)) {
 			try {
 				Object convertedBean = getTypeConverter().convertIfNecessary(bean, requiredType);
@@ -395,7 +395,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		if (containsSingleton(beanName) || containsBeanDefinition(beanName)) {
 			return (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(name));
 		}
-		// Not found -> check parent.
+		// 未找到 -> 检查父级。
 		BeanFactory parentBeanFactory = getParentBeanFactory();
 		return (parentBeanFactory != null && parentBeanFactory.containsBean(originalBeanName(name)));
 	}
@@ -762,29 +762,25 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	//---------------------------------------------------------------------
 
 	/**
-	 * Return the bean name, stripping out the factory dereference prefix if necessary,
-	 * and resolving aliases to canonical names.
+	 * 返回 bean 名称，如果需要，去除工厂引用前缀，并将别名解析为规范名称。
 	 *
-	 * @param name the user-specified name
-	 * @return the transformed bean name
+	 * @param name 用户指定的名称
+	 * @return 转换后的 bean 名称
 	 */
 	protected String transformedBeanName(String name) {
 		return canonicalName(BeanFactoryUtils.transformedBeanName(name));
 	}
 
 	/**
-	 * Check if this bean factory contains a bean definition with the given name.
-	 * Does not consider any hierarchy this factory may participate in.
-	 * Invoked by {@code containsBean} when no cached singleton instance is found.
-	 * <p>Depending on the nature of the concrete bean factory implementation,
-	 * this operation might be expensive (for example, because of directory lookups
-	 * in external registries). However, for listable bean factories, this usually
-	 * just amounts to a local hash lookup: The operation is therefore part of the
-	 * public interface there. The same implementation can serve for both this
-	 * template method and the public interface method in that case.
+	 * 检查此 bean 工厂是否包含具有给定名称的 bean 定义。
+	 * 不考虑此工厂可能参与的任何层次结构。
+	 * 在 {@code containsBean} 未找到缓存的单例实例时调用。
+	 * <p>根据具体的 bean 工厂实现的性质，此操作可能很昂贵（例如，由于在外部注册表中进行目录查找）。
+	 * 但是，对于可列出的 bean 工厂，这通常只是一个本地哈希查找：因此，该操作是公共接口的一部分。
+	 * 在这种情况下，相同的实现可以同时用于此模板方法和公共接口方法。
 	 *
-	 * @param beanName the name of the bean to look for
-	 * @return if this bean factory contains a bean definition with the given name
+	 * @param beanName 要查找的 bean 的名称
+	 * @return 如果此 bean 工厂包含具有给定名称的 bean 定义
 	 * @see #containsBean
 	 * @see org.springframework.beans.factory.ListableBeanFactory#containsBeanDefinition
 	 */
@@ -792,7 +788,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 
 	//---------------------------------------------------------------------
-	// Implementation of ConfigurableBeanFactory interface
+	// ConfigurableBeanFactory 接口的实现
 	//---------------------------------------------------------------------
 
 	@Override
