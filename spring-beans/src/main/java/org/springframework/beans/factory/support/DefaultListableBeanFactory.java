@@ -1869,12 +1869,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Return whether the bean definition for the given bean name has been
-	 * marked as a primary bean.
+	 * 返回给定bean名称的bean定义是否被标记为主要bean。
 	 *
-	 * @param beanName     the name of the bean
-	 * @param beanInstance the corresponding bean instance (can be null)
-	 * @return whether the given bean qualifies as primary
+	 * @param beanName     bean的名称
+	 * @param beanInstance 对应的bean实例（可以为null）
+	 * @return 给定的bean是否符合主要条件
 	 */
 	protected boolean isPrimary(String beanName, Object beanInstance) {
 		String transformedBeanName = transformedBeanName(beanName);
@@ -1887,17 +1886,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Return the priority assigned for the given bean instance by
-	 * the {@code javax.annotation.Priority} annotation.
-	 * <p>The default implementation delegates to the specified
-	 * {@link #setDependencyComparator dependency comparator}, checking its
-	 * {@link OrderComparator#getPriority method} if it is an extension of
-	 * Spring's common {@link OrderComparator} - typically, an
-	 * {@link org.springframework.core.annotation.AnnotationAwareOrderComparator}.
-	 * If no such comparator is present, this implementation returns {@code null}.
+	 * 返回由{@code javax.annotation.Priority}注解为给定的bean实例分配的优先级。
+	 * <p>默认实现委托给指定的{@link #setDependencyComparator 依赖比较器}，如果它是Spring常见的{@link OrderComparator}的扩展，
+	 * 则检查其{@link OrderComparator#getPriority 方法}。如果没有这样的比较器，则此实现返回{@code null}。
 	 *
-	 * @param beanInstance the bean instance to check (can be {@code null})
-	 * @return the priority assigned to that bean or {@code null} if none is set
+	 * @param beanInstance 要检查的bean实例（可以为{@code null}）
+	 * @return 分配给该bean的优先级，如果未设置则返回{@code null}
 	 */
 	@Nullable
 	protected Integer getPriority(Object beanInstance) {
@@ -1909,8 +1903,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Determine whether the given candidate name matches the bean name or the aliases
-	 * stored in this bean definition.
+	 * 确定给定的候选名称是否与此bean定义中存储的bean名称或别名匹配。
 	 */
 	protected boolean matchesBeanName(String beanName, @Nullable String candidateName) {
 		return (candidateName != null &&
@@ -1918,9 +1911,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Determine whether the given beanName/candidateName pair indicates a self reference,
-	 * i.e. whether the candidate points back to the original bean or to a factory method
-	 * on the original bean.
+	 * 确定给定的beanName/candidateName对是否指示自引用，
+	 * 即候选对象是否指向原始bean或原始bean上的工厂方法。
 	 */
 	private boolean isSelfReference(@Nullable String beanName, @Nullable String candidateName) {
 		return (beanName != null && candidateName != null &&
@@ -1929,8 +1921,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Raise a NoSuchBeanDefinitionException or BeanNotOfRequiredTypeException
-	 * for an unresolvable dependency.
+	 * 对于无法解析的依赖项，抛出NoSuchBeanDefinitionException或BeanNotOfRequiredTypeException。
 	 */
 	private void raiseNoMatchingBeanFound(
 			Class<?> type, ResolvableType resolvableType, DependencyDescriptor descriptor) throws BeansException {
@@ -1943,29 +1934,34 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Raise a BeanNotOfRequiredTypeException for an unresolvable dependency, if applicable,
-	 * i.e. if the target type of the bean would match but an exposed proxy doesn't.
+	 * 检查是否存在不符合要求的Bean类型的依赖关系，如果适用的话，
+	 * 即如果Bean的目标类型匹配但是暴露的代理不匹配。
 	 */
 	private void checkBeanNotOfRequiredType(Class<?> type, DependencyDescriptor descriptor) {
 		for (String beanName : this.beanDefinitionNames) {
 			try {
+				// 获取合并后的本地Bean定义
 				RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+				// 获取目标类型
 				Class<?> targetType = mbd.getTargetType();
 				if (targetType != null && type.isAssignableFrom(targetType) &&
 						isAutowireCandidate(beanName, mbd, descriptor, getAutowireCandidateResolver())) {
-					// Probably a proxy interfering with target type match -> throw meaningful exception.
+					// 可能是代理干扰了目标类型匹配 -> 抛出有意义的异常
 					Object beanInstance = getSingleton(beanName, false);
+					// 获取Bean的类型
 					Class<?> beanType = (beanInstance != null && beanInstance.getClass() != NullBean.class ?
 							beanInstance.getClass() : predictBeanType(beanName, mbd));
 					if (beanType != null && !type.isAssignableFrom(beanType)) {
+						// 抛出Bean类型不符合要求的异常
 						throw new BeanNotOfRequiredTypeException(beanName, type, beanType);
 					}
 				}
 			} catch (NoSuchBeanDefinitionException ex) {
-				// Bean definition got removed while we were iterating -> ignore.
+				// 在迭代过程中Bean定义被移除 -> 忽略
 			}
 		}
 
+		// 检查父级Bean工厂中是否存在不符合要求的Bean类型的依赖关系
 		BeanFactory parent = getParentBeanFactory();
 		if (parent instanceof DefaultListableBeanFactory) {
 			((DefaultListableBeanFactory) parent).checkBeanNotOfRequiredType(type, descriptor);
@@ -1973,11 +1969,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Create an {@link Optional} wrapper for the specified dependency.
+	 * 为指定的依赖项创建一个{@link Optional}包装器。
 	 */
 	private Optional<?> createOptionalDependency(
 			DependencyDescriptor descriptor, @Nullable String beanName, final Object... args) {
 
+		// 创建一个嵌套的依赖项描述符，用于处理可选依赖项
 		DependencyDescriptor descriptorToUse = new NestedDependencyDescriptor(descriptor) {
 			@Override
 			public boolean isRequired() {
@@ -1986,11 +1983,18 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 			@Override
 			public Object resolveCandidate(String beanName, Class<?> requiredType, BeanFactory beanFactory) {
+				// 如果参数不为空，则使用参数创建Bean实例
+				// 否则，使用父类的方法解析候选Bean
 				return (!ObjectUtils.isEmpty(args) ? beanFactory.getBean(beanName, args) :
 						super.resolveCandidate(beanName, requiredType, beanFactory));
 			}
 		};
+
+		// 解析依赖项
 		Object result = doResolveDependency(descriptorToUse, beanName, null, null);
+
+		// 如果解析的结果是Optional类型，则直接返回
+		// 否则，将结果包装成Optional并返回
 		return (result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result));
 	}
 
