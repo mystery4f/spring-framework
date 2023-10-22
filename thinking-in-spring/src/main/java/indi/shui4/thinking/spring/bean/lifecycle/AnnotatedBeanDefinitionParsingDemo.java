@@ -3,7 +3,6 @@ package indi.shui4.thinking.spring.bean.lifecycle;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
-import org.springframework.stereotype.Component;
 
 /**
  * 注解 BeanDefinition 解析示例
@@ -22,7 +21,8 @@ public class AnnotatedBeanDefinitionParsingDemo {
 		int beanDefinitionCountAfter = beanFactory.getBeanDefinitionCount();
 		System.out.println(" 已加载 BeanDefinition 数量：" + (beanDefinitionCountAfter - beanDefinitionCountBefore));
 		// 普通的 Class 作为 Component 注册到 Spring IoC 容器后，通常 Bean 名称为 annotatedBeanDefinitionParsingDemo
+		// Bean 名称生成来自于 BeanNameGenerator，注解实现 AnnotationBeanNameGenerator
 		System.out.println(beanFactory.getBean("annotatedBeanDefinitionParsingDemo"));
-	}   
+	}
 
 }
