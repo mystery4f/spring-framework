@@ -58,15 +58,15 @@ public class ManagedList<E> extends ArrayList<E> implements Mergeable, BeanMetad
 	}
 
 	/**
-	 * Set the configuration source {@code Object} for this metadata element.
-	 * <p>The exact type of the object will depend on the configuration mechanism used.
+	 * 设置此元数据元素的配置源对象。
+	 * <p>对象的确切类型将取决于所使用的配置机制。
 	 */
 	public void setSource(@Nullable Object source) {
 		this.source = source;
 	}
 
 	/**
-	 * Return the default element type name (class name) to be used for this list.
+	 * 返回用于此列表的默认元素类型名称（类名）。
 	 */
 	@Nullable
 	public String getElementTypeName() {
@@ -74,7 +74,7 @@ public class ManagedList<E> extends ArrayList<E> implements Mergeable, BeanMetad
 	}
 
 	/**
-	 * Set the default element type name (class name) to be used for this list.
+	 * 设置用于此列表的默认元素类型名称（类名）。
 	 */
 	public void setElementTypeName(String elementTypeName) {
 		this.elementTypeName = elementTypeName;
@@ -86,8 +86,7 @@ public class ManagedList<E> extends ArrayList<E> implements Mergeable, BeanMetad
 	}
 
 	/**
-	 * Set whether merging should be enabled for this collection,
-	 * in case of a 'parent' collection value being present.
+	 * 设置是否启用合并功能，以便在存在“父”集合值的情况下进行合并。
 	 */
 	public void setMergeEnabled(boolean mergeEnabled) {
 		this.mergeEnabled = mergeEnabled;
