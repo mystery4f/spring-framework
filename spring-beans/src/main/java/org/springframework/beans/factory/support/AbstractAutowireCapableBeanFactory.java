@@ -521,6 +521,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 给 BeanPostProcessors 一个返回代理而不是目标 bean 实例的机会。
 			// InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
+			// ? 返回了一个非空的对象：跳出方法
 			if (bean != null) {
 				return bean;
 			}
@@ -1096,18 +1097,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
-	 * Apply before-instantiation post-processors, resolving whether there is a
-	 * before-instantiation shortcut for the specified bean.
+	 * 应用实例化前的后置处理器，判断是否存在实例化前的快捷方式来处理指定的bean。
 	 *
-	 * @param beanName the name of the bean
-	 * @param mbd      the bean definition for the bean
-	 * @return the shortcut-determined bean instance, or {@code null} if none
+	 * @param beanName bean的名称
+	 * @param mbd      bean的定义
+	 * @return 确定的bean实例，如果没有则返回{@code null}
 	 */
 	@Nullable
 	protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
 		Object bean = null;
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
-			// Make sure bean class is actually resolved at this point.
+			// 确保此时bean类已经解析
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
