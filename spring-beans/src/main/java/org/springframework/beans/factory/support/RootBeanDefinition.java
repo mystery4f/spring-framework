@@ -52,11 +52,11 @@ import java.util.function.Supplier;
 public class RootBeanDefinition extends AbstractBeanDefinition {
 
 	/**
-	 * 用于下面四个构造函数字段的公共锁。
+	 * 下面四个构造函数字段的公共锁。
 	 */
 	final Object constructorArgumentLock = new Object();
 	/**
-	 * 用于下面两个后处理字段的公共锁。
+	 * 下面两个后处理字段的公共锁。
 	 */
 	final Object postProcessingLock = new Object();
 	/**
@@ -65,47 +65,47 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	volatile boolean stale;
 
 	/**
-	 * 用于确定是否允许对该bean进行缓存
+	 * 确定是否允许对该bean进行缓存
 	 */
 	boolean allowCaching = true;
 
 	/**
-	 * 用于确定工厂方法是否是唯一的
+	 * 确定工厂方法是否是唯一的
 	 */
 	boolean isFactoryMethodUnique;
 
 	/**
-	 * 用于存储目标类型的可解析类型
+	 * 存储目标类型的可解析类型
 	 */
 	@Nullable
 	volatile ResolvableType targetType;
 
 	/**
-	 * 用于缓存给定bean定义的确定类的包可见字段。
+	 * 缓存给定bean定义的确定类的包可见字段。
 	 */
 	@Nullable
 	volatile Class<?> resolvedTargetType;
 
 	/**
-	 * 用于缓存bean是否为工厂bean的包可见字段。
+	 * 缓存bean是否为工厂bean的包可见字段。
 	 */
 	@Nullable
 	volatile Boolean isFactoryBean;
 
 	/**
-	 * 用于缓存通用类型化工厂方法的返回类型的包可见字段。
+	 * 缓存通用类型化工厂方法的返回类型的包可见字段。
 	 */
 	@Nullable
 	volatile ResolvableType factoryMethodReturnType;
 
 	/**
-	 * 用于缓存用于内省的唯一工厂方法候选的包可见字段。
+	 * 缓存用于内省的唯一工厂方法候选的包可见字段。
 	 */
 	@Nullable
 	volatile Method factoryMethodToIntrospect;
 
 	/**
-	 * 用于缓存已解析的销毁方法名称的包可见字段（也用于推断）。
+	 * 缓存已解析的销毁方法名称的包可见字段（也用于推断）。
 	 */
 	@Nullable
 	volatile String resolvedDestroyMethodName;
@@ -126,43 +126,43 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	@Nullable
 	Object[] resolvedConstructorArguments;
 	/**
-	 * 用于缓存部分准备好的构造函数参数的包可见字段。
+	 * 缓存部分准备好的构造函数参数的包可见字段。
 	 */
 	@Nullable
 	Object[] preparedConstructorArguments;
 	/**
-	 * 用于指示已应用MergedBeanDefinitionPostProcessor的包可见字段。
+	 * 指示已应用MergedBeanDefinitionPostProcessor的包可见字段。
 	 */
 	boolean postProcessed = false;
 	/**
-	 * 用于指示已启动实例化前后处理器的包可见字段。
+	 * 指示已启动实例化前后处理器的包可见字段。
 	 */
 	@Nullable
 	volatile Boolean beforeInstantiationResolved;
 	/**
-	 * 用于存储装饰的bean定义
+	 * 存储装饰的bean定义
 	 */
 	@Nullable
 	private BeanDefinitionHolder decoratedDefinition;
 	/**
-	 * 用于存储限定的元素（如注解或其他元数据），用于指示bean定义的限定条件
+	 * 存储限定的元素（如注解或其他元数据），用于指示bean定义的限定条件
 	 */
 	@Nullable
 	private AnnotatedElement qualifiedElement;
 	/**
-	 * 用于存储外部管理的配置成员（如字段或方法），这些成员不由Spring容器进行管理
+	 * 存储外部管理的配置成员（如字段或方法），这些成员不由Spring容器进行管理
 	 */
 	@Nullable
 	private Set<Member> externallyManagedConfigMembers;
 
 	/**
-	 * 用于存储外部管理的初始化方法的名称。这些初始化方法不由Spring容器进行管理，而是由外部代码负责调用
+	 * 存储外部管理的初始化方法的名称。这些初始化方法不由Spring容器进行管理，而是由外部代码负责调用
 	 */
 	@Nullable
 	private Set<String> externallyManagedInitMethods;
 
 	/**
-	 * 用于存储外部管理的销毁方法的名称。这些销毁方法不由Spring容器进行管理，而是由外部代码负责调用
+	 * 存储外部管理的销毁方法的名称。这些销毁方法不由Spring容器进行管理，而是由外部代码负责调用
 	 */
 	@Nullable
 	private Set<String> externallyManagedDestroyMethods;
