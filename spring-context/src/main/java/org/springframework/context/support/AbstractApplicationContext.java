@@ -543,6 +543,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerListeners();
 
 				// 实例化所有剩余的（非懒加载的）单例 Bean 对象。
+				// SmartInitializingSingleton
 				finishBeanFactoryInitialization(beanFactory);
 
 				// 最后一步是发布相应的事件。
