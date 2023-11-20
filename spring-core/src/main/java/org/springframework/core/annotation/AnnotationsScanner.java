@@ -61,22 +61,21 @@ abstract class AnnotationsScanner {
 
 
 	/**
-	 * Scan the hierarchy of the specified element for relevant annotations and
-	 * call the processor as required.
-	 * @param context an optional context object that will be passed back to the
-	 * processor
-	 * @param source the source element to scan
-	 * @param searchStrategy the search strategy to use
-	 * @param processor the processor that receives the annotations
-	 * @return the result of {@link AnnotationsProcessor#finish(Object)}
+	 * 扫描指定元素的层次结构，查找相关的注解，并根据需要调用处理器。
+	 * @param context 可选的上下文对象，将被传递给处理器
+	 * @param source 要扫描的源元素
+	 * @param searchStrategy 要使用的搜索策略
+	 * @param processor 接收注解的处理器
+	 * @return {@link AnnotationsProcessor#finish(Object)} 的结果
 	 */
 	@Nullable
 	static <C, R> R scan(C context, AnnotatedElement source, SearchStrategy searchStrategy,
-			AnnotationsProcessor<C, R> processor) {
+						 AnnotationsProcessor<C, R> processor) {
 
 		R result = process(context, source, searchStrategy, processor);
 		return processor.finish(result);
 	}
+
 
 	@Nullable
 	private static <C, R> R process(C context, AnnotatedElement source,
@@ -444,6 +443,12 @@ abstract class AnnotationsScanner {
 		return null;
 	}
 
+	/**
+	 * 获取指定元素的声明注解数组。
+	 * @param source 要获取注解的元素
+	 * @param defensive 是否进行防御性复制
+	 * @return 声明注解数组
+	 */
 	static Annotation[] getDeclaredAnnotations(AnnotatedElement source, boolean defensive) {
 		boolean cached = false;
 		Annotation[] annotations = declaredAnnotationCache.get(source);

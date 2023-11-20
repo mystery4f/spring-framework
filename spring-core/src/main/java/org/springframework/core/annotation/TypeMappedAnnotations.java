@@ -235,12 +235,16 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 	@Nullable
 	private <C, R> R scan(C criteria, AnnotationsProcessor<C, R> processor) {
 		if (this.annotations != null) {
+			// 如果注解不为空，则调用处理器的 doWithAnnotations 方法处理注解
 			R result = processor.doWithAnnotations(criteria, 0, this.source, this.annotations);
+			// 调用处理器的 finish 方法处理结果并返回
 			return processor.finish(result);
 		}
 		if (this.element != null && this.searchStrategy != null) {
+			// 如果注解为空，但元素和搜索策略不为空，则调用 AnnotationsScanner 的 scan 方法进行扫描
 			return AnnotationsScanner.scan(criteria, this.element, this.searchStrategy, processor);
 		}
+		// 如果以上条件都不满足，则返回 null
 		return null;
 	}
 

@@ -93,10 +93,9 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	}
 
 	/**
-	 * Determine whether the underlying class has any methods that are
-	 * annotated (or meta-annotated) with the given annotation type.
-	 * @param annotationName the fully qualified class name of the annotation
-	 * type to look for
+	 * 确定底层类是否有任何方法被给定的注解类型（或元注解）注解。
+	 * @param annotationName 要查找的注解类型的完全限定类名
+	 * @return 如果有被注解的方法则返回 true，否则返回 false
 	 */
 	default boolean hasAnnotatedMethods(String annotationName) {
 		return !getAnnotatedMethods(annotationName).isEmpty();
@@ -117,10 +116,9 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 
 
 	/**
-	 * Factory method to create a new {@link AnnotationMetadata} instance
-	 * for the given class using standard reflection.
-	 * @param type the class to introspect
-	 * @return a new {@link AnnotationMetadata} instance
+	 * 工厂方法，用于通过标准反射来创建一个新的 {@link AnnotationMetadata} 实例，用于给定类的内省。
+	 * @param type 要内省的类
+	 * @return 一个新的 {@link AnnotationMetadata} 实例
 	 * @since 5.2
 	 */
 	static AnnotationMetadata introspect(Class<?> type) {
