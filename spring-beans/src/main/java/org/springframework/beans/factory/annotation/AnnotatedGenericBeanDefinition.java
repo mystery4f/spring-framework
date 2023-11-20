@@ -43,47 +43,54 @@ import org.springframework.util.Assert;
 @SuppressWarnings("serial")
 public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implements AnnotatedBeanDefinition {
 
+	/**
+	 * 存储注解元数据的成员变量
+	 */
 	private final AnnotationMetadata metadata;
 
+	/**
+	 * 存储工厂方法元数据的成员变量，可以为null
+	 */
 	@Nullable
 	private MethodMetadata factoryMethodMetadata;
 
 
 	/**
-	 * Create a new AnnotatedGenericBeanDefinition for the given bean class.
-	 * @param beanClass the loaded bean class
+	 * 为给定的bean类创建一个新的AnnotatedGenericBeanDefinition。
+	 * @param beanClass 加载的bean类
 	 */
 	public AnnotatedGenericBeanDefinition(Class<?> beanClass) {
 		setBeanClass(beanClass);
 		this.metadata = AnnotationMetadata.introspect(beanClass);
 	}
 
+
 	/**
-	 * Create a new AnnotatedGenericBeanDefinition for the given annotation metadata,
-	 * allowing for ASM-based processing and avoidance of early loading of the bean class.
-	 * Note that this constructor is functionally equivalent to
-	 * {@link org.springframework.context.annotation.ScannedGenericBeanDefinition
-	 * ScannedGenericBeanDefinition}, however the semantics of the latter indicate that a
-	 * bean was discovered specifically via component-scanning as opposed to other means.
-	 * @param metadata the annotation metadata for the bean class in question
+	 * 为给定的注解元数据创建一个新的AnnotatedGenericBeanDefinition，允许使用基于ASM的处理和避免对bean类的早期加载。
+	 * 注意，这个构造函数在功能上等同于{@link org.springframework.context.annotation.ScannedGenericBeanDefinition ScannedGenericBeanDefinition}，但是后者的语义表明bean是通过组件扫描特别发现的，而不是其他方式。
+	 * @param metadata 问题中的bean类的注解元数据
 	 * @since 3.1.1
 	 */
 	public AnnotatedGenericBeanDefinition(AnnotationMetadata metadata) {
+		// 断言注解元数据不为空
 		Assert.notNull(metadata, "AnnotationMetadata must not be null");
+		// 如果注解元数据是标准注解元数据类型
 		if (metadata instanceof StandardAnnotationMetadata) {
+			// 设置bean的类
 			setBeanClass(((StandardAnnotationMetadata) metadata).getIntrospectedClass());
 		}
 		else {
+			// 否则设置bean的类名
 			setBeanClassName(metadata.getClassName());
 		}
 		this.metadata = metadata;
 	}
 
+
 	/**
-	 * Create a new AnnotatedGenericBeanDefinition for the given annotation metadata,
-	 * based on an annotated class and a factory method on that class.
-	 * @param metadata the annotation metadata for the bean class in question
-	 * @param factoryMethodMetadata metadata for the selected factory method
+	 * 为给定的注解元数据和基于注解类的工厂方法创建一个新的AnnotatedGenericBeanDefinition。
+	 * @param metadata 问题中的bean类的注解元数据
+	 * @param factoryMethodMetadata 选定的工厂方法的元数据
 	 * @since 4.1.1
 	 */
 	public AnnotatedGenericBeanDefinition(AnnotationMetadata metadata, MethodMetadata factoryMethodMetadata) {
@@ -92,7 +99,6 @@ public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implem
 		setFactoryMethodName(factoryMethodMetadata.getMethodName());
 		this.factoryMethodMetadata = factoryMethodMetadata;
 	}
-
 
 	@Override
 	public final AnnotationMetadata getMetadata() {
@@ -104,5 +110,6 @@ public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implem
 	public final MethodMetadata getFactoryMethodMetadata() {
 		return this.factoryMethodMetadata;
 	}
+
 
 }
