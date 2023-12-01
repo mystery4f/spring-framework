@@ -16,6 +16,6 @@
 		<property name="description" value="test"/>
 	</bean>
 
-	<context:annotation-config></context:annotation-config>
+	<context:annotation-config />
 
 </beans>

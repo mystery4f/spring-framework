@@ -36,7 +36,7 @@ public class UserHolder implements BeanNameAware, BeanClassLoaderAware,
 		EnvironmentAware
 		, InitializingBean, SmartInitializingSingleton, DisposableBean {
 
-	private final User user;
+	private User user;
 
 	private Integer number;
 
@@ -52,6 +52,9 @@ public class UserHolder implements BeanNameAware, BeanClassLoaderAware,
 
 	public UserHolder(User user) {
 		this.user = user;
+	}
+
+	public UserHolder() {
 	}
 
 	public Integer getNumber() {
