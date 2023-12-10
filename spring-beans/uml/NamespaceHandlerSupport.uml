@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.springframework.beans.factory.xml.NamespaceHandlerSupport</OriginalElement>
+  <nodes>
+    <node x="-140.0" y="35.5">org.springframework.beans.factory.xml.BeanDefinitionParser</node>
+    <node x="-105.0" y="155.5">org.springframework.beans.factory.xml.NamespaceHandlerSupport</node>
+    <node x="105.5" y="35.5">org.springframework.beans.factory.xml.NamespaceHandler</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.springframework.beans.factory.xml.NamespaceHandlerSupport" target="org.springframework.beans.factory.xml.BeanDefinitionParser" relationship="TO_MANY">
+      <point x="-65.5" y="-15.5" />
+      <point x="-39.5" y="131.0" />
+      <point x="-34.0" y="131.0" />
+      <point x="0.0" y="15.5" />
+    </edge>
+    <edge source="org.springframework.beans.factory.xml.NamespaceHandlerSupport" target="org.springframework.beans.factory.xml.NamespaceHandler" relationship="REALIZATION">
+      <point x="65.5" y="-15.5" />
+      <point x="91.5" y="131.0" />
+      <point x="206.0" y="131.0" />
+      <point x="0.0" y="15.5" />
+    </edge>
+  </edges>
+  <settings layout="分层紧凑" zoom="1.5" showDependencies="true" x="93.5" y="121.0" />
+  <SelectedNodes>
+    <node>org.springframework.beans.factory.xml.BeanDefinitionParser</node>
+    <node>org.springframework.beans.factory.xml.NamespaceHandler</node>
+    <node>org.springframework.beans.factory.xml.NamespaceHandlerSupport</node>
+  </SelectedNodes>
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
