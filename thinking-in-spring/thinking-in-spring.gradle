@@ -24,8 +24,12 @@ dependencies {
         transitive = true
     }
     implementation 'javax.inject:javax.inject:1', {
-                transitive = true
+        transitive = true
     }
+    implementation "org.yaml:snakeyaml", {
+        transitive=true
+    }
+
 }
 
 sourceCompatibility = 11
