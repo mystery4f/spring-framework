@@ -27,7 +27,10 @@ dependencies {
         transitive = true
     }
     implementation "org.yaml:snakeyaml", {
-        transitive=true
+        transitive = true
+    }
+    implementation 'commons-io:commons-io:2.15.0', {
+        transitive = true
     }
 
 }
