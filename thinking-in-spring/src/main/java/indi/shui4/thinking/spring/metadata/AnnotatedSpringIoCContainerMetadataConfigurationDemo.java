@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package indi.shui4.thinking.configuration.metadata;
+package indi.shui4.thinking.spring.metadata;
 
 import indi.shui4.thinking.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.annotation.Value;

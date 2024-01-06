@@ -1,4 +1,4 @@
-package indi.shui4.thinking.ioc.java.beans;
+package indi.shui4.thinking.spring.beans;
 
 /**
  * Person

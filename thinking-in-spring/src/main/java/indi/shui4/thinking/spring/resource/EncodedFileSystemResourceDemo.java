@@ -1,4 +1,4 @@
-package indi.shui4.thinking.resource;
+package indi.shui4.thinking.spring.resource;
 
 /**
  * @author shui4

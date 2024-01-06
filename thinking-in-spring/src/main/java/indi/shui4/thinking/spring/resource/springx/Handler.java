@@ -1,4 +1,4 @@
-package indi.shui4.thinking.resource.springx;
+package indi.shui4.thinking.spring.resource.springx;
 
 import org.springframework.util.StreamUtils;
 

@@ -1,4 +1,4 @@
-package indi.shui4.thinking.configuration.metadata;
+package indi.shui4.thinking.spring.metadata;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 

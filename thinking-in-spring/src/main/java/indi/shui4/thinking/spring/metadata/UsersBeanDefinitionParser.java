@@ -1,4 +1,4 @@
-package indi.shui4.thinking.configuration.metadata;
+package indi.shui4.thinking.spring.metadata;
 
 import indi.shui4.thinking.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

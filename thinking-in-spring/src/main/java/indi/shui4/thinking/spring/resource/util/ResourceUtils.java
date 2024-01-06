@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package indi.shui4.thinking.resource.util;
+package indi.shui4.thinking.spring.resource.util;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.Resource;
@@ -27,10 +27,15 @@ import java.io.Reader;
  * {@link Resource} 工具类
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
  */
 public interface ResourceUtils {
 
+	/**
+	 * getContent
+	 *
+	 * @param resource resource
+	 * @return String
+	 */
 	static String getContent(Resource resource) {
 		try {
 			return getContent(resource, "UTF-8");
@@ -39,6 +44,14 @@ public interface ResourceUtils {
 		}
 	}
 
+	/**
+	 * getContent
+	 *
+	 * @param resource resource
+	 * @param encoding encoding
+	 * @return String
+	 * @throws IOException IOException
+	 */
 	static String getContent(Resource resource, String encoding) throws IOException {
 		EncodedResource encodedResource = new EncodedResource(resource, encoding);
 		// 字符输入流
