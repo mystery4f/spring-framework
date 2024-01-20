@@ -729,36 +729,42 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * Initialize the MessageSource.
-	 * Use parent's if none defined in this context.
+	 * 初始化消息源。
+	 * 如果在此上下文中未定义，则使用父级的消息源。
 	 */
 	protected void initMessageSource() {
+		// 获取Bean工厂
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 如果Bean工厂包含名为MESSAGE_SOURCE_BEAN_NAME的本地Bean
 		if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
+			// 从Bean工厂获取消息源
 			this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
-			// Make MessageSource aware of parent MessageSource.
+			// 将消息源设置为了父消息源的知晓者
 			if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource) {
 				HierarchicalMessageSource hms = (HierarchicalMessageSource) this.messageSource;
 				if (hms.getParentMessageSource() == null) {
-					// Only set parent context as parent MessageSource if no parent MessageSource
-					// registered already.
+					// 只有在父消息源未注册时，将父上下文设置为父消息源
 					hms.setParentMessageSource(getInternalParentMessageSource());
 				}
 			}
+			// 如果日志级别为跟踪模式，则记录使用的消息源
 			if (logger.isTraceEnabled()) {
 				logger.trace("Using MessageSource [" + this.messageSource + "]");
 			}
 		} else {
-			// Use empty MessageSource to be able to accept getMessage calls.
+			// 使用空的消息源以接受getMessage调用
 			DelegatingMessageSource dms = new DelegatingMessageSource();
 			dms.setParentMessageSource(getInternalParentMessageSource());
 			this.messageSource = dms;
+			// 将消息源注册为单例Bean
 			beanFactory.registerSingleton(MESSAGE_SOURCE_BEAN_NAME, this.messageSource);
 			if (logger.isTraceEnabled()) {
+				// 如果未找到名为MESSAGE_SOURCE_BEAN_NAME的Bean，则记录使用的消息源
 				logger.trace("No '" + MESSAGE_SOURCE_BEAN_NAME + "' bean, using [" + this.messageSource + "]");
 			}
 		}
 	}
+
 
 	/**
 	 * Initialize the ApplicationEventMulticaster.
@@ -1287,7 +1293,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	@Override
-	public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type, boolean includeNonSingletons, boolean allowEagerInit)
+	public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type, boolean includeNonSingletons,
+											 boolean allowEagerInit)
 			throws BeansException {
 
 		assertBeanFactoryActive();
