@@ -42,8 +42,8 @@ public class DynamicResourceMessageSource extends AbstractMessageSource implemen
 	private static final String RESOURCE_PATH = "/META-INF/" + RESOURCE_FILE_NAME;
 	private final Properties messageProperties;
 	private final ExecutorService executorService;
+	private final Resource messagePropertiesResource;
 	private ResourceLoader resourceLoader;
-	private Resource messagePropertiesResource;
 
 
 	public DynamicResourceMessageSource() {
