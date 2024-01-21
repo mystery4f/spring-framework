@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author shui4
  */
+@SuppressWarnings("NullableProblems")
 public class DynamicResourceMessageSource extends AbstractMessageSource implements ResourceLoaderAware {
 
 	public static final String ENCODING = "UTF-8";
@@ -46,6 +47,7 @@ public class DynamicResourceMessageSource extends AbstractMessageSource implemen
 	private ResourceLoader resourceLoader;
 
 
+	@SuppressWarnings("AlibabaThreadPoolCreation")
 	public DynamicResourceMessageSource() {
 		this.executorService = Executors.newSingleThreadExecutor();
 		this.messagePropertiesResource = getMessagePropertiesResource();
@@ -101,6 +103,7 @@ public class DynamicResourceMessageSource extends AbstractMessageSource implemen
 	 *
 	 * @param watchService watchService
 	 */
+	@SuppressWarnings("InfiniteLoopStatement")
 	private void processMessagePropertiesChanged(WatchService watchService) {
 		executorService.submit(() -> {
 			while (true) {
@@ -163,17 +166,24 @@ public class DynamicResourceMessageSource extends AbstractMessageSource implemen
 	 */
 	private Properties loadMessageProperties() {
 		final EncodedResource encodedResource = new EncodedResource(this.messagePropertiesResource, ENCODING);
-		try (Reader reader = encodedResource.getReader()) {
-			return loadMessageProperties(reader);
+		Reader reader = getReader(encodedResource);
+		return loadMessageProperties(reader);
+	}
+
+	private Reader getReader(EncodedResource encodedResource) {
+		Reader reader;
+		try {
+			reader = encodedResource.getReader();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		return reader;
 	}
 
 	/**
 	 * 加载 Properties 文件
 	 *
-	 * @param reader1
+	 * @param reader1 reader1
 	 * @return Properties
 	 */
 	private Properties loadMessageProperties(Reader reader1) {
