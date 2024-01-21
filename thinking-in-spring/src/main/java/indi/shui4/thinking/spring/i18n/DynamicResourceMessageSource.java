@@ -57,7 +57,8 @@ public class DynamicResourceMessageSource extends AbstractMessageSource implemen
 
 	public static void main(String[] args) {
 		DynamicResourceMessageSource dynamicResourceMessageSource = new DynamicResourceMessageSource();
-		for (int i = 0; i < 10; i++) {
+		int cycleTotal = 10;
+		for (int i = 0; i < cycleTotal; i++) {
 			String message = dynamicResourceMessageSource.getMessage("name", new Object[]{}, Locale.getDefault());
 			System.out.println(message);
 			ThreadUtil.sleep(1, TimeUnit.SECONDS);
