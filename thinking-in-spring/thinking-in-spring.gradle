@@ -32,7 +32,12 @@ dependencies {
     implementation 'commons-io:commons-io:2.15.0', {
         transitive = true
     }
-
+    implementation 'org.hibernate:hibernate-validator', {
+        transitive = true
+    }
+    implementation 'javax.annotation:javax.annotation-api'
+    implementation "javax.el:javax.el-api"
+    implementation "org.glassfish:javax.el"
 }
 
 sourceCompatibility = 11
