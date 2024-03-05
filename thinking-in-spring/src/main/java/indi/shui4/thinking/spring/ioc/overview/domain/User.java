@@ -18,8 +18,9 @@ public class User implements BeanNameAware {
 	private String id;
 	private String name;
 	private City city;
-	private Resource configFileLocation;
 
+	private Company company;
+	private Resource configFileLocation;
 	private City[] workCities;
 	private List<City> liteCities;
 	private String beanName;
@@ -31,16 +32,20 @@ public class User implements BeanNameAware {
 		return user;
 	}
 
+	@PostConstruct
+	public void init() {
+		System.out.println(beanName + "用户对象初始化...");
+	}
+
+	@PreDestroy
+	public void destroy() {
+		System.out.println(beanName + ":用户对象销毁...");
+	}
+
 	@Override
 	public String toString() {
-		return "User{" +
-				"id='" + id + '\'' +
-				", name='" + name + '\'' +
-				", city=" + city +
-				", configFileLocation=" + configFileLocation +
-				", workCities=" + Arrays.toString(workCities) +
-				", liteCities=" + liteCities +
-				'}';
+		return "User{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", city=" + city + ", configFileLocation=" + configFileLocation + ", workCities=" + Arrays.toString(
+				workCities) + ", liteCities=" + liteCities + '}';
 	}
 
 	public List<City> getLiteCities() {
@@ -97,18 +102,17 @@ public class User implements BeanNameAware {
 	}
 
 
-	@PostConstruct
-	public void init() {
-		System.out.println(beanName + "用户对象初始化...");
-	}
-
-	@PreDestroy
-	public void destroy() {
-		System.out.println(beanName + ":用户对象销毁...");
-	}
-
 	@Override
 	public void setBeanName(String name) {
 		this.beanName = name;
 	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
 }
