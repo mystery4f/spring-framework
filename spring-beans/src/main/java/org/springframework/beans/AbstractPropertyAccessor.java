@@ -16,12 +16,12 @@
 
 package org.springframework.beans;
 
+import org.springframework.lang.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Abstract implementation of the {@link PropertyAccessor} interface.
@@ -30,23 +30,15 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 2.0
  * @see #getPropertyValue
  * @see #setPropertyValue
+ * @since 2.0
  */
 public abstract class AbstractPropertyAccessor extends TypeConverterSupport implements ConfigurablePropertyAccessor {
 
-	private boolean extractOldValueForEditor = false;
-
-	private boolean autoGrowNestedPaths = false;
-
 	boolean suppressNotWritablePropertyException = false;
-
-
-	@Override
-	public void setExtractOldValueForEditor(boolean extractOldValueForEditor) {
-		this.extractOldValueForEditor = extractOldValueForEditor;
-	}
+	private boolean extractOldValueForEditor = false;
+	private boolean autoGrowNestedPaths = false;
 
 	@Override
 	public boolean isExtractOldValueForEditor() {
@@ -54,8 +46,8 @@ public abstract class AbstractPropertyAccessor extends TypeConverterSupport impl
 	}
 
 	@Override
-	public void setAutoGrowNestedPaths(boolean autoGrowNestedPaths) {
-		this.autoGrowNestedPaths = autoGrowNestedPaths;
+	public void setExtractOldValueForEditor(boolean extractOldValueForEditor) {
+		this.extractOldValueForEditor = extractOldValueForEditor;
 	}
 
 	@Override
@@ -63,10 +55,9 @@ public abstract class AbstractPropertyAccessor extends TypeConverterSupport impl
 		return this.autoGrowNestedPaths;
 	}
 
-
 	@Override
-	public void setPropertyValue(PropertyValue pv) throws BeansException {
-		setPropertyValue(pv.getName(), pv.getValue());
+	public void setAutoGrowNestedPaths(boolean autoGrowNestedPaths) {
+		this.autoGrowNestedPaths = autoGrowNestedPaths;
 	}
 
 	@Override
@@ -77,11 +68,6 @@ public abstract class AbstractPropertyAccessor extends TypeConverterSupport impl
 	@Override
 	public void setPropertyValues(PropertyValues pvs) throws BeansException {
 		setPropertyValues(pvs, false, false);
-	}
-
-	@Override
-	public void setPropertyValues(PropertyValues pvs, boolean ignoreUnknown) throws BeansException {
-		setPropertyValues(pvs, ignoreUnknown, false);
 	}
 
 	@Override
@@ -102,28 +88,24 @@ public abstract class AbstractPropertyAccessor extends TypeConverterSupport impl
 				// We can attempt to deal only with less serious exceptions.
 				try {
 					setPropertyValue(pv);
-				}
-				catch (NotWritablePropertyException ex) {
+				} catch (NotWritablePropertyException ex) {
 					if (!ignoreUnknown) {
 						throw ex;
 					}
 					// Otherwise, just ignore it and continue...
-				}
-				catch (NullValueInNestedPathException ex) {
+				} catch (NullValueInNestedPathException ex) {
 					if (!ignoreInvalid) {
 						throw ex;
 					}
 					// Otherwise, just ignore it and continue...
-				}
-				catch (PropertyAccessException ex) {
+				} catch (PropertyAccessException ex) {
 					if (propertyAccessExceptions == null) {
 						propertyAccessExceptions = new ArrayList<>();
 					}
 					propertyAccessExceptions.add(ex);
 				}
 			}
-		}
-		finally {
+		} finally {
 			if (ignoreUnknown) {
 				this.suppressNotWritablePropertyException = false;
 			}
@@ -136,6 +118,26 @@ public abstract class AbstractPropertyAccessor extends TypeConverterSupport impl
 		}
 	}
 
+	@Override
+	public void setPropertyValue(PropertyValue pv) throws BeansException {
+		setPropertyValue(pv.getName(), pv.getValue());
+	}
+
+	/**
+	 * 实际上设置一个属性值。
+	 *
+	 * @param propertyName 要设置值的属性的名称
+	 * @param value        新值
+	 * @throws InvalidPropertyException 如果不存在这样的属性或者属性不可写
+	 * @throws PropertyAccessException  如果属性有效但访问器方法失败或类型不匹配
+	 */
+	@Override
+	public abstract void setPropertyValue(String propertyName, @Nullable Object value) throws BeansException;
+
+	@Override
+	public void setPropertyValues(PropertyValues pvs, boolean ignoreUnknown) throws BeansException {
+		setPropertyValues(pvs, ignoreUnknown, false);
+	}
 
 	// Redefined with public visibility.
 	@Override
@@ -145,28 +147,15 @@ public abstract class AbstractPropertyAccessor extends TypeConverterSupport impl
 	}
 
 	/**
-	 * Actually get the value of a property.
-	 * @param propertyName name of the property to get the value of
-	 * @return the value of the property
-	 * @throws InvalidPropertyException if there is no such property or
-	 * if the property isn't readable
-	 * @throws PropertyAccessException if the property was valid but the
-	 * accessor method failed
+	 * 实际上获取一个属性的值。
+	 *
+	 * @param propertyName 属性名，用于获取其值
+	 * @return 属性的值
+	 * @throws InvalidPropertyException 如果没有这样的属性或者属性不可读
+	 * @throws PropertyAccessException  如果属性有效，但是访问器方法失败
 	 */
 	@Override
 	@Nullable
 	public abstract Object getPropertyValue(String propertyName) throws BeansException;
-
-	/**
-	 * Actually set a property value.
-	 * @param propertyName name of the property to set value of
-	 * @param value the new value
-	 * @throws InvalidPropertyException if there is no such property or
-	 * if the property isn't writable
-	 * @throws PropertyAccessException if the property was valid but the
-	 * accessor method failed or a type mismatch occurred
-	 */
-	@Override
-	public abstract void setPropertyValue(String propertyName, @Nullable Object value) throws BeansException;
 
 }

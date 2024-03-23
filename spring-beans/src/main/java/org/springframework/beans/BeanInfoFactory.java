@@ -16,43 +16,37 @@
 
 package org.springframework.beans;
 
+import org.springframework.lang.Nullable;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 
-import org.springframework.lang.Nullable;
-
 /**
- * Strategy interface for creating {@link BeanInfo} instances for Spring beans.
- * Can be used to plug in custom bean property resolution strategies (e.g. for other
- * languages on the JVM) or more efficient {@link BeanInfo} retrieval algorithms.
+ * 策略接口，用于为Springbeans创建{@link BeanInfo}实例。
+ * 可以用于 Custom bean property resolution strategies (e.g. for other
+ * languages on the JVM) or more efficient {@link BeanInfo}获取算法。
  *
- * <p>BeanInfoFactories are instantiated by the {@link CachedIntrospectionResults},
- * by using the {@link org.springframework.core.io.support.SpringFactoriesLoader}
- * utility class.
+ * <p>BeanInfoFactories由{@link CachedIntrospectionResults}通过使用{@link org.springframework.core.io.support.SpringFactoriesLoader}实用类创建。
+ * <p>
+ * 当需要创建{@link BeanInfo}时，{@code CachedIntrospectionResults}将遍历发现的工厂，调用{@link #getBeanInfo(Class)}工厂方法。
+ * 如果返回{@code null}，将查询下一个工厂。如果 none of the factories support the class, a standard {@link BeanInfo}将作为默认创建。
  *
- * When a {@link BeanInfo} is to be created, the {@code CachedIntrospectionResults}
- * will iterate through the discovered factories, calling {@link #getBeanInfo(Class)}
- * on each one. If {@code null} is returned, the next factory will be queried.
- * If none of the factories support the class, a standard {@link BeanInfo} will be
- * created as a default.
- *
- * <p>Note that the {@link org.springframework.core.io.support.SpringFactoriesLoader}
- * sorts the {@code BeanInfoFactory} instances by
- * {@link org.springframework.core.annotation.Order @Order}, so that ones with a
- * higher precedence come first.
+ * <p>注意，{@link org.springframework.core.io.support.SpringFactoriesLoader}对{@code BeanInfoFactory}实例进行了排序，
+ * 根据{@link org.springframework.core.annotation.Order @Order}属性。
  *
  * @author Arjen Poutsma
- * @since 3.2
  * @see CachedIntrospectionResults
  * @see org.springframework.core.io.support.SpringFactoriesLoader
+ * @since 3.2
  */
 public interface BeanInfoFactory {
 
 	/**
-	 * Return the bean info for the given class, if supported.
-	 * @param beanClass the bean class
-	 * @return the BeanInfo, or {@code null} if the given class is not supported
-	 * @throws IntrospectionException in case of exceptions
+	 * 返回对于给定类的BeanInfo。
+	 *
+	 * @param beanClass 给定类
+	 * @return 对应的BeanInfo，如果支持
+	 * @throws IntrospectionException 如果在获取过程中出现异常
 	 */
 	@Nullable
 	BeanInfo getBeanInfo(Class<?> beanClass) throws IntrospectionException;
