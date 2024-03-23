@@ -578,11 +578,16 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		}
 
 		private void restructure(boolean allowResize, @Nullable Reference<K, V> ref) {
+			// 标记是否需要调整大小
 			boolean needsResize;
+			// 加锁
 			lock();
 			try {
+				// 获取计数器count的值
 				int countAfterRestructure = this.count.get();
+				// 创建一个空的HashSet
 				Set<Reference<K, V>> toPurge = Collections.emptySet();
+				// 如果有引用不为空，则将其添加到toPurge中
 				if (ref != null) {
 					toPurge = new HashSet<>();
 					while (ref != null) {
@@ -590,23 +595,28 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 						ref = this.referenceManager.pollForPurge();
 					}
 				}
+				// 重新计算，减去toPurge的大小
 				countAfterRestructure -= toPurge.size();
 
-				// Recalculate taking into account count inside lock and items that
-				// will be purged
+				// 重新计算是否需要调整大小
 				needsResize = (countAfterRestructure > 0 && countAfterRestructure >= this.resizeThreshold);
+				// 标记是否调整大小
 				boolean resizing = false;
+				// 获取references数组的长度
 				int restructureSize = this.references.length;
+				// 如果允许调整大小，并且需要调整大小，并且数组的长度小于MAXIMUM_SEGMENT_SIZE
 				if (allowResize && needsResize && restructureSize < MAXIMUM_SEGMENT_SIZE) {
+					// 重新计算数组的长度
 					restructureSize <<= 1;
+					// 标记已经调整过大小
 					resizing = true;
 				}
 
-				// Either create a new table or reuse the existing one
+				// 不是调整大小，就创建一个新的数组，否则就使用现有的数组
 				Reference<K, V>[] restructured =
 						(resizing ? createReferenceArray(restructureSize) : this.references);
 
-				// Restructure
+				// 重新struct
 				for (int i = 0; i < this.references.length; i++) {
 					ref = this.references[i];
 					if (!resizing) {
@@ -616,7 +626,9 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 						if (!toPurge.contains(ref)) {
 							Entry<K, V> entry = ref.get();
 							if (entry != null) {
+								// 获取索引
 								int index = getIndex(ref.getHash(), restructured);
+								// 创建一个新的引用
 								restructured[index] = this.referenceManager.createReference(
 										entry, ref.getHash(), restructured[index]);
 							}
@@ -625,14 +637,17 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 					}
 				}
 
-				// Replace volatile members
+				// 如果是调整大小，则更新references数组
 				if (resizing) {
 					this.references = restructured;
+					// 重新计算resizeThreshold
 					this.resizeThreshold = (int) (this.references.length * getLoadFactor());
 				}
+				// 更新count
 				this.count.set(Math.max(countAfterRestructure, 0));
 			}
 			finally {
+				// 解锁
 				unlock();
 			}
 		}

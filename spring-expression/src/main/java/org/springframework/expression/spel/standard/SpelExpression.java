@@ -118,27 +118,33 @@ public class SpelExpression implements Expression {
 	@Override
 	@Nullable
 	public Object getValue() throws EvaluationException {
+		// 如果compiledAst不为空，则尝试使用编译后的AST计算表达式
 		CompiledExpression compiledAst = this.compiledAst;
 		if (compiledAst != null) {
 			try {
+				// 获取 EvalutionContext
 				EvaluationContext context = getEvaluationContext();
+				// 使用编译后的AST计算表达式，并返回结果
 				return compiledAst.getValue(context.getRootObject().getValue(), context);
 			}
 			catch (Throwable ex) {
-				// If running in mixed mode, revert to interpreted
+				// 如果running in mixed mode, 则重新回到 interpreted 模式
 				if (this.configuration.getCompilerMode() == SpelCompilerMode.MIXED) {
 					this.compiledAst = null;
 					this.interpretedCount.set(0);
 				}
 				else {
-					// Running in SpelCompilerMode.immediate mode - propagate exception to caller
+					// running in SpelCompilerMode.immediate mode, 则将异常传递给调用者
 					throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
 				}
 			}
 		}
 
+		// 如果compiledAst为空，则使用表达式状态计算表达式
 		ExpressionState expressionState = new ExpressionState(getEvaluationContext(), this.configuration);
+		// 返回计算结果
 		Object result = this.ast.getValue(expressionState);
+		// 检查是否需要编译
 		checkCompile(expressionState);
 		return result;
 	}

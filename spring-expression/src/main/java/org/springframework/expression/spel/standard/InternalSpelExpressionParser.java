@@ -121,22 +121,36 @@ class InternalSpelExpressionParser extends TemplateAwareExpressionParser {
 	protected SpelExpression doParseExpression(String expressionString, @Nullable ParserContext context)
 			throws ParseException {
 
+		// 尝试解析表达式
 		try {
+			// 将表达式字符串赋值给 this.expressionString
 			this.expressionString = expressionString;
+			// 创建 Tokenizer 对象，处理表达式字符串
 			Tokenizer tokenizer = new Tokenizer(expressionString);
+			// 获取处理后的 tokenStream
 			this.tokenStream = tokenizer.process();
+			// 获取 tokenStream 的长度
 			this.tokenStreamLength = this.tokenStream.size();
+			// 指向 tokenStream 的第一个元素
 			this.tokenStreamPointer = 0;
+			// 清除 constructedNodes 集合
 			this.constructedNodes.clear();
+			// 解析表达式，并返回 SpelNodeImpl 节点
 			SpelNodeImpl ast = eatExpression();
+			// 断言 ast 不为空
 			Assert.state(ast != null, "No node");
+			// 获取下一个 token
 			Token t = peekToken();
+			// 如果有下一个 token，抛出异常
 			if (t != null) {
 				throw new SpelParseException(t.startPos, SpelMessage.MORE_INPUT, toString(nextToken()));
 			}
+			// 断言 constructedNodes 集合为空
 			Assert.isTrue(this.constructedNodes.isEmpty(), "At least one node expected");
+			// 返回 SpelExpression 对象
 			return new SpelExpression(expressionString, ast, this.configuration);
 		}
+		// 捕获内部解析异常，抛出原因
 		catch (InternalParseException ex) {
 			throw ex.getCause();
 		}

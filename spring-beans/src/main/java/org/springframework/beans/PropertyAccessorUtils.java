@@ -144,25 +144,33 @@ public abstract class PropertyAccessorUtils {
 			return "";
 		}
 
+		// 创建一个StringBuilder对象，用于添加字符串
 		StringBuilder sb = new StringBuilder(propertyName);
 		int searchIndex = 0;
+		// 循环遍历字符串，直到找到key
 		while (searchIndex != -1) {
 			int keyStart = sb.indexOf(PropertyAccessor.PROPERTY_KEY_PREFIX, searchIndex);
 			searchIndex = -1;
 			if (keyStart != -1) {
+				// 获取key的结束位置
 				int keyEnd = sb.indexOf(
 						PropertyAccessor.PROPERTY_KEY_SUFFIX, keyStart + PropertyAccessor.PROPERTY_KEY_PREFIX.length());
 				if (keyEnd != -1) {
+					// 获取key
 					String key = sb.substring(keyStart + PropertyAccessor.PROPERTY_KEY_PREFIX.length(), keyEnd);
+					// 判断key是否是字符串
 					if ((key.startsWith("'") && key.endsWith("'")) || (key.startsWith("\"") && key.endsWith("\""))) {
+						// 如果key是字符串，去掉两边的引号
 						sb.delete(keyStart + 1, keyStart + 2);
 						sb.delete(keyEnd - 2, keyEnd - 1);
 						keyEnd = keyEnd - 2;
 					}
+					// 更新searchIndex
 					searchIndex = keyEnd + PropertyAccessor.PROPERTY_KEY_SUFFIX.length();
 				}
 			}
 		}
+		// 返回最终的字符串
 		return sb.toString();
 	}
 

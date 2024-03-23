@@ -127,28 +127,42 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException if the resource cannot be resolved to a URL
 	 */
 	public static URL getURL(String resourceLocation) throws FileNotFoundException {
+		// 断言资源位置不为空
 		Assert.notNull(resourceLocation, "Resource location must not be null");
+		// 如果资源位置以CLASSPATH_URL_PREFIX开头
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
+			// 从资源位置中截取路径
 			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			// 获取默认类加载器
 			ClassLoader cl = ClassUtils.getDefaultClassLoader();
+			// 尝试获取类路径资源
 			URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
+			// 如果获取不到URL
 			if (url == null) {
+				// 获取描述
 				String description = "class path resource [" + path + "]";
+				// 抛出文件未找到异常
 				throw new FileNotFoundException(description +
 						" cannot be resolved to URL because it does not exist");
 			}
+			// 返回URL
 			return url;
 		}
+		// 尝试URL
 		try {
 			// try URL
 			return new URL(resourceLocation);
 		}
+		// 如果是文件路径
 		catch (MalformedURLException ex) {
 			// no URL -> treat as file path
 			try {
+				// 获取文件路径的URL
 				return new File(resourceLocation).toURI().toURL();
 			}
+			// 如果是文件路径，则抛出异常
 			catch (MalformedURLException ex2) {
+				// 抛出文件未找到异常
 				throw new FileNotFoundException("Resource location [" + resourceLocation +
 						"] is neither a URL not a well-formed file path");
 			}
@@ -167,24 +181,34 @@ public abstract class ResourceUtils {
 	 * a file in the file system
 	 */
 	public static File getFile(String resourceLocation) throws FileNotFoundException {
+		// 断言资源位置不为空
 		Assert.notNull(resourceLocation, "Resource location must not be null");
+		// 如果资源位置以CLASSPATH_URL_PREFIX开头
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
+			// 从资源位置中截取路径
 			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			// 获取描述
 			String description = "class path resource [" + path + "]";
+			// 获取默认类加载器
 			ClassLoader cl = ClassUtils.getDefaultClassLoader();
+			// 如果默认类加载器不为空，获取资源路径
 			URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
+			// 如果资源路径为空，抛出文件未找到异常
 			if (url == null) {
 				throw new FileNotFoundException(description +
 						" cannot be resolved to absolute file path because it does not exist");
 			}
+			// 返回文件
 			return getFile(url, description);
 		}
+		// 尝试URL
 		try {
-			// try URL
+			// 获取文件URL
 			return getFile(new URL(resourceLocation));
 		}
+		// 捕获异常
 		catch (MalformedURLException ex) {
-			// no URL -> treat as file path
+			// 如果不是URL -> 作为文件路径处理
 			return new File(resourceLocation);
 		}
 	}
