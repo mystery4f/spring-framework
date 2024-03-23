@@ -73,6 +73,7 @@ public class TypeMismatchException extends PropertyAccessException {
 				(propertyChangeEvent.getPropertyName() != null ?
 				" for property '" + propertyChangeEvent.getPropertyName() + "'" : ""),
 				cause);
+		// 把 propertyChangeEvent 的属性值赋给 self
 		this.propertyName = propertyChangeEvent.getPropertyName();
 		this.value = propertyChangeEvent.getNewValue();
 		this.requiredType = requiredType;
