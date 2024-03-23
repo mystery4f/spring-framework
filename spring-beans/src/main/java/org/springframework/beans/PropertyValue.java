@@ -39,16 +39,27 @@ import org.springframework.util.ObjectUtils;
  * @see PropertyValues
  * @see BeanWrapper
  */
-@SuppressWarnings("serial")
 public class PropertyValue extends BeanMetadataAttributeAccessor implements Serializable {
 
+	/**
+     * 声明一个私有最终字符串变量name
+     */
 	private final String name;
 
+	/**
+     * 声明一个私有最终对象变量value
+     */
 	@Nullable
 	private final Object value;
 
+	/**
+     * 声明一个私有布尔变量optional，表示是否为必需参数
+     */
 	private boolean optional = false;
 
+	/**
+     * 声明一个私有布尔变量converted，表示是否已经进行了转换
+     */
 	private boolean converted = false;
 
 	@Nullable
