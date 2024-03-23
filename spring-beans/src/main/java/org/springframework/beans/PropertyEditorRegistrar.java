@@ -33,16 +33,12 @@ package org.springframework.beans;
 public interface PropertyEditorRegistrar {
 
 	/**
-	 * Register custom {@link java.beans.PropertyEditor PropertyEditors} with
-	 * the given {@code PropertyEditorRegistry}.
-	 * <p>The passed-in registry will usually be a {@link BeanWrapper} or a
-	 * {@link org.springframework.validation.DataBinder DataBinder}.
-	 * <p>It is expected that implementations will create brand new
-	 * {@code PropertyEditors} instances for each invocation of this
-	 * method (since {@code PropertyEditors} are not threadsafe).
-	 * @param registry the {@code PropertyEditorRegistry} to register the
-	 * custom {@code PropertyEditors} with
+	 * 使用给定的{@code PropertyEditorRegistry}注册自定义{@link java.beans.PropertyEditor PropertyEditors}。
+	 * <p>传入的注册表通常将是一个{@link BeanWrapper}或一个{@link org.springframework.validation.DataBinder DataBinder}。
+	 * <p>预期实现将为每次调用此方法创建全新的{@code PropertyEditors}实例（因为{@code PropertyEditors}不是线程安全的）。
+	 * @param registry 要注册自定义{@code PropertyEditors}的{@code PropertyEditorRegistry}
 	 */
 	void registerCustomEditors(PropertyEditorRegistry registry);
+
 
 }
