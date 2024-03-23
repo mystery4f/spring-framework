@@ -68,51 +68,69 @@ final class GenericTypeAwarePropertyDescriptor extends PropertyDescriptor {
 			@Nullable Method readMethod, @Nullable Method writeMethod,
 			@Nullable Class<?> propertyEditorClass) throws IntrospectionException {
 
+		// 调用父类的构造函数，传入参数propertyName、readMethod、writeMethod
 		super(propertyName, null, null);
+		// 将beanClass赋值给成员变量
 		this.beanClass = beanClass;
 
+		// 如果readMethod不为空，查找bridge方法
 		Method readMethodToUse = (readMethod != null ? BridgeMethodResolver.findBridgedMethod(readMethod) : null);
+		// 如果writeMethod不为空，查找bridge方法
 		Method writeMethodToUse = (writeMethod != null ? BridgeMethodResolver.findBridgedMethod(writeMethod) : null);
+		// 如果writeMethod为空，且readMethod不为空，查找set方法
 		if (writeMethodToUse == null && readMethodToUse != null) {
 			// Fallback: Original JavaBeans introspection might not have found matching setter
 			// method due to lack of bridge method resolution, in case of the getter using a
 			// covariant return type whereas the setter is defined for the concrete property type.
 			Method candidate = ClassUtils.getMethodIfAvailable(
 					this.beanClass, "set" + StringUtils.capitalize(getName()), (Class<?>[]) null);
+			// 如果找到set方法，且参数个数为1，则赋值给writeMethodToUse
 			if (candidate != null && candidate.getParameterCount() == 1) {
 				writeMethodToUse = candidate;
 			}
 		}
+		// 将readMethodToUse赋值给成员变量
 		this.readMethod = readMethodToUse;
+		// 将writeMethodToUse赋值给成员变量
 		this.writeMethod = writeMethodToUse;
 
+		// 如果writeMethod不为空，则查找ambiguousWriteMethods
 		if (this.writeMethod != null) {
+			// 如果readMethod为空，则设置ambiguousWriteMethods
 			if (this.readMethod == null) {
 				// Write method not matched against read method: potentially ambiguous through
 				// several overloaded variants, in which case an arbitrary winner has been chosen
 				// by the JDK's JavaBeans Introspector...
 				Set<Method> ambiguousCandidates = new HashSet<>();
 				for (Method method : beanClass.getMethods()) {
+					// 判断method的名称、参数个数是否与writeMethodToUse相同，且不等于writeMethodToUse，不等于bridge方法，不等于抽象方法
 					if (method.getName().equals(writeMethodToUse.getName()) &&
 							!method.equals(writeMethodToUse) && !method.isBridge() &&
 							method.getParameterCount() == writeMethodToUse.getParameterCount()) {
 						ambiguousCandidates.add(method);
 					}
 				}
+				// 如果ambiguousCandidates不为空，则设置ambiguousWriteMethods
 				if (!ambiguousCandidates.isEmpty()) {
 					this.ambiguousWriteMethods = ambiguousCandidates;
 				}
 			}
+			// 查找writeMethodParameter
 			this.writeMethodParameter = new MethodParameter(this.writeMethod, 0).withContainingClass(this.beanClass);
 		}
 
+		// 如果readMethod不为空，则查找propertyType
 		if (this.readMethod != null) {
+			// Resolve generic type through return type
 			this.propertyType = GenericTypeResolver.resolveReturnType(this.readMethod, this.beanClass);
 		}
+		// 如果writeMethodParameter不为空，则查找propertyType
 		else if (this.writeMethodParameter != null) {
+			// Resolve generic type through parameter type
 			this.propertyType = this.writeMethodParameter.getParameterType();
 		}
 
+		// 将propertyEditorClass赋值给成员变量
 		this.propertyEditorClass = propertyEditorClass;
 	}
 
