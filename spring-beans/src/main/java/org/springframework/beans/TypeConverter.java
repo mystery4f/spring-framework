@@ -16,36 +16,33 @@
 
 package org.springframework.beans;
 
-import java.lang.reflect.Field;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 
+import java.lang.reflect.Field;
+
 /**
- * Interface that defines type conversion methods. Typically (but not necessarily)
- * implemented in conjunction with the {@link PropertyEditorRegistry} interface.
+ * 定义类型转换方法的接口。通常（但不一定）与 {@link PropertyEditorRegistry} 接口一起实现。
  *
- * <p><b>Note:</b> Since TypeConverter implementations are typically based on
- * {@link java.beans.PropertyEditor PropertyEditors} which aren't thread-safe,
- * TypeConverters themselves are <em>not</em> to be considered as thread-safe either.
+ * <p><b>注意：</b>由于 TypeConverter 实现通常基于不是线程安全的 {@link java.beans.PropertyEditor PropertyEditors}，
+ * 因此 TypeConverter 本身也不被视为线程安全。
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see SimpleTypeConverter
  * @see BeanWrapperImpl
+ * @since 2.0
  */
 public interface TypeConverter {
 
 	/**
-	 * Convert the value to the required type (if necessary from a String).
-	 * <p>Conversions from String to any type will typically use the {@code setAsText}
-	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
-	 * @param value the value to convert
-	 * @param requiredType the type we must convert to
-	 * (or {@code null} if not known, for example in case of a collection element)
-	 * @return the new value, possibly the result of type conversion
-	 * @throws TypeMismatchException if type conversion failed
+	 * 将值转换为所需类型（如果需要从字符串转换）。
+	 * <p>从字符串到任何类型的转换通常会使用 PropertyEditor 类的 {@code setAsText} 方法，或者在 ConversionService 中使用 Spring Converter。
+	 *
+	 * @param value        要转换的值
+	 * @param requiredType 我们必须转换到的类型（如果不知道，则为 {@code null}，例如在集合元素的况下）
+	 * @return 新值，可能是类型转换的结果
+	 * @throws TypeMismatchException 如果类型转换失败
 	 * @see java.beans.PropertyEditor#setAsText(String)
 	 * @see java.beans.PropertyEditor#getValue()
 	 * @see org.springframework.core.convert.ConversionService
@@ -55,16 +52,14 @@ public interface TypeConverter {
 	<T> T convertIfNecessary(@Nullable Object value, @Nullable Class<T> requiredType) throws TypeMismatchException;
 
 	/**
-	 * Convert the value to the required type (if necessary from a String).
-	 * <p>Conversions from String to any type will typically use the {@code setAsText}
-	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
-	 * @param value the value to convert
-	 * @param requiredType the type we must convert to
-	 * (or {@code null} if not known, for example in case of a collection element)
-	 * @param methodParam the method parameter that is the target of the conversion
-	 * (for analysis of generic types; may be {@code null})
-	 * @return the new value, possibly the result of type conversion
-	 * @throws TypeMismatchException if type conversion failed
+	 * 将值转换为所需类型（如果需要从字符串转换）。
+	 * <p>从字符串到任何类型的转换通常会使用 PropertyEditor 类的 {@code setAsText} 方法，或者在 ConversionService 中使用 Spring Converter。
+	 *
+	 * @param value        要转换的值
+	 * @param requiredType 我们必须转换到的类型（如果不知道，则为 {@code null}，例如在集合元素的情况下）
+	 * @param methodParam  转换的目标方法参数（用于分析泛型类型；可能为 {@code null}）
+	 * @return 新值，可能是类型转换的结果
+	 * @throws TypeMismatchException 如果类型转换失败
 	 * @see java.beans.PropertyEditor#setAsText(String)
 	 * @see java.beans.PropertyEditor#getValue()
 	 * @see org.springframework.core.convert.ConversionService
@@ -72,19 +67,17 @@ public interface TypeConverter {
 	 */
 	@Nullable
 	<T> T convertIfNecessary(@Nullable Object value, @Nullable Class<T> requiredType,
-			@Nullable MethodParameter methodParam) throws TypeMismatchException;
+							 @Nullable MethodParameter methodParam) throws TypeMismatchException;
 
 	/**
-	 * Convert the value to the required type (if necessary from a String).
-	 * <p>Conversions from String to any type will typically use the {@code setAsText}
-	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
-	 * @param value the value to convert
-	 * @param requiredType the type we must convert to
-	 * (or {@code null} if not known, for example in case of a collection element)
-	 * @param field the reflective field that is the target of the conversion
-	 * (for analysis of generic types; may be {@code null})
-	 * @return the new value, possibly the result of type conversion
-	 * @throws TypeMismatchException if type conversion failed
+	 * 将值转换为所需类型（如果需要从字符串转换）。
+	 * <p>从字符串到任何类型的转换通常会使用 PropertyEditor 类的 {@code setAsText} 方法，或者在 ConversionService 中使用 Spring Converter。
+	 *
+	 * @param value        要转换的值
+	 * @param requiredType 我们必须转换到的类型（如果不知道，则为 {@code null}，例如在集合元素的情况下）
+	 * @param field        反射字段，是转换的目标（用于分析泛型类型；可能为 {@code null}）
+	 * @return 新值，可能是类型转换的结果
+	 * @throws TypeMismatchException 如果类型转换失败
 	 * @see java.beans.PropertyEditor#setAsText(String)
 	 * @see java.beans.PropertyEditor#getValue()
 	 * @see org.springframework.core.convert.ConversionService
@@ -95,24 +88,23 @@ public interface TypeConverter {
 			throws TypeMismatchException;
 
 	/**
-	 * Convert the value to the required type (if necessary from a String).
-	 * <p>Conversions from String to any type will typically use the {@code setAsText}
-	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
-	 * @param value the value to convert
-	 * @param requiredType the type we must convert to
-	 * (or {@code null} if not known, for example in case of a collection element)
-	 * @param typeDescriptor the type descriptor to use (may be {@code null}))
-	 * @return the new value, possibly the result of type conversion
-	 * @throws TypeMismatchException if type conversion failed
-	 * @since 5.1.4
+	 * 将值转换为所需类型（如果需要从字符串转换）。
+	 * <p>从字符串到任何类型的转换通常会使用 PropertyEditor 类的 {@code setAsText} 方法，或者在 ConversionService 中使用 Spring Converter。
+	 *
+	 * @param value          要转换的值
+	 * @param requiredType   我们必须转换到的类型（如果不知道，则为 {@code null}，例如在集合元素的情况下）
+	 * @param typeDescriptor 要使用的类型描述符（可能为 {@code null}）
+	 * @return 新值，可能是类型转换的结果
+	 * @throws TypeMismatchException 如果类型转换失败
 	 * @see java.beans.PropertyEditor#setAsText(String)
 	 * @see java.beans.PropertyEditor#getValue()
 	 * @see org.springframework.core.convert.ConversionService
 	 * @see org.springframework.core.convert.converter.Converter
+	 * @since 5.1.4
 	 */
 	@Nullable
 	default <T> T convertIfNecessary(@Nullable Object value, @Nullable Class<T> requiredType,
-			@Nullable TypeDescriptor typeDescriptor) throws TypeMismatchException {
+									 @Nullable TypeDescriptor typeDescriptor) throws TypeMismatchException {
 
 		throw new UnsupportedOperationException("TypeDescriptor resolution not supported");
 	}
