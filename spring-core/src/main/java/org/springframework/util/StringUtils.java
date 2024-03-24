@@ -180,21 +180,26 @@ public abstract class StringUtils {
 	 * @see java.lang.Character#isWhitespace
 	 */
 	public static String trimWhitespace(String str) {
+		// 如果字符串为空，则直接返回原字符串
 		if (!hasLength(str)) {
 			return str;
 		}
 
+		// 初始化开始索引和结束索引
 		int beginIndex = 0;
 		int endIndex = str.length() - 1;
 
+		// 从开始索引开始，找到第一个非空格字符
 		while (beginIndex <= endIndex && Character.isWhitespace(str.charAt(beginIndex))) {
 			beginIndex++;
 		}
 
+		// 从结束索引开始，找到第一个非空格字符
 		while (endIndex > beginIndex && Character.isWhitespace(str.charAt(endIndex))) {
 			endIndex--;
 		}
 
+		// 返回截取后的字符串
 		return str.substring(beginIndex, endIndex + 1);
 	}
 
@@ -221,18 +226,25 @@ public abstract class StringUtils {
 	 * @see java.lang.Character#isWhitespace
 	 */
 	public static String trimAllWhitespace(String str) {
+		// 如果字符串为空，则直接返回原字符串
 		if (!hasLength(str)) {
 			return str;
 		}
 
+		// 获取字符串长度
 		int len = str.length();
+		// 创建一个新的字符串构建器，用于存储去除空格后的字符串
 		StringBuilder sb = new StringBuilder(str.length());
+		// 遍历字符串中的每一个字符
 		for (int i = 0; i < len; i++) {
+			// 获取字符
 			char c = str.charAt(i);
+			// 如果字符不是空格，则将其添加到字符串构建器中
 			if (!Character.isWhitespace(c)) {
 				sb.append(c);
 			}
 		}
+		// 返回去除空格后的字符串
 		return sb.toString();
 	}
 
