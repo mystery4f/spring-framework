@@ -152,8 +152,26 @@ class TypeConverterDelegate {
 			if (editor == null) {
 				editor = findDefaultEditor(requiredType);
 			}
-			convertedValue = doConvertValue(oldValue, convertedValue, requiredType, editor);
-		}
+		// Custom editor for this type?
+		PropertyEditor editor = this.propertyEditorRegistry.findCustomEditor(requiredType, propertyName);
+
+		ConversionFailedException conversionAttemptEx = null;
+
+		// No custom editor but custom ConversionService specified?
+		ConversionService conversionService = this.propertyEditorRegistry.getConversionService();
+		if (editor == null && conversionService != null && newValue != null && typeDescriptor != null) {
+			TypeDescriptor sourceTypeDesc = TypeDescriptor.forObject(newValue);
+			if (conversionService.canConvert(sourceTypeDesc, typeDescriptor)) {
+				try {
+					// Try the conversion via the ConversionService
+					return (T) conversionService.convert(newValue, sourceTypeDesc, typeDescriptor);
+				}
+				catch (ConversionFailedException ex) {
+					// fallback to default conversion logic below
+					conversionAttemptEx = ex;
+				}
+			}
+		}		}
 
 		boolean standardConversion = false;
 
