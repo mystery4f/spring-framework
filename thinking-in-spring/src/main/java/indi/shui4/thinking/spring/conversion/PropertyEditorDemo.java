@@ -14,5 +14,6 @@ public class PropertyEditorDemo {
 		final var stringToPropertiesPropertyEditor = new StringToPropertiesPropertyEditor();
 		stringToPropertiesPropertyEditor.setAsText(text);
 		System.out.println(stringToPropertiesPropertyEditor.getValue());
+		System.out.println(stringToPropertiesPropertyEditor.getAsText());
 	}
 }

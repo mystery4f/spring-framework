@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -12,6 +13,16 @@ import java.util.Properties;
  * @author shui4
  */
 public class StringToPropertiesPropertyEditor extends PropertyEditorSupport implements PropertyEditor {
+	@Override
+	public String getAsText() {
+		final var properties = (Properties) getValue();
+		StringBuilder stringBuilder = new StringBuilder();
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			stringBuilder.append(entry.getKey()).append("=").append(entry.getValue()).append(System.lineSeparator());
+		}
+		return stringBuilder.toString();
+	}
+
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		final var properties = new Properties();
@@ -22,5 +33,4 @@ public class StringToPropertiesPropertyEditor extends PropertyEditorSupport impl
 		}
 		setValue(properties);
 	}
-
 }
