@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<bean class="indi.shui4.thinking.spring.conversion.CustomizedPropertyEditorRegistrar"/>
+	<bean class="indi.shui4.thinking.spring.ioc.overview.domain.User"
+		  id="user">
+		<property name="id" value="1"/>
+		<property name="name" value="张三"/>
+		<property name="context"> <!--Properties 类型-->
+			<value>
+				id=1
+				name=shui4
+			</value>
+		</property>
+	</bean>
+</beans>

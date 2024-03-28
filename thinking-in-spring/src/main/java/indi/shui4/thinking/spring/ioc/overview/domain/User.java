@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * 用户
@@ -25,6 +26,8 @@ public class User implements BeanNameAware {
 	private List<City> liteCities;
 	private String beanName;
 
+	private Properties context;
+
 	public static User createUser() {
 		User user = new User();
 		user.setId(System.nanoTime());
@@ -40,12 +43,6 @@ public class User implements BeanNameAware {
 	@PreDestroy
 	public void destroy() {
 		System.out.println(beanName + ":用户对象销毁...");
-	}
-
-	@Override
-	public String toString() {
-		return "User{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", city=" + city + ", configFileLocation=" + configFileLocation + ", workCities=" + Arrays.toString(
-				workCities) + ", liteCities=" + liteCities + '}';
 	}
 
 	public List<City> getLiteCities() {
@@ -115,4 +112,26 @@ public class User implements BeanNameAware {
 		this.company = company;
 	}
 
+	public Properties getContext() {
+		return context;
+	}
+
+	public void setContext(Properties context) {
+		this.context = context;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", city=" + city +
+				", company=" + company +
+				", configFileLocation=" + configFileLocation +
+				", workCities=" + Arrays.toString(workCities) +
+				", liteCities=" + liteCities +
+				", beanName='" + beanName + '\'' +
+				", context=" + context +
+				'}';
+	}
 }

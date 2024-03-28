@@ -13,6 +13,9 @@ import java.util.Properties;
  * @author shui4
  */
 public class StringToPropertiesPropertyEditor extends PropertyEditorSupport implements PropertyEditor {
+
+	public static final StringToPropertiesPropertyEditor INSTANCE=new StringToPropertiesPropertyEditor();
+
 	@Override
 	public String getAsText() {
 		final var properties = (Properties) getValue();
