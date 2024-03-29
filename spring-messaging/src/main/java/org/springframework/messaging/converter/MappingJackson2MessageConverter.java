@@ -244,29 +244,43 @@ public class MappingJackson2MessageConverter extends AbstractMessageConverter {
 			@Nullable Object conversionHint) {
 
 		try {
+			// 获取序列化视图
 			Class<?> view = getSerializationView(conversionHint);
+			// 如果序列化负载类为byte[]
 			if (byte[].class == getSerializedPayloadClass()) {
+				// 创建ByteArrayOutputStream，用于将数据写入到字节数组中
 				ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+				// 获取Json编码，根据MimeType
 				JsonEncoding encoding = getJsonEncoding(getMimeType(headers));
+				// 使用objectMapper工厂创建JsonGenerator
 				try (JsonGenerator generator = this.objectMapper.getFactory().createGenerator(out, encoding)) {
+					// 如果视图不为空
 					if (view != null) {
+						// 使用objectMapper的writerWithView方法，根据视图写入数据
 						this.objectMapper.writerWithView(view).writeValue(generator, payload);
 					}
 					else {
+						// 使用objectMapper的writeValue方法写入数据
 						this.objectMapper.writeValue(generator, payload);
 					}
+					// 将字节数组设置为payload
 					payload = out.toByteArray();
 				}
 			}
 			else {
-				// Assuming a text-based target payload
+				// 假设目标是基于文本的负载
+				// 创建StringWriter，用于将数据写入到字符串中
 				Writer writer = new StringWriter(1024);
+				// 如果视图不为空
 				if (view != null) {
+					// 使用objectMapper的writerWithView方法，根据视图写入数据
 					this.objectMapper.writerWithView(view).writeValue(writer, payload);
 				}
 				else {
+					// 使用objectMapper的writeValue方法写入数据
 					this.objectMapper.writeValue(writer, payload);
 				}
+				// 将字符串设置为payload
 				payload = writer.toString();
 			}
 		}
