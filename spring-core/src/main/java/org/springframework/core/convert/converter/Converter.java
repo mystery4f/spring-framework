@@ -26,34 +26,23 @@ import org.springframework.util.Assert;
  *
  * <p>Implementations may additionally implement {@link ConditionalConverter}.
  *
+ * @param <S> the source type
+ * @param <T> the target type
  * @author Keith Donald
  * @author Josh Cummings
  * @since 3.0
- * @param <S> the source type
- * @param <T> the target type
  */
 @FunctionalInterface
 public interface Converter<S, T> {
 
 	/**
-	 * Convert the source object of type {@code S} to target type {@code T}.
-	 * @param source the source object to convert, which must be an instance of {@code S} (never {@code null})
-	 * @return the converted object, which must be an instance of {@code T} (potentially {@code null})
-	 * @throws IllegalArgumentException if the source cannot be converted to the desired target type
-	 */
-	@Nullable
-	T convert(S source);
-
-	/**
-	 * Construct a composed {@link Converter} that first applies this {@link Converter}
-	 * to its input, and then applies the {@code after} {@link Converter} to the
-	 * result.
-	 * @param after the {@link Converter} to apply after this {@link Converter}
-	 * is applied
-	 * @param <U> the type of output of both the {@code after} {@link Converter}
-	 * and the composed {@link Converter}
-	 * @return a composed {@link Converter} that first applies this {@link Converter}
-	 * and then applies the {@code after} {@link Converter}
+	 * 构造一个组合的{@link Converter}，首先应用此{@link Converter}
+	 * 到其输入，然后应用{@code after} {@link Converter}到结果。
+	 *
+	 * @param after 在应用此{@link Converter}后应用的{@link Converter}
+	 * @param <U>   both the {@code after} {@link Converter} and the composed {@link Converter}的输出类型
+	 * @return 一个组合的{@link Converter}，首先应用此{@link Converter}
+	 * 然后应用{@code after} {@link Converter}
 	 * @since 5.3
 	 */
 	default <U> Converter<S, U> andThen(Converter<? super T, ? extends U> after) {
@@ -63,5 +52,15 @@ public interface Converter<S, T> {
 			return (initialResult != null ? after.convert(initialResult) : null);
 		};
 	}
+
+	/**
+	 * 将类型为 {@code S} 的源对象转换为目标类型 {@code T}。
+	 *
+	 * @param source 要转换的源对象，必须是 {@code S} 的实例（绝不能为 {@code null})
+	 * @return 转换后的对象，必须是 {@code T} 的实例（ potentially {@code null})
+	 * @throws IllegalArgumentException 如果源对象不能转换为所需的目标类型
+	 */
+	@Nullable
+	T convert(S source);
 
 }
