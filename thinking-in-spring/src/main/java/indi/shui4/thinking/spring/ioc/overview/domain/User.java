@@ -28,11 +28,37 @@ public class User implements BeanNameAware {
 
 	private Properties context;
 
+	private String contextAsText;
+
 	public static User createUser() {
 		User user = new User();
 		user.setId(System.nanoTime());
 		user.setName("shui4");
 		return user;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", city=" + city +
+				", company=" + company +
+				", configFileLocation=" + configFileLocation +
+				", workCities=" + Arrays.toString(workCities) +
+				", liteCities=" + liteCities +
+				", beanName='" + beanName + '\'' +
+				", context=" + context +
+				", contextAsText='" + contextAsText + '\'' +
+				'}';
+	}
+
+	public String getContextAsText() {
+		return contextAsText;
+	}
+
+	public void setContextAsText(String contextAsText) {
+		this.contextAsText = contextAsText;
 	}
 
 	@PostConstruct
@@ -120,18 +146,4 @@ public class User implements BeanNameAware {
 		this.context = context;
 	}
 
-	@Override
-	public String toString() {
-		return "User{" +
-				"id='" + id + '\'' +
-				", name='" + name + '\'' +
-				", city=" + city +
-				", company=" + company +
-				", configFileLocation=" + configFileLocation +
-				", workCities=" + Arrays.toString(workCities) +
-				", liteCities=" + liteCities +
-				", beanName='" + beanName + '\'' +
-				", context=" + context +
-				'}';
-	}
 }

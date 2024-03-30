@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans
+		xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util
+        https://www.springframework.org/schema/util/spring-util.xsd">
+
 
 
 	<bean class="indi.shui4.thinking.spring.conversion.CustomizedPropertyEditorRegistrar"/>
+	<!--id 必须是“conversionService”，从 org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization 得知-->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<bean class="indi.shui4.thinking.spring.conversion.PropertiesToStringConverter"/>
+		</property>
+	</bean>
+
+	<util:properties id="context">
+		<prop key="id">1</prop>
+		<prop key="name">mercyblitz</prop>
+	</util:properties>
+
 	<bean class="indi.shui4.thinking.spring.ioc.overview.domain.User"
 		  id="user">
 		<property name="id" value="1"/>
@@ -16,5 +36,6 @@
 				name=shui4
 			</value>
 		</property>
+		<property name="contextAsText" ref="context"/>
 	</bean>
 </beans>
