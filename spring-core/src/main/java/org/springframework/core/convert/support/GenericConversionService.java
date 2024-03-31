@@ -34,16 +34,15 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Base {@link ConversionService} implementation suitable for use in most environments.
- * Indirectly implements {@link ConverterRegistry} as registration API through the
- * {@link ConfigurableConversionService} interface.
+ * 基础的 {@link ConversionService} 实现，适用于大多数环境。
+ * 通过 {@link ConfigurableConversionService} 接口间接实现 {@link ConverterRegistry} 作为注册 API。
  *
  * @author Keith Donald
  * @author Juergen Hoeller
  * @author Chris Beams
  * @author Phillip Webb
  * @author David Haraburda
- * @since 3.0
+ * @see 3.0 起
  */
 public class GenericConversionService implements ConfigurableConversionService {
 
@@ -115,15 +114,20 @@ public class GenericConversionService implements ConfigurableConversionService {
 
 	@Override
 	public void addConverterFactory(ConverterFactory<?, ?> factory) {
+		// 获取factory的类型信息
 		ResolvableType[] typeInfo = getRequiredTypeInfo(factory.getClass(), ConverterFactory.class);
+		// 如果typeInfo为空，且factory是DecoratingProxy的实例
 		if (typeInfo == null && factory instanceof DecoratingProxy) {
+			// 获取被装饰类的类型信息
 			typeInfo = getRequiredTypeInfo(((DecoratingProxy) factory).getDecoratedClass(), ConverterFactory.class);
 		}
+		// 如果typeInfo仍为空，抛出异常
 		if (typeInfo == null) {
 			throw new IllegalArgumentException("Unable to determine source type <S> and target type <T> for your " +
 					"ConverterFactory [" + factory.getClass()
 					.getName() + "]; does the class parameterize those types?");
 		}
+		// 添加转换器
 		addConverter(new ConverterFactoryAdapter(
 				factory,
 				new ConvertiblePair(typeInfo[0].toClass(), typeInfo[1].toClass())
