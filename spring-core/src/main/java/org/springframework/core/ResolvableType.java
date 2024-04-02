@@ -702,30 +702,43 @@ public class ResolvableType implements Serializable {
 	 * @see #resolveGenerics()
 	 */
 	public ResolvableType[] getGenerics() {
+		// 如果当前类型为NONE，则返回一个空的类型数组
 		if (this == NONE) {
 			return EMPTY_TYPES_ARRAY;
 		}
+		// 获取当前类型的泛型数组
 		ResolvableType[] generics = this.generics;
+		// 如果泛型数组为空
 		if (generics == null) {
+			// 如果当前类型为Class
 			if (this.type instanceof Class) {
+				// 获取Class的类型参数
 				Type[] typeParams = ((Class<?>) this.type).getTypeParameters();
+				// 创建一个新的泛型数组
 				generics = new ResolvableType[typeParams.length];
+				// 遍历泛型数组，为每一个元素赋值
 				for (int i = 0; i < generics.length; i++) {
 					generics[i] = ResolvableType.forType(typeParams[i], this);
 				}
-			}
-			else if (this.type instanceof ParameterizedType) {
+			// 如果当前类型为ParameterizedType
+			} else if (this.type instanceof ParameterizedType) {
+				// 获取ParameterizedType的实际类型参数
 				Type[] actualTypeArguments = ((ParameterizedType) this.type).getActualTypeArguments();
+				// 创建一个新的泛型数组
 				generics = new ResolvableType[actualTypeArguments.length];
+				// 遍历泛型数组，为每一个元素赋值
 				for (int i = 0; i < actualTypeArguments.length; i++) {
 					generics[i] = forType(actualTypeArguments[i], this.variableResolver);
 				}
-			}
-			else {
+			// 如果当前类型为其他类型
+			} else {
+				// 调用resolveType()方法，获取当前类型的泛型数组
 				generics = resolveType().getGenerics();
 			}
+			// 将泛型数组赋值给this.generics
 			this.generics = generics;
 		}
+		// 返回泛型数组
 		return generics;
 	}
 
