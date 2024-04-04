@@ -43,16 +43,9 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Encapsulates a Java {@link java.lang.reflect.Type}, providing access to
- * {@link #getSuperType() supertypes}, {@link #getInterfaces() interfaces}, and
- * {@link #getGeneric(int...) generic parameters} along with the ability to ultimately
- * {@link #resolve() resolve} to a {@link java.lang.Class}.
+ * 封装了一个Java {@link java.lang.reflect.Type}，提供对{@link #getSuperType() 超类型}、{@link #getInterfaces() 接口}和{@link #getGeneric(int...) 泛型参数}的访问，最终能够{@link #resolve() 解析}为一个{@link java.lang.Class}。
  *
- * <p>{@code ResolvableTypes} may be obtained from {@link #forField(Field) fields},
- * {@link #forMethodParameter(Method, int) method parameters},
- * {@link #forMethodReturnType(Method) method returns} or
- * {@link #forClass(Class) classes}. Most methods on this class will themselves return
- * {@link ResolvableType ResolvableTypes}, allowing easy navigation. For example:
+ * <p>{@code ResolvableTypes} 可以从{@link #forField(Field) 字段}、{@link #forMethodParameter(Method, int) 方法参数}、{@link #forMethodReturnType(Method) 方法返回}或{@link #forClass(Class) 类}中获取。该类上的大多数方法本身将返回{@link ResolvableType ResolvableTypes}，方便进行导航。例如：
  * <pre class="code">
  * private HashMap&lt;Integer, List&lt;String&gt;&gt; myMap;
  *
@@ -80,7 +73,6 @@ import org.springframework.util.StringUtils;
  * @see #forInstance(Object)
  * @see ResolvableTypeProvider
  */
-@SuppressWarnings("serial")
 public class ResolvableType implements Serializable {
 
 	/**
