@@ -22,12 +22,9 @@ import java.lang.reflect.Method;
 import org.springframework.lang.Nullable;
 
 /**
- * Interface to discover parameter names for methods and constructors.
+ * 用于发现方法和构造函数的参数名的接口。
  *
- * <p>Parameter name discovery is not always possible, but various strategies are
- * available to try, such as looking for debug information that may have been
- * emitted at compile time, and looking for argname annotation values optionally
- * accompanying AspectJ annotated methods.
+ * <p>参数名的发现并非总是可能的，但有各种策略可供尝试，例如寻找可能已在编译时发出的调试信息，以及寻找可选地陪伴AspectJ注解方法的 argname 注解值。
  *
  * @author Rod Johnson
  * @author Adrian Colyer
