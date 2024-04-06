@@ -17,28 +17,18 @@
 package org.springframework.context;
 
 /**
- * A common interface defining methods for start/stop lifecycle control.
- * The typical use case for this is to control asynchronous processing.
- * <b>NOTE: This interface does not imply specific auto-startup semantics.
- * Consider implementing {@link SmartLifecycle} for that purpose.</b>
+ * 一个通用的接口，定义了用于控制启动/停止生命周期的方法。
+ * 典型的用例是控制异步处理。
+ * <b>注意：此接口不暗示特定的自动启动语义。考虑实现{@link SmartLifecycle}来实现该目的。</b>
  *
- * <p>Can be implemented by both components (typically a Spring bean defined in a
- * Spring context) and containers  (typically a Spring {@link ApplicationContext}
- * itself). Containers will propagate start/stop signals to all components that
- * apply within each container, e.g. for a stop/restart scenario at runtime.
+ * <p>可以由组件（通常是在Spring上下文中定义的Spring bean）和容器（通常是Spring的{@link ApplicationContext}）来实现。
+ * 容器会向每个容器内的所有适用组件传播启动/停止信号，例如在运行时的停止/重启场景。
  *
- * <p>Can be used for direct invocations or for management operations via JMX.
- * In the latter case, the {@link org.springframework.jmx.export.MBeanExporter}
- * will typically be defined with an
- * {@link org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler},
- * restricting the visibility of activity-controlled components to the Lifecycle
- * interface.
+ * <p>可以用于直接调用或通过JMX进行管理操作。
+ * 在后一种情况下，{@link org.springframework.jmx.export.MBeanExporter}通常会被定义为一个
+ * {@link org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler}，将活动控制组件的可见性限制在Lifecycle接口上。
  *
- * <p>Note that the present {@code Lifecycle} interface is only supported on
- * <b>top-level singleton beans</b>. On any other component, the {@code Lifecycle}
- * interface will remain undetected and hence ignored. Also, note that the extended
- * {@link SmartLifecycle} interface provides sophisticated integration with the
- * application context's startup and shutdown phases.
+ * <p>请注意，当前的{@code Lifecycle}接口仅支持在<b>顶级单例bean</b>上。对于任何其他组件，{@code Lifecycle}接口将保持未检测状态，因此会被忽略。此外，注意扩展的{@link SmartLifecycle}接口提供了与应用程序上下文的启动和关闭阶段的复杂集成。
  *
  * @author Juergen Hoeller
  * @see SmartLifecycle

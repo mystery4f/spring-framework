@@ -1449,7 +1449,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	@Override
 	public void stop() {
+		// 获取生命周期处理器并停止
 		getLifecycleProcessor().stop();
+		// 发布一个上下文停止事件
 		publishEvent(new ContextStoppedEvent(this));
 	}
 
