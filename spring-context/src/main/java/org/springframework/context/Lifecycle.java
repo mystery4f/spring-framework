@@ -41,45 +41,40 @@ package org.springframework.context;
  * application context's startup and shutdown phases.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see SmartLifecycle
  * @see ConfigurableApplicationContext
  * @see org.springframework.jms.listener.AbstractMessageListenerContainer
  * @see org.springframework.scheduling.quartz.SchedulerFactoryBean
+ * @since 2.0
  */
 public interface Lifecycle {
-
 	/**
-	 * Start this component.
-	 * <p>Should not throw an exception if the component is already running.
-	 * <p>In the case of a container, this will propagate the start signal to all
-	 * components that apply.
+	 * 启动此组件。
+	 * <p>如果组件已经在运行，则不应抛出异常。
+	 * <p>对于容器而言，这将向所有适用的组件传播启动信号。
+	 *
 	 * @see SmartLifecycle#isAutoStartup()
 	 */
 	void start();
 
 	/**
-	 * Stop this component, typically in a synchronous fashion, such that the component is
-	 * fully stopped upon return of this method. Consider implementing {@link SmartLifecycle}
-	 * and its {@code stop(Runnable)} variant when asynchronous stop behavior is necessary.
-	 * <p>Note that this stop notification is not guaranteed to come before destruction:
-	 * On regular shutdown, {@code Lifecycle} beans will first receive a stop notification
-	 * before the general destruction callbacks are being propagated; however, on hot
-	 * refresh during a context's lifetime or on aborted refresh attempts, a given bean's
-	 * destroy method will be called without any consideration of stop signals upfront.
-	 * <p>Should not throw an exception if the component is not running (not started yet).
-	 * <p>In the case of a container, this will propagate the stop signal to all components
-	 * that apply.
+	 * 停止此组件，通常以同步方式进行，以便在此方法返回时组件完全停止。当需要异步停止行为时，考虑实现{@link SmartLifecycle}及其{@code stop(Runnable)}变体。
+	 * <p>请注意，此停止通知不能保证在销毁之前到来：
+	 * 在常规关闭期间，{@code Lifecycle} bean将在一般销毁回调被传播之前首先接收到停止通知；
+	 * 但是，在上下文生命周期内的热刷新或刷新尝试中止时，将调用给定bean的销毁方法，而不考虑提前停止信号。
+	 * <p>如果组件未运行（尚未启动），则不应抛出异常。
+	 * <p>对于容器而言，这将向所有适用的组件传播停止信号。
+	 *
 	 * @see SmartLifecycle#stop(Runnable)
 	 * @see org.springframework.beans.factory.DisposableBean#destroy()
 	 */
 	void stop();
 
 	/**
-	 * Check whether this component is currently running.
-	 * <p>In the case of a container, this will return {@code true} only if <i>all</i>
-	 * components that apply are currently running.
-	 * @return whether the component is currently running
+	 * 检查此组件当前是否正在运行。
+	 * <p>对于容器而言，只有当所有适用的组件当前正在运行时，此方法才会返回{@code true}。
+	 *
+	 * @return 组件当前是否正在运行
 	 */
 	boolean isRunning();
 
