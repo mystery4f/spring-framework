@@ -71,6 +71,7 @@ public class ApplicationListenerDemo implements ApplicationEventPublisherAware {
 
 	@Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		// 发送 PayloadApplicationEvent
 		applicationEventPublisher.publishEvent(new ApplicationEvent("Hello") {
 		});
 	}
