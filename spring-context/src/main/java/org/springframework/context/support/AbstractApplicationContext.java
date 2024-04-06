@@ -767,21 +767,27 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 
 	/**
-	 * Initialize the ApplicationEventMulticaster.
-	 * Uses SimpleApplicationEventMulticaster if none defined in the context.
+	 * 初始化 ApplicationEventMulticaster。
+	 * 如果上下文中没有定义 ApplicationEventMulticaster，
+	 * 那么将使用 SimpleApplicationEventMulticaster。
 	 *
 	 * @see org.springframework.context.event.SimpleApplicationEventMulticaster
 	 */
 	protected void initApplicationEventMulticaster() {
+		// 获取 BeanFactory
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 如果 BeanFactory 中包含 APPLICATION_EVENT_MULTICASTER_BEAN_NAME 的本地 bean
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
+			// 从 BeanFactory 中获取 ApplicationEventMulticaster 类型的 bean
 			this.applicationEventMulticaster =
 					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}
 		} else {
+			// 创建 SimpleApplicationEventMulticaster
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
+			// 将 SimpleApplicationEventMulticaster 注册到 BeanFactory 中
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No '" + APPLICATION_EVENT_MULTICASTER_BEAN_NAME + "' bean, using " +
