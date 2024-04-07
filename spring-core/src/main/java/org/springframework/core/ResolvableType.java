@@ -110,18 +110,33 @@ public class ResolvableType implements Serializable {
 	@Nullable
 	private final ResolvableType componentType;
 
+	/**
+	 * 哈希值
+	 */
 	@Nullable
 	private final Integer hash;
 
+	/**
+	 * 解析后的类
+	 */
 	@Nullable
 	private Class<?> resolved;
 
+	/**
+	 * 父类类型
+	 */
 	@Nullable
 	private volatile ResolvableType superType;
 
+	/**
+	 * 接口类型数组
+	 */
 	@Nullable
 	private volatile ResolvableType[] interfaces;
 
+	/**
+	 * 泛型类型数组
+	 */
 	@Nullable
 	private volatile ResolvableType[] generics;
 

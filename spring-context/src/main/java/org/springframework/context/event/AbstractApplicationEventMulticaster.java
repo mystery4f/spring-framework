@@ -359,22 +359,22 @@ public abstract class AbstractApplicationEventMulticaster
 	}
 
 	/**
-	 * Determine whether the given listener supports the given event.
-	 * <p>The default implementation detects the {@link SmartApplicationListener}
-	 * and {@link GenericApplicationListener} interfaces. In case of a standard
-	 * {@link ApplicationListener}, a {@link GenericApplicationListenerAdapter}
-	 * will be used to introspect the generically declared type of the target listener.
-	 * @param listener the target listener to check
-	 * @param eventType the event type to check against
-	 * @param sourceType the source type to check against
-	 * @return whether the given listener should be included in the candidates
-	 * for the given event type
+	 * 判断给定的监听器是否支持给定的事件。
+	 * <p>默认实现检测{@link SmartApplicationListener}和{@link GenericApplicationListener}接口。
+	 * 对于标准的{@link ApplicationListener}，将使用{@link GenericApplicationListenerAdapter}来内省目标监听器的泛型声明类型。
+	 * @param listener 要检查的目标监听器
+	 * @param eventType 要检查的事件类型
+	 * @param sourceType 要检查的源类型
+	 * @return 给定的监听器是否应包含在给定事件类型的候选列表中
 	 */
 	protected boolean supportsEvent(
 			ApplicationListener<?> listener, ResolvableType eventType, @Nullable Class<?> sourceType) {
 
+		// 检查监听器是否是GenericApplicationListener的实例
 		GenericApplicationListener smartListener = (listener instanceof GenericApplicationListener ?
 				(GenericApplicationListener) listener : new GenericApplicationListenerAdapter(listener));
+
+		// 返回监听器是否支持事件类型和源类型
 		return (smartListener.supportsEventType(eventType) && smartListener.supportsSourceType(sourceType));
 	}
 
@@ -384,8 +384,14 @@ public abstract class AbstractApplicationEventMulticaster
 	 */
 	private static final class ListenerCacheKey implements Comparable<ListenerCacheKey> {
 
+		/**
+		 * 事件 {@link ResolvableType}
+		 */
 		private final ResolvableType eventType;
 
+		/**
+		 * 来源类型
+		 */
 		@Nullable
 		private final Class<?> sourceType;
 
