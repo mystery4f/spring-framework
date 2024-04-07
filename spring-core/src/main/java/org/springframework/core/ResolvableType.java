@@ -74,7 +74,7 @@ import org.springframework.util.StringUtils;
  * @see ResolvableTypeProvider
  */
 public class ResolvableType implements Serializable {
-
+	private static final long serialVersionUID = 1L;
 	/**
 	 * {@code ResolvableType} returned when no value is available. {@code NONE} is used
 	 * in preference to {@code null} so that multiple method calls can be safely chained.
@@ -1529,6 +1529,7 @@ public class ResolvableType implements Serializable {
 
 
 	private static final class SyntheticParameterizedType implements ParameterizedType, Serializable {
+		private static final long serialVersionUID = 1L;
 
 		private final Type rawType;
 
