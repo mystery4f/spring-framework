@@ -304,9 +304,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 
 
 	/**
-	 * Scan the class path for candidate components.
-	 * @param basePackage the package to check for annotated classes
-	 * @return a corresponding Set of autodetected bean definitions
+	 * 扫描类路径，查找候选组件。
+	 * @param basePackage 检查包含注释的类
+	 * @return 自动检测的bean定义的对应集
 	 */
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
@@ -318,9 +318,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
-	 * Determine if the index can be used by this instance.
-	 * @return {@code true} if the index is available and the configuration of this
-	 * instance is supported by it, {@code false} otherwise
+	 * 确定索引是否可用。
+	 *
+	 * @return 如果索引可用且此实例的配置支持它，则返回{@code true}，否则返回{@code false}
 	 * @since 5.0
 	 */
 	private boolean indexSupportsIncludeFilters() {
@@ -333,9 +333,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
-	 * Determine if the specified include {@link TypeFilter} is supported by the index.
-	 * @param filter the filter to check
-	 * @return whether the index supports this include filter
+	 * 检查指定的包括过滤器是否被索引支持。
+	 * @param filter 要检查的过滤器
+	 * @return 索引是否支持此包括过滤器
 	 * @since 5.0
 	 * @see #extractStereotype(TypeFilter)
 	 */
@@ -353,9 +353,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
-	 * Extract the stereotype to use for the specified compatible filter.
-	 * @param filter the filter to handle
-	 * @return the stereotype in the index matching this filter
+	 * 获取指定兼容过滤器的stereotype。
+	 * @param filter 需要处理的过滤器
+	 * @return 索引中与该过滤器匹配的stereotype
 	 * @since 5.0
 	 * @see #indexSupportsIncludeFilter(TypeFilter)
 	 */
@@ -414,54 +414,78 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
+		// 创建一个 LinkedHashSet 对象，用于存储候选的 BeanDefinition
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
+		// 尝试获取资源，用于后续的扫描
 		try {
+			// 获取类路径资源的前缀，加上解析后的包名，用于后续的扫描
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+			// 获取指定路径下的资源
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
+			// 判断是否开启追踪日志
 			boolean traceEnabled = logger.isTraceEnabled();
+			// 判断是否开启调试日志
 			boolean debugEnabled = logger.isDebugEnabled();
+			// 遍历资源
 			for (Resource resource : resources) {
+				// 判断是否开启追踪日志
 				if (traceEnabled) {
 					logger.trace("Scanning " + resource);
 				}
+				// 获取元数据读取器
 				try {
 					MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
+					// 判断是否是候选的组件
 					if (isCandidateComponent(metadataReader)) {
+						// 创建 ScannedGenericBeanDefinition 对象
 						ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
+						// 设置源信息
 						sbd.setSource(resource);
+						// 判断是否是候选的组件
 						if (isCandidateComponent(sbd)) {
+							// 判断是否开启调试日志
 							if (debugEnabled) {
 								logger.debug("Identified candidate component class: " + resource);
 							}
+							// 将候选的 BeanDefinition 添加到 candidates 中
 							candidates.add(sbd);
 						}
 						else {
+							// 判断是否开启调试日志
 							if (debugEnabled) {
 								logger.debug("Ignored because not a concrete top-level class: " + resource);
 							}
 						}
 					}
 					else {
+						// 判断是否开启追踪日志
 						if (traceEnabled) {
 							logger.trace("Ignored because not matching any filter: " + resource);
 						}
 					}
 				}
+				// 捕获 FileNotFoundException 异常
 				catch (FileNotFoundException ex) {
+					// 判断是否开启追踪日志
 					if (traceEnabled) {
 						logger.trace("Ignored non-readable " + resource + ": " + ex.getMessage());
 					}
 				}
+				// 捕获 Throwable 异常
 				catch (Throwable ex) {
+					// 抛出 BeanDefinitionStoreException 异常
 					throw new BeanDefinitionStoreException(
 							"Failed to read candidate component class: " + resource, ex);
 				}
 			}
 		}
+		// 捕获 IOException 异常
 		catch (IOException ex) {
+			// 抛出 BeanDefinitionStoreException 异常
 			throw new BeanDefinitionStoreException("I/O failure during classpath scanning", ex);
 		}
+		// 返回 candidates
 		return candidates;
 	}
 

@@ -19,102 +19,94 @@ package org.springframework.core.type;
 import org.springframework.lang.Nullable;
 
 /**
- * Interface that defines abstract metadata of a specific class,
- * in a form that does not require that class to be loaded yet.
+ * 定义抽象访问特定类元数据的接口，在不加载该类的情况下即可访问。
  *
  * @author Juergen Hoeller
- * @since 2.5
+ * @author Mark Fisher
+ * @author Phillip Webb
+ * @author Sam Brannen
  * @see StandardClassMetadata
  * @see org.springframework.core.type.classreading.MetadataReader#getClassMetadata()
  * @see AnnotationMetadata
+ * @since 2.5
  */
 public interface ClassMetadata {
 
 	/**
-	 * Return the name of the underlying class.
+	 * 返回底层类的名称。
 	 */
 	String getClassName();
 
 	/**
-	 * Return whether the underlying class represents an interface.
-	 */
-	boolean isInterface();
-
-	/**
-	 * Return whether the underlying class represents an annotation.
+	 * 返回底层类是否表示注释。
+	 *
 	 * @since 4.1
 	 */
 	boolean isAnnotation();
 
 	/**
-	 * Return whether the underlying class is marked as abstract.
-	 */
-	boolean isAbstract();
-
-	/**
-	 * Return whether the underlying class represents a concrete class,
-	 * i.e. neither an interface nor an abstract class.
+	 * 返回底层类是否为具体类，即不是接口也不是抽象类。
 	 */
 	default boolean isConcrete() {
 		return !(isInterface() || isAbstract());
 	}
 
 	/**
-	 * Return whether the underlying class is marked as 'final'.
+	 * 返回底层类是否表示接口。
+	 */
+	boolean isInterface();
+
+	/**
+	 * 返回底层类是否为抽象类。
+	 */
+	boolean isAbstract();
+
+	/**
+	 * 返回底层类是否为最终类。
 	 */
 	boolean isFinal();
 
 	/**
-	 * Determine whether the underlying class is independent, i.e. whether
-	 * it is a top-level class or a nested class (static inner class) that
+	 * 确定底层类是否独立，即 whether it is a top-level class or a nested class (static inner class) that
 	 * can be constructed independently from an enclosing class.
 	 */
 	boolean isIndependent();
 
 	/**
-	 * Return whether the underlying class is declared within an enclosing
-	 * class (i.e. the underlying class is an inner/nested class or a
-	 * local class within a method).
-	 * <p>If this method returns {@code false}, then the underlying
-	 * class is a top-level class.
+	 * 返回底层类是否在闭包类中（即 underlying class 是内部/嵌套类或方法中的局部类）。
+	 * <p>如果此方法返回 {@code false}，则底层类是顶级类。
 	 */
 	default boolean hasEnclosingClass() {
 		return (getEnclosingClassName() != null);
 	}
 
 	/**
-	 * Return the name of the enclosing class of the underlying class,
-	 * or {@code null} if the underlying class is a top-level class.
+	 * 返回闭包类的名称，或 {@code null} 如果底层类是顶级类。
 	 */
 	@Nullable
 	String getEnclosingClassName();
 
 	/**
-	 * Return whether the underlying class has a super class.
+	 * 返回底层类是否有父类。
 	 */
 	default boolean hasSuperClass() {
 		return (getSuperClassName() != null);
 	}
 
 	/**
-	 * Return the name of the super class of the underlying class,
-	 * or {@code null} if there is no super class defined.
+	 * 返回父类的名称，或 {@code null} 如果没有定义父类。
 	 */
 	@Nullable
 	String getSuperClassName();
 
 	/**
-	 * Return the names of all interfaces that the underlying class
-	 * implements, or an empty array if there are none.
+	 * 返回底层类实现的接口名称数组，或空数组如果没有接口。
 	 */
 	String[] getInterfaceNames();
 
 	/**
-	 * Return the names of all classes declared as members of the class represented by
-	 * this ClassMetadata object. This includes public, protected, default (package)
-	 * access, and private classes and interfaces declared by the class, but excludes
-	 * inherited classes and interfaces. An empty array is returned if no member classes
-	 * or interfaces exist.
+	 * 返回底层类声明的成员类名数组，空数组如果没有成员类或接口。
+	 *
 	 * @since 3.1
 	 */
 	String[] getMemberClassNames();

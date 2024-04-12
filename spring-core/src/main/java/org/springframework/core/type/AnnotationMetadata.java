@@ -26,8 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Interface that defines abstract access to the annotations of a specific
- * class, in a form that does not require that class to be loaded yet.
+ * 定义抽象访问特定类注释的接口，在不加载该类的情况下即可访问。
  *
  * @author Juergen Hoeller
  * @author Mark Fisher
@@ -38,6 +37,7 @@ import java.util.stream.Collectors;
  * @see AnnotatedTypeMetadata
  * @since 2.5
  */
+
 public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata {
 
 	/**
@@ -74,13 +74,15 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	 */
 	default Set<String> getMetaAnnotationTypes(String annotationName) {
 		MergedAnnotation<?> annotation = getAnnotations().get(annotationName,
-				MergedAnnotation::isDirectlyPresent);
+				MergedAnnotation::isDirectlyPresent
+		);
 		if (!annotation.isPresent()) {
 			return Collections.emptySet();
 		}
 		return MergedAnnotations
 				.from(annotation.getType(),
-						SearchStrategy.INHERITED_ANNOTATIONS)
+						SearchStrategy.INHERITED_ANNOTATIONS
+				)
 				.stream()
 				.map(mergedAnnotation -> mergedAnnotation
 						.getType()
@@ -107,7 +109,8 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	default boolean hasMetaAnnotation(String metaAnnotationName) {
 		return getAnnotations()
 				.get(metaAnnotationName,
-						MergedAnnotation::isMetaPresent)
+						MergedAnnotation::isMetaPresent
+				)
 				.isPresent();
 	}
 

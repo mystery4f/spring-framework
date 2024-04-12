@@ -27,14 +27,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link LinkedHashMap} subclass representing annotation attribute
- * <em>key-value</em> pairs as read by {@link AnnotationUtils},
- * {@link AnnotatedElementUtils}, and Spring's reflection- and ASM-based
- * {@link org.springframework.core.type.AnnotationMetadata} implementations.
+ * {@link LinkedHashMap}的子类，表示由{@link AnnotationUtils}、{@link AnnotatedElementUtils}以及Spring基于反射和ASM的{@link org.springframework.core.type.AnnotationMetadata}实现读取的注解属性键值对。
  *
- * <p>Provides 'pseudo-reification' to avoid noisy Map generics in the calling
- * code as well as convenience methods for looking up annotation attributes
- * in a type-safe fashion.
+ * <p>提供了“伪泛型”以避免在调用代码中出现杂乱的Map泛型，同时还提供了便利方法，以类型安全的方式查找注解属性。
  *
  * @author Chris Beams
  * @author Sam Brannen
