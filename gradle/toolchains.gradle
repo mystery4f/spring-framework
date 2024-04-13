@@ -121,12 +121,12 @@ pluginManager.withPlugin("kotlin") {
 		// Fallback to JDK8
 		compileKotlin {
 			kotlinOptions {
-				jvmTarget = '8'
+				jvmTarget = '11'
 			}
 		}
 		compileTestKotlin {
 			kotlinOptions {
-				jvmTarget = '8'
+				jvmTarget = '11'
 			}
 		}
 	}
