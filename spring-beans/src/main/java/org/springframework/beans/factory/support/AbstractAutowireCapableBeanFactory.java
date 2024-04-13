@@ -483,7 +483,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	//---------------------------------------------------------------------
 	// Implementation of relevant AbstractBeanFactory template methods
 	//---------------------------------------------------------------------
-
 	/**
 	 * 创建bean的实例对象
 	 *
@@ -493,6 +492,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @return 创建好的bean的实例对象
 	 * @throws BeanCreationException 如果bean的创建过程中出现问题
 	 */
+	@Override
 	protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
 			throws BeanCreationException {
 
@@ -501,7 +501,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		RootBeanDefinition mbdToUse = mbd;
 
-		// 确保此时已经解析了bean的类，若是动态解析的Bean，则克隆bean的定义以保证动态解析的Class不会存储在共享的合并bean定义中
+		// 确保此时已经解析了 bean 的类，若是动态解析的 Bean，则克隆 bean 的定义以保证动态解析的 Class 不会存储在共享的合并 bean 定义中
 		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
 		if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
 			mbdToUse = new RootBeanDefinition(mbd);
@@ -512,7 +512,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 准备方法覆盖
 			mbdToUse.prepareMethodOverrides();
 		} catch (BeanDefinitionValidationException ex) {
-			// 如果方法覆盖验证失败，则抛出BeanDefinitionStoreException异常
+			// 如果方法覆盖验证失败，则抛出 BeanDefinitionStoreException 异常
 			throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
 					beanName, "Validation of method overrides failed", ex);
 		}
@@ -526,7 +526,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				return bean;
 			}
 		} catch (Throwable ex) {
-			// 如果BeanPostProcessor返回代理对象失败，则抛出BeanCreationException异常
+			// 如果 BeanPostProcessor 返回代理对象失败，则抛出 BeanCreationException 异常
 			throw new BeanCreationException(mbdToUse.getResourceDescription(), beanName,
 					"BeanPostProcessor before instantiation of bean failed", ex);
 		}

@@ -78,38 +78,53 @@ class ConditionEvaluator {
 	 * @return if the item should be skipped
 	 */
 	public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable ConfigurationPhase phase) {
+		// 检查metadata是否为null或者metadata中不包含Conditional注解
 		if (metadata == null || !metadata.isAnnotated(Conditional.class.getName())) {
 			return false;
 		}
 
+		// 检查phase是否为null
 		if (phase == null) {
+			// 如果是，则判断当前metadata是否为AnnotationMetadata，并判断是否为配置类候选
 			if (metadata instanceof AnnotationMetadata &&
 					ConfigurationClassUtils.isConfigurationCandidate((AnnotationMetadata) metadata)) {
+				// 如果是，则判断是否应该跳过解析配置阶段
 				return shouldSkip(metadata, ConfigurationPhase.PARSE_CONFIGURATION);
 			}
+			// 如果是，则判断是否应该跳过注册Bean阶段
 			return shouldSkip(metadata, ConfigurationPhase.REGISTER_BEAN);
 		}
 
+		// 创建一个条件列表
 		List<Condition> conditions = new ArrayList<>();
+		// 遍历metadata中定义的条件类
 		for (String[] conditionClasses : getConditionClasses(metadata)) {
+			// 遍历条件类
 			for (String conditionClass : conditionClasses) {
+				// 根据条件类名获取条件
 				Condition condition = getCondition(conditionClass, this.context.getClassLoader());
+				// 将条件添加到条件列表中
 				conditions.add(condition);
 			}
 		}
 
+		// 对条件列表进行排序
 		AnnotationAwareOrderComparator.sort(conditions);
 
+		// 遍历条件列表
 		for (Condition condition : conditions) {
+			// 获取条件所需阶段
 			ConfigurationPhase requiredPhase = null;
 			if (condition instanceof ConfigurationCondition) {
 				requiredPhase = ((ConfigurationCondition) condition).getConfigurationPhase();
 			}
+			// 如果条件所需阶段为null或者与当前阶段相等，并且条件不匹配，则返回true
 			if ((requiredPhase == null || requiredPhase == phase) && !condition.matches(this.context, metadata)) {
 				return true;
 			}
 		}
 
+		// 遍历完条件列表，没有返回true，则返回false
 		return false;
 	}
 

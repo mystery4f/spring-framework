@@ -168,28 +168,39 @@ class ConfigurationClassParser {
 
 
 	public void parse(Set<BeanDefinitionHolder> configCandidates) {
+		// 遍历候选的Bean定义holders
 		for (BeanDefinitionHolder holder : configCandidates) {
+			// 获取Bean定义
 			BeanDefinition bd = holder.getBeanDefinition();
 			try {
+				// 如果Bean定义是AnnotatedBeanDefinition类型
 				if (bd instanceof AnnotatedBeanDefinition) {
+					// 解析AnnotatedBeanDefinition的元数据
 					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
 				}
+				// 如果Bean定义是AbstractBeanDefinition类型，并且有bean类
 				else if (bd instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) bd).hasBeanClass()) {
+					// 解析AbstractBeanDefinition的bean类
 					parse(((AbstractBeanDefinition) bd).getBeanClass(), holder.getBeanName());
 				}
+				// 其他情况，解析Bean定义的类名
 				else {
 					parse(bd.getBeanClassName(), holder.getBeanName());
 				}
 			}
+			// 捕获BeanDefinitionStoreException异常
 			catch (BeanDefinitionStoreException ex) {
 				throw ex;
 			}
+			// 捕获Throwable异常
 			catch (Throwable ex) {
+				// 抛出BeanDefinitionStoreException异常
 				throw new BeanDefinitionStoreException(
 						"Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
 			}
 		}
 
+		// 执行deferredImportSelectorHandler的处理
 		this.deferredImportSelectorHandler.process();
 	}
 
