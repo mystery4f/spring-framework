@@ -85,30 +85,35 @@ abstract class ConfigurationClassUtils {
 	public static boolean checkConfigurationClassCandidate(
 			BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
 
+		// public boolean isConfigurationCandidate(AnnotationMetadata metadata) {
+		// 判断metadata是否是配置类的候选
 		String className = beanDef.getBeanClassName();
 		if (className == null || beanDef.getFactoryMethodName() != null) {
+			// 如果类名不为null，或者有工厂方法，则返回false
 			return false;
 		}
 
+		// 获取metadata
 		AnnotationMetadata metadata;
 		if (beanDef instanceof AnnotatedBeanDefinition &&
 				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
-			// Can reuse the pre-parsed metadata from the given BeanDefinition...
+			// 如果beanDef是AnnotatedBeanDefinition类型，且类名与metadata中的类名相同，则直接使用metadata
 			metadata = ((AnnotatedBeanDefinition) beanDef).getMetadata();
 		}
 		else if (beanDef instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) beanDef).hasBeanClass()) {
-			// Check already loaded Class if present...
-			// since we possibly can't even load the class file for this Class.
+			// 如果beanDef是AbstractBeanDefinition类型，且存在Bean类，则获取Bean类
 			Class<?> beanClass = ((AbstractBeanDefinition) beanDef).getBeanClass();
 			if (BeanFactoryPostProcessor.class.isAssignableFrom(beanClass) ||
 					BeanPostProcessor.class.isAssignableFrom(beanClass) ||
 					AopInfrastructureBean.class.isAssignableFrom(beanClass) ||
 					EventListenerFactory.class.isAssignableFrom(beanClass)) {
+				// 如果Bean类是BeanFactoryPostProcessor、BeanPostProcessor、AopInfrastructureBean、EventListenerFactory的子类，则返回false
 				return false;
 			}
 			metadata = AnnotationMetadata.introspect(beanClass);
 		}
 		else {
+			// 如果不是，则尝试获取metadata
 			try {
 				MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(className);
 				metadata = metadataReader.getAnnotationMetadata();
@@ -122,18 +127,21 @@ abstract class ConfigurationClassUtils {
 			}
 		}
 
+		// 获取配置类的属性
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
+			// 如果配置类的proxyBeanMethods属性为true，则设置配置类的属性为CONFIGURATION_CLASS_FULL
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
 		else if (config != null || isConfigurationCandidate(metadata)) {
+			// 如果配置类的proxyBeanMethods属性为false，或者满足其他条件，则设置配置类的属性为CONFIGURATION_CLASS_LITE
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
 		else {
 			return false;
 		}
 
-		// It's a full or lite configuration candidate... Let's determine the order value, if any.
+		// 设置配置类的顺序属性
 		Integer order = getOrder(metadata);
 		if (order != null) {
 			beanDef.setAttribute(ORDER_ATTRIBUTE, order);

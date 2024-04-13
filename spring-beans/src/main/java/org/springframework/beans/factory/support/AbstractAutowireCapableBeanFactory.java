@@ -899,8 +899,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		if (factoryBeanName == null && mbd.hasBeanClass() && factoryMethodName != null) {
-			// No early bean instantiation possible: determine FactoryBean's type from
-			// static factory method signature or from class inheritance hierarchy...
+			// 无法进行早期 bean 实例化：确定 FactoryBean 的类型静态工厂方法签名或来自类继承层次结构...
 			return getTypeForFactoryBeanFromMethod(mbd.getBeanClass(), factoryMethodName);
 		}
 		result = getFactoryBeanGeneric(beanType);
