@@ -9,14 +9,17 @@ import org.springframework.context.annotation.ComponentScan;
  *
  * @author shui4
  */
-@ComponentScan("indi.shui4.thinking.spring.annotations") // 指定 Class-Path(s)
+//@ComponentScan("indi.shui4.thinking.spring.annotations") // 指定 Class-Path(s)
+//@MyComponentScan(scanBasePackages = "indi.shui4.thinking.spring.annotations") // 指定 Class-Path(s)
+@MyComponentScan2(scanBasePackages = "indi.shui4.thinking.spring.annotations") // 指定 Class-Path(s)
 public class ComponentScanDemo {
 	public static void main(String[] args) {
 		final var applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(ComponentScanDemo.class);
 		applicationContext.refresh();
 		System.out.println(((AnnotatedBeanDefinition) applicationContext.getDefaultListableBeanFactory()
-				.getBeanDefinition("testBean")).getMetadata().getAnnotationAttributes(MyComponent2.class.getName()));
+				.getBeanDefinition("testBean")).getMetadata().getAnnotationAttributes(ComponentScan.class.getName()));
 
+		applicationContext.close();
 	}
 }
