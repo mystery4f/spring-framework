@@ -109,7 +109,7 @@ public class EventListenerMethodProcessor
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-
+		// 获取所有的EventListenerFactory
 		Map<String, EventListenerFactory> beans = beanFactory.getBeansOfType(EventListenerFactory.class, false, false);
 		List<EventListenerFactory> factories = new ArrayList<>(beans.values());
 		AnnotationAwareOrderComparator.sort(factories);
@@ -136,7 +136,7 @@ public class EventListenerMethodProcessor
 					type = AutoProxyUtils.determineTargetClass(beanFactory, beanName);
 				}
 				catch (Throwable ex) {
-					// An unresolvable bean type, probably from a lazy bean - let's ignore it.
+					// 无法解析的 bean 类型，可能来自惰性 bean - 让我们忽略它。
 					if (logger.isDebugEnabled()) {
 						logger.debug("Could not resolve target class for bean with name '" + beanName + "'", ex);
 					}
@@ -153,7 +153,7 @@ public class EventListenerMethodProcessor
 							}
 						}
 						catch (Throwable ex) {
-							// An invalid scoped proxy arrangement - let's ignore it.
+							// 无效的范围代理安排 - 让我们忽略它。
 							if (logger.isDebugEnabled()) {
 								logger.debug("Could not resolve target bean for scoped proxy '" + beanName + "'", ex);
 							}
