@@ -119,13 +119,20 @@ public class EventListenerMethodProcessor
 
 	@Override
 	public void afterSingletonsInstantiated() {
+		// 获取 Bean 工厂
 		ConfigurableListableBeanFactory beanFactory = this.beanFactory;
+		// 断言 Bean 工厂不为空
 		Assert.state(this.beanFactory != null, "No ConfigurableListableBeanFactory set");
+		// 获取所有 Bean 的名称
 		String[] beanNames = beanFactory.getBeanNamesForType(Object.class);
+		// 遍历所有 Bean
 		for (String beanName : beanNames) {
+			// 如果 Bean 不是 ScopedProxyUtils 注册的 Bean
 			if (!ScopedProxyUtils.isScopedTarget(beanName)) {
+				// 获取 Bean 类型
 				Class<?> type = null;
 				try {
+					// 脱离 CGLIB 包装
 					type = AutoProxyUtils.determineTargetClass(beanFactory, beanName);
 				}
 				catch (Throwable ex) {
@@ -135,8 +142,10 @@ public class EventListenerMethodProcessor
 					}
 				}
 				if (type != null) {
+					// 如果 Bean 是 ScopedObject 的子类
 					if (ScopedObject.class.isAssignableFrom(type)) {
 						try {
+							// 获取 ScopedProxyUtils 注册的 Bean 类型
 							Class<?> targetClass = AutoProxyUtils.determineTargetClass(
 									beanFactory, ScopedProxyUtils.getTargetBeanName(beanName));
 							if (targetClass != null) {
@@ -150,6 +159,7 @@ public class EventListenerMethodProcessor
 							}
 						}
 					}
+					// 处理 Bean 及其子类
 					try {
 						processBean(beanName, type);
 					}
@@ -167,11 +177,14 @@ public class EventListenerMethodProcessor
 				AnnotationUtils.isCandidateClass(targetType, EventListener.class) &&
 				!isSpringContainerClass(targetType)) {
 
+			// 首先，我们检查目标类型是否已经存在于nonAnnotatedClasses集合中，或者是否是候选类（具有EventListener注解的类），或者是否是Spring容器中的类。
 			Map<Method, EventListener> annotatedMethods = null;
 			try {
+				// 使用MethodIntrospector选择目标类型的方法
 				annotatedMethods = MethodIntrospector.selectMethods(targetType,
 						(MethodIntrospector.MetadataLookup<EventListener>) method ->
 								AnnotatedElementUtils.findMergedAnnotation(method, EventListener.class));
+				// 捕获异常
 			}
 			catch (Throwable ex) {
 				// An unresolvable type in a method signature, probably from a lazy bean - let's ignore it.
@@ -181,6 +194,7 @@ public class EventListenerMethodProcessor
 			}
 
 			if (CollectionUtils.isEmpty(annotatedMethods)) {
+				// 如果注解方法为空，将目标类型添加到nonAnnotatedClasses集合中
 				this.nonAnnotatedClasses.add(targetType);
 				if (logger.isTraceEnabled()) {
 					logger.trace("No @EventListener annotations found on bean class: " + targetType.getName());
@@ -192,13 +206,16 @@ public class EventListenerMethodProcessor
 				Assert.state(context != null, "No ApplicationContext set");
 				List<EventListenerFactory> factories = this.eventListenerFactories;
 				Assert.state(factories != null, "EventListenerFactory List not initialized");
+				// 遍历注解方法，创建ApplicationListener
 				for (Method method : annotatedMethods.keySet()) {
 					for (EventListenerFactory factory : factories) {
 						if (factory.supportsMethod(method)) {
+							// 选择可调用方法
 							Method methodToUse = AopUtils.selectInvocableMethod(method, context.getType(beanName));
 							ApplicationListener<?> applicationListener =
 									factory.createApplicationListener(beanName, targetType, methodToUse);
 							if (applicationListener instanceof ApplicationListenerMethodAdapter) {
+								// 如果ApplicationListener是ApplicationListenerMethodAdapter类型，则初始化
 								((ApplicationListenerMethodAdapter) applicationListener).init(context, this.evaluator);
 							}
 							context.addApplicationListener(applicationListener);
