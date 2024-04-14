@@ -16,10 +16,10 @@
 
 package org.springframework.context.annotation;
 
-import java.util.function.Predicate;
-
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.Nullable;
+
+import java.util.function.Predicate;
 
 /**
  * Interface to be implemented by types that determine which @{@link Configuration}
@@ -52,34 +52,30 @@ import org.springframework.lang.Nullable;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.1
  * @see DeferredImportSelector
  * @see Import
  * @see ImportBeanDefinitionRegistrar
  * @see Configuration
+ * @since 3.1
  */
 public interface ImportSelector {
 
 	/**
-	 * Select and return the names of which class(es) should be imported based on
-	 * the {@link AnnotationMetadata} of the importing @{@link Configuration} class.
-	 * @return the class names, or an empty array if none
+	 * 根据导入的 {@link Configuration} 类的 {@link AnnotationMetadata}，选择并返回应该导入的类名。
+	 * 如果没有，则返回一个空数组。
 	 */
 	String[] selectImports(AnnotationMetadata importingClassMetadata);
 
 	/**
-	 * Return a predicate for excluding classes from the import candidates, to be
-	 * transitively applied to all classes found through this selector's imports.
-	 * <p>If this predicate returns {@code true} for a given fully-qualified
-	 * class name, said class will not be considered as an imported configuration
-	 * class, bypassing class file loading as well as metadata introspection.
-	 * @return the filter predicate for fully-qualified candidate class names
-	 * of transitively imported configuration classes, or {@code null} if none
+	 * 返回一个用于从导入候选类中排除类的谓词，将传递性应用于通过此选择器的导入找到的所有类。
+	 * <p>如果对于给定的完全限定类名，此谓词返回 {@code true}，则该类将不被视为导入的配置类，
+	 * 绕过类文件加载以及元数据内省。
+	 *
+	 * @return 传递性导入的配置类的完全限定候选类名的过滤谓词，如果没有则返回 {@code null}
 	 * @since 5.2.4
 	 */
 	@Nullable
 	default Predicate<String> getExclusionFilter() {
 		return null;
 	}
-
 }
