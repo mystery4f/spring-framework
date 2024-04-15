@@ -218,23 +218,39 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 				resolvePlaceholders(value) : resolveRequiredPlaceholders(value));
 	}
 
+	/**
+	 * 创建一个属性占位符帮助器。
+	 *
+	 * @param ignoreUnresolvablePlaceholders 是否忽略无法解析的占位符。
+	 * @return 返回配置好的PropertyPlaceholderHelper实例。
+	 */
 	private PropertyPlaceholderHelper createPlaceholderHelper(boolean ignoreUnresolvablePlaceholders) {
-		return new PropertyPlaceholderHelper(this.placeholderPrefix, this.placeholderSuffix,
-				this.valueSeparator, ignoreUnresolvablePlaceholders
+		// 使用指定的前缀、后缀、分隔符以及是否忽略无法解析的占位符参数，创建属性占位符帮助器实例
+		return new PropertyPlaceholderHelper(this.placeholderPrefix,
+				this.placeholderSuffix,
+				this.valueSeparator,
+				ignoreUnresolvablePlaceholders
 		);
 	}
 
+	/**
+	 * 解析文本中的占位符。
+	 *
+	 * @param text   包含占位符的文本字符串。
+	 * @param helper 用于解析占位符的PropertyPlaceholderHelper实例。
+	 * @return 返回解析后的文本，占位符被其相应的属性值替换。
+	 */
 	private String doResolvePlaceholders(String text, PropertyPlaceholderHelper helper) {
+		// 使用占位符帮助器替换文本中的占位符为实际的属性值
 		return helper.replacePlaceholders(text, this::getPropertyAsRawString);
 	}
 
 	/**
-	 * Convert the given value to the specified target type, if necessary.
+	 * 将给定的值转换为指定的目标类型，如果有必要的话。
 	 *
-	 * @param value      the original property value
-	 * @param targetType the specified target type for property retrieval
-	 * @return the converted value, or the original value if no conversion
-	 * is necessary
+	 * @param value      原始属性值
+	 * @param targetType 指定的属性获取目标类型
+	 * @return 转换后的值，如果不需要转换则返回原始值
 	 * @since 4.3.5
 	 */
 	@SuppressWarnings("unchecked")
@@ -245,8 +261,7 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 		}
 		ConversionService conversionServiceToUse = this.conversionService;
 		if (conversionServiceToUse == null) {
-			// Avoid initialization of shared DefaultConversionService if
-			// no standard type conversion is needed in the first place...
+			// 若无须标准类型转换，则避免初始化共享的DefaultConversionService...
 			if (ClassUtils.isAssignableValue(targetType, value)) {
 				return (T) value;
 			}
