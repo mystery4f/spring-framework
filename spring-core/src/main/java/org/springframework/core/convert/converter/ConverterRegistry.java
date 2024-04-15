@@ -17,7 +17,7 @@
 package org.springframework.core.convert.converter;
 
 /**
- * For registering converters with a type conversion system.
+ * 用于向类型转换系统注册转换器的接口。
  *
  * @author Keith Donald
  * @author Juergen Hoeller
@@ -26,38 +26,42 @@ package org.springframework.core.convert.converter;
 public interface ConverterRegistry {
 
 	/**
-	 * Add a plain converter to this registry.
-	 * The convertible source/target type pair is derived from the Converter's parameterized types.
-	 * @throws IllegalArgumentException if the parameterized types could not be resolved
+	 * 向注册表中添加一个普通的转换器。
+	 * 转换的源/目标类型对是从转换器的泛型参数类型中派生出来的。
+	 *
+	 * @throws IllegalArgumentException 如果泛型参数类型无法解析
 	 */
 	void addConverter(Converter<?, ?> converter);
 
 	/**
-	 * Add a plain converter to this registry.
-	 * The convertible source/target type pair is specified explicitly.
-	 * <p>Allows for a Converter to be reused for multiple distinct pairs without
-	 * having to create a Converter class for each pair.
+	 * 向注册表中添加一个普通的转换器。
+	 * 转换的源/目标类型对被显式指定。
+	 * <p>允许一个转换器被重用于多个不同的类型对，而无需为每对类型创建一个转换器类。
+	 *
 	 * @since 3.1
 	 */
 	<S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter);
 
 	/**
-	 * Add a generic converter to this registry.
+	 * 向注册表中添加一个通用转换器。
 	 */
 	void addConverter(GenericConverter converter);
 
 	/**
-	 * Add a ranged converter factory to this registry.
-	 * The convertible source/target type pair is derived from the ConverterFactory's parameterized types.
-	 * @throws IllegalArgumentException if the parameterized types could not be resolved
+	 * 向注册表中添加一个范围转换器工厂。
+	 * 转换的源/目标类型对是从转换器工厂的泛型参数类型中派生出来的。
+	 *
+	 * @throws IllegalArgumentException 如果泛型参数类型无法解析
 	 */
 	void addConverterFactory(ConverterFactory<?, ?> factory);
 
 	/**
-	 * Remove any converters from {@code sourceType} to {@code targetType}.
-	 * @param sourceType the source type
-	 * @param targetType the target type
+	 * 从{@code sourceType}到{@code targetType}移除任何转换器。
+	 *
+	 * @param sourceType 源类型
+	 * @param targetType 目标类型
 	 */
 	void removeConvertible(Class<?> sourceType, Class<?> targetType);
 
 }
+
