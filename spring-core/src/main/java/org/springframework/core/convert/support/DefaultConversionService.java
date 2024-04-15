@@ -26,18 +26,17 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * A specialization of {@link GenericConversionService} configured by default
- * with converters appropriate for most environments.
+ * {@link GenericConversionService}的一个特化类，默认配置了适用于大多数环境的转换器。
  *
- * <p>Designed for direct instantiation but also exposes the static
- * {@link #addDefaultConverters(ConverterRegistry)} utility method for ad-hoc
- * use against any {@code ConverterRegistry} instance.
+ * <p>该类旨在直接实例化，但也提供了静态的{@link #addDefaultConverters(ConverterRegistry)}工具方法，
+ * 可用于任意{@code ConverterRegistry}实例的临时使用。
  *
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  * @since 3.1
  */
+
 public class DefaultConversionService extends GenericConversionService {
 
 	@Nullable
@@ -45,32 +44,41 @@ public class DefaultConversionService extends GenericConversionService {
 
 
 	/**
-	 * Create a new {@code DefaultConversionService} with the set of
-	 * {@linkplain DefaultConversionService#addDefaultConverters(ConverterRegistry) default converters}.
+	 * 构造一个新的{@code DefaultConversionService}，使用
+	 * {@linkplain DefaultConversionService#addDefaultConverters(ConverterRegistry) 默认转换器集合}。
+	 * <p>
+	 * 该构造函数不接受任何参数，并且不会直接返回任何值。它的主要作用是初始化一个带有默认转换器的
+	 * DefaultConversionService实例。这些默认转换器能够处理不同类型之间的转换，提供了一套基本的
+	 * 数据类型转换能力。
 	 */
 	public DefaultConversionService() {
+		// 向当前转换服务添加默认的转换器集合
 		addDefaultConverters(this);
 	}
 
 	/**
-	 * Add converters appropriate for most environments.
+	 * 为大多数环境添加适当的转换器。
 	 *
-	 * @param converterRegistry the registry of converters to add to
-	 *                          (must also be castable to ConversionService, e.g. being a {@link ConfigurableConversionService})
-	 * @throws ClassCastException if the given ConverterRegistry could not be cast to a ConversionService
+	 * @param converterRegistry 转换器注册表，将向其添加转换器（也必须可转换为ConversionService，例如是{@link ConfigurableConversionService}）
+	 * @throws ClassCastException 如果给定的ConverterRegistry无法转换为ConversionService时抛出
 	 */
 	public static void addDefaultConverters(ConverterRegistry converterRegistry) {
+		// 添加基本类型转换器
 		addScalarConverters(converterRegistry);
+		// 添加集合类型转换器
 		addCollectionConverters(converterRegistry);
-
+		// 添加特定转换器：ByteBuffer、TimeZone、ZoneId、ZonedDateTime之间的转换
 		converterRegistry.addConverter(new ByteBufferConverter((ConversionService) converterRegistry));
 		converterRegistry.addConverter(new StringToTimeZoneConverter());
 		converterRegistry.addConverter(new ZoneIdToTimeZoneConverter());
 		converterRegistry.addConverter(new ZonedDateTimeToCalendarConverter());
-
+		// 添加复杂对象之间的转换器
 		converterRegistry.addConverter(new ObjectToObjectConverter());
+		// 实体ID到实体的转换器
 		converterRegistry.addConverter(new IdToEntityConverter((ConversionService) converterRegistry));
+		// 备选对象到字符串的转换器
 		converterRegistry.addConverter(new FallbackObjectToStringConverter());
+		// 对象到Optional的转换器
 		converterRegistry.addConverter(new ObjectToOptionalConverter((ConversionService) converterRegistry));
 	}
 
