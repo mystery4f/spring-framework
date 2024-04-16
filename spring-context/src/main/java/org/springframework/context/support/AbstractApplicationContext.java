@@ -709,21 +709,26 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 	}
 
-	/**
-	 * Instantiate and invoke all registered BeanFactoryPostProcessor beans,
-	 * respecting explicit order if given.
-	 * <p>Must be called before singleton instantiation.
-	 */
+    /**
+     * 实例化并调用所有已注册的BeanFactoryPostProcessor Bean,
+     * 尊重给定的明确顺序。
+     * <p>必须在单例实例化之前调用。
+     *
+     * @param beanFactory 可配置的列表 BeanFactory，提供 Bean 实例化和管理功能。
+     */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		// 调用所有注册的 BeanFactoryPostProcessor
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
-		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
-		// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
+		// 检测 LoadTimeWeaver 并准备进行编织，如果在此期间找到（例如，通过 ConfigurationClassPostProcessor 注册的 @Bean 方法）
 		if (!NativeDetector.inNativeImage() && beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
+			// 为 BeanFactory 添加 BeanPostProcessor 以支持 LoadTimeWeaver
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
+			// 设置临时类加载器以匹配上下文类型
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
 		}
 	}
+
 
 	/**
 	 * Instantiate and register all BeanPostProcessor beans,
@@ -803,29 +808,35 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * Initialize the LifecycleProcessor.
-	 * Uses DefaultLifecycleProcessor if none defined in the context.
+	 * 初始化 LifecycleProcessor。
+	 * 如果上下文中未定义 LifecycleProcessor，则使用 DefaultLifecycleProcessor。
 	 *
 	 * @see org.springframework.context.support.DefaultLifecycleProcessor
 	 */
 	protected void initLifecycleProcessor() {
-		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-		if (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) {
-			this.lifecycleProcessor =
-					beanFactory.getBean(LIFECYCLE_PROCESSOR_BEAN_NAME, LifecycleProcessor.class);
-			if (logger.isTraceEnabled()) {
-				logger.trace("Using LifecycleProcessor [" + this.lifecycleProcessor + "]");
-			}
-		} else {
-			DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
-			defaultProcessor.setBeanFactory(beanFactory);
-			this.lifecycleProcessor = defaultProcessor;
-			beanFactory.registerSingleton(LIFECYCLE_PROCESSOR_BEAN_NAME, this.lifecycleProcessor);
-			if (logger.isTraceEnabled()) {
-				logger.trace("No '" + LIFECYCLE_PROCESSOR_BEAN_NAME + "' bean, using " +
-						"[" + this.lifecycleProcessor.getClass().getSimpleName() + "]");
-			}
-		}
+	    ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+	    // 检查是否在上下文中定义了 LifecycleProcessor
+	    if (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) {
+	        // 从上下文中获取 LifecycleProcessor 实例
+	        this.lifecycleProcessor =
+	                beanFactory.getBean(LIFECYCLE_PROCESSOR_BEAN_NAME, LifecycleProcessor.class);
+	        if (logger.isTraceEnabled()) {
+	            // 记录使用的 LifecycleProcessor 实例
+	            logger.trace("Using LifecycleProcessor [" + this.lifecycleProcessor + "]");
+	        }
+	    } else {
+	        // 创建 DefaultLifecycleProcessor 实例
+	        DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
+	        defaultProcessor.setBeanFactory(beanFactory);
+	        this.lifecycleProcessor = defaultProcessor;
+	        // 将 DefaultLifecycleProcessor 注册为单例 bean
+	        beanFactory.registerSingleton(LIFECYCLE_PROCESSOR_BEAN_NAME, this.lifecycleProcessor);
+	        if (logger.isTraceEnabled()) {
+	            // 记录使用了默认的 LifecycleProcessor 实例
+	            logger.trace("No '" + LIFECYCLE_PROCESSOR_BEAN_NAME + "' bean, using " +
+	                    "[" + this.lifecycleProcessor.getClass().getSimpleName() + "]");
+	        }
+	    }
 	}
 
 	/**
