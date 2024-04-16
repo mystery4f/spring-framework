@@ -76,9 +76,20 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 	}
 
 
+	/**
+	 * 在Bean初始化之前对其进行后处理。
+	 * 该方法检查给定的Bean是否实现了特定的接口（如EnvironmentAware, EmbeddedValueResolverAware等），
+	 * 如果实现了，则调用相应的设置方法，为Bean注入所需的依赖。
+	 *
+	 * @param bean 将要被后处理的Bean实例。
+	 * @param beanName Bean的名称。
+	 * @return 经过可能的后处理后的Bean实例。如果没有进行任何处理，返回原Bean实例。
+	 * @throws BeansException 如果在处理过程中发生错误。
+	 */
 	@Override
 	@Nullable
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	    // 检查bean是否实现了特定的Aware接口，如果没有则直接返回原bean
 		if (!(bean instanceof EnvironmentAware || bean instanceof EmbeddedValueResolverAware ||
 				bean instanceof ResourceLoaderAware || bean instanceof ApplicationEventPublisherAware ||
 				bean instanceof MessageSourceAware || bean instanceof ApplicationContextAware ||
@@ -88,10 +99,12 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 
 		AccessControlContext acc = null;
 
+	    // 如果系统有安全管理员，则获取访问控制上下文
 		if (System.getSecurityManager() != null) {
 			acc = this.applicationContext.getBeanFactory().getAccessControlContext();
 		}
 
+	    // 在有安全管理员的情况下，使用特权动作调用invokeAwareInterfaces，以避免权限检查
 		if (acc != null) {
 			AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 				invokeAwareInterfaces(bean);
@@ -99,6 +112,7 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			}, acc);
 		}
 		else {
+	        // 在没有安全管理员的情况下直接调用invokeAwareInterfaces
 			invokeAwareInterfaces(bean);
 		}
 
