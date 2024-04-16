@@ -635,22 +635,28 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * 配置工厂的标准上下文特性，例如上下文的类装载器和后处理器。
+	 * 该方法对 BeanFactory 进行一系列的配置，包括设置类加载器、表达式解析器、注册资源编辑器、
+	 * 添加 ApplicationContextAware 处理器、忽略特定接口、注册可解析的依赖项、
+	 * 检测和配置 LoadTimeWeaver、注册默认环境 Bean 等。
 	 *
-	 * @param beanFactory 要配置的 BeanFactory
+	 * @param beanFactory 要配置的 BeanFactory, 用于 Spring 容器中管理 Bean 的实例。
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// 设置 Bean 工厂的类装载器
 		beanFactory.setBeanClassLoader(getClassLoader());
-		// 如果不应忽略 SpEL，则设置 Bean 表达式解析器
+
+		// 根据是否忽略 SpEL 来决定是否设置 Bean 表达式解析器
 		if (!shouldIgnoreSpel) {
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
-		// 注册资源编辑器的注册器
+
+		// 注册资源编辑器的注册器，以支持资源路径的解析
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
-		// 添加 ApplicationContextAwareProcessor，将 ApplicationContext 传递给 BeanFactory 实例
+		// 添加 ApplicationContextAwareProcessor，使得 ApplicationContext 可以被注入到 Bean 实例中
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
-		// 忽略一些接口，这些接口在进行依赖注入时不应该被考虑
+
+		// 忽略一系列接口，这些接口在依赖注入时不需要考虑
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -659,24 +665,23 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.ignoreDependencyInterface(ApplicationContextAware.class);
 		beanFactory.ignoreDependencyInterface(ApplicationStartupAware.class);
 
-		// 向工厂注册可解析 BeanFactory 接口类型和一些其他类型的依赖项
-		// 用于依赖注入
+		// 注册 BeanFactory 和其他依赖项，以供依赖注入使用
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
-		// 为检测到的内部 Bean 注册 ApplicationListenerDetector，在后处理时检测 ApplicationListener 实例
+		// 为内部 Bean 注册 ApplicationListenerDetector，以便在后处理时检测 ApplicationListener 实例
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
-		// 检测 LoadTimeWeaver 和准备编织
+		// 检测 LoadTimeWeaver 并准备编织，如果运行在原生图像中则不进行操作
 		if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
-			// 如果找到了 LoadTimeWeaver，则添加 LoadTimeWeaverAwareProcessor 并设置一个临时的 ClassLoader 进行类型匹配
+			// 添加 LoadTimeWeaverAwareProcessor 并设置临时 ClassLoader 以进行类型匹配
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
 		}
 
-		// 注册默认的环境 Bean
+		// 注册默认的环境 Bean，如果它们还没有被注册的话
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
@@ -690,6 +695,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			beanFactory.registerSingleton(APPLICATION_STARTUP_BEAN_NAME, getApplicationStartup());
 		}
 	}
+
 
 
 	/**
