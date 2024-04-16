@@ -21,8 +21,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.MultiValueMap;
 
 /**
- * {@link Condition} that matches based on the value of a {@link Profile @Profile}
- * annotation.
+ * 一个匹配条件类，用于根据{@link Profile @Profile}注解的值进行匹配。
  *
  * @author Chris Beams
  * @author Phillip Webb
@@ -31,18 +30,27 @@ import org.springframework.util.MultiValueMap;
  */
 class ProfileCondition implements Condition {
 
+    /**
+     * 判断当前条件是否匹配。
+     *
+     * @param context 提供当前环境和条件上下文的Context对象。
+     * @param metadata 提供注解类型元数据的AnnotatedTypeMetadata对象。
+     * @return boolean 如果当前环境与{@link Profile @Profile}注解中指定的条件匹配，则返回true；否则返回false。
+     */
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		// 获取所有@Profile注解的属性值
 		MultiValueMap<String, Object> attrs = metadata.getAllAnnotationAttributes(Profile.class.getName());
 		if (attrs != null) {
+			// 遍历value属性，检查当前环境是否接受指定的profile
 			for (Object value : attrs.get("value")) {
 				if (context.getEnvironment().acceptsProfiles(Profiles.of((String[]) value))) {
 					return true;
 				}
 			}
-			return false;
+			return false; // 如果没有匹配的profile，则返回false
 		}
-		return true;
+		return true; // 如果没有找到@Profile注解，则认为匹配
 	}
 
 }
