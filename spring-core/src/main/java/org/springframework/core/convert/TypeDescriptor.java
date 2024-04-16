@@ -279,21 +279,27 @@ public class TypeDescriptor implements Serializable {
 		return nested(new TypeDescriptor(methodParameter), nestingLevel);
 	}
 
+	/**
+	 * 获取指定嵌套级别的类型描述符。
+	 * @param typeDescriptor 初始类型描述符，不可为null。
+	 * @param nestingLevel 嵌套级别，表示需要获取的嵌套类型的深度。
+	 * @return 返回对应嵌套级别的类型描述符，如果无法获取则返回null。
+	 */
 	@Nullable
 	private static TypeDescriptor nested(TypeDescriptor typeDescriptor, int nestingLevel) {
 		ResolvableType nested = typeDescriptor.resolvableType;
 		for (int i = 0; i < nestingLevel; i++) {
+			// 遍历嵌套类型，根据嵌套级别获取相应的类型。
 			if (Object.class == nested.getType()) {
-				// Could be a collection type but we don't know about its element type,
-				// so let's just assume there is an element type of type Object...
+				// 如果当前类型为Object类，可能是一个集合类型，但无法确定其元素类型，故假设其有元素类型为Object。
 			} else {
-				nested = nested.getNested(2);
+				nested = nested.getNested(2); // 获取嵌套的下一层类型
 			}
 		}
 		if (nested == ResolvableType.NONE) {
-			return null;
+			return null; // 如果无法解析指定嵌套级别的类型，则返回null
 		}
-		return getRelatedIfResolvable(typeDescriptor, nested);
+		return getRelatedIfResolvable(typeDescriptor, nested); // 尝试获取与指定类型相关的类型描述符
 	}
 
 	@Nullable
@@ -559,28 +565,24 @@ public class TypeDescriptor implements Serializable {
 	}
 
 	/**
-	 * Narrows this {@link TypeDescriptor} by setting its type to the class of the
-	 * provided value.
-	 * <p>If the value is {@code null}, no narrowing is performed and this TypeDescriptor
-	 * is returned unchanged.
-	 * <p>Designed to be called by binding frameworks when they read property, field,
-	 * or method return values. Allows such frameworks to narrow a TypeDescriptor built
-	 * from a declared property, field, or method return value type. For example, a field
-	 * declared as {@code java.lang.Object} would be narrowed to {@code java.util.HashMap}
-	 * if it was set to a {@code java.util.HashMap} value. The narrowed TypeDescriptor
-	 * can then be used to convert the HashMap to some other type. Annotation and nested
-	 * type context is preserved by the narrowed copy.
+	 * 将此{@link TypeDescriptor}的类型限定为提供的值的类。
+	 * <p>如果值为{@code null}，则不执行任何限定操作，并且不变地返回此TypeDescriptor。
+	 * <p>旨在由绑定框架调用，当它们读取属性、字段或方法返回值时。允许此类框架缩窄从声明的属性、
+	 * 字段或方法返回值类型构建的TypeDescriptor。例如，声明为{@code java.lang.Object}的字段，
+	 * 如果被设置为{@code java.util.HashMap}值，则将被缩窄为{@code java.util.HashMap}。
+	 * 缩窄的TypeDescriptor随后可以用于将HashMap转换为其他类型。注解和嵌套类型上下文通过缩窄的副本保留。
 	 *
-	 * @param value the value to use for narrowing this type descriptor
-	 * @return this TypeDescriptor narrowed (returns a copy with its type updated to the
-	 * class of the provided value)
+	 * @param value 用于缩窄此类型描述符的值
+	 * @return 此TypeDescriptor被缩窄（返回一个其类型被更新为提供的值的类的副本）
 	 */
 	public TypeDescriptor narrow(@Nullable Object value) {
-		if (value == null) {
-			return this;
-		}
-		ResolvableType narrowed = ResolvableType.forType(value.getClass(), getResolvableType());
-		return new TypeDescriptor(narrowed, value.getClass(), getAnnotations());
+	    if (value == null) {
+	        return this;  // 如果提供的值为null，则直接返回当前TypeDescriptor实例，不做任何改变
+	    }
+	    // 创建一个新的ResolvableType实例，基于提供的值的类，并保留当前TypeDescriptor的ResolvableType信息
+	    ResolvableType narrowed = ResolvableType.forType(value.getClass(), getResolvableType());
+	    // 使用缩窄后的ResolvableType和注解信息创建并返回一个新的TypeDescriptor实例
+	    return new TypeDescriptor(narrowed, value.getClass(), getAnnotations());
 	}
 
 	/**
