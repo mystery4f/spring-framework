@@ -49,6 +49,7 @@ import java.util.stream.Stream;
  * @see ConversionService#convert(Object, TypeDescriptor, TypeDescriptor)
  * @since 3.0
  */
+@SuppressWarnings("AlibabaAvoidCommentBehindStatement")
 public class TypeDescriptor implements Serializable {
 
 	private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
@@ -77,6 +78,7 @@ public class TypeDescriptor implements Serializable {
 	/**
 	 * 根据 {@link MethodParameter} 创建一个新的类型描述符。
 	 * <p>当源或目标转换点是构造函数参数、方法参数或方法返回值时，使用这个构造函数。
+	 *
 	 * @param methodParameter 方法参数
 	 */
 	public TypeDescriptor(MethodParameter methodParameter) {
@@ -117,8 +119,8 @@ public class TypeDescriptor implements Serializable {
 	 * 从5.1.4版本开始，它被设置为公共的，而在之前它是受保护的。
 	 *
 	 * @param resolvableType 可解析的类型，提供动态类型解析能力。
-	 * @param type            支持的后端类型（如果为{@code null}，则表示需要解析）。
-	 * @param annotations     类型注解。
+	 * @param type           支持的后端类型（如果为{@code null}，则表示需要解析）。
+	 * @param annotations    类型注解。
 	 * @since 4.0
 	 */
 	public TypeDescriptor(ResolvableType resolvableType, @Nullable Class<?> type, @Nullable Annotation[] annotations) {
@@ -138,8 +140,8 @@ public class TypeDescriptor implements Serializable {
 	 */
 	@Nullable
 	public static TypeDescriptor forObject(@Nullable Object source) {
-	    // 根据源对象是否为null，决定是返回null还是调用valueOf方法获取类型描述符
-	    return (source != null ? valueOf(source.getClass()) : null);
+		// 根据源对象是否为null，决定是返回null还是调用valueOf方法获取类型描述符
+		return (source != null ? valueOf(source.getClass()) : null);
 	}
 
 	/**
@@ -151,14 +153,14 @@ public class TypeDescriptor implements Serializable {
 	 * @return 对应的类型描述符
 	 */
 	public static TypeDescriptor valueOf(@Nullable Class<?> type) {
-	    // 如果类型为null，则将其视为Object类
-	    if (type == null) {
-	        type = Object.class;
-	    }
-	    // 从缓存中尝试获取类型描述符
-	    TypeDescriptor desc = commonTypesCache.get(type);
-	    // 如果缓存中存在，则使用缓存中的描述符；否则，创建一个新的类型描述符
-	    return (desc != null ? desc : new TypeDescriptor(ResolvableType.forClass(type), null, null));
+		// 如果类型为null，则将其视为Object类
+		if (type == null) {
+			type = Object.class;
+		}
+		// 从缓存中尝试获取类型描述符
+		TypeDescriptor desc = commonTypesCache.get(type);
+		// 如果缓存中存在，则使用缓存中的描述符；否则，创建一个新的类型描述符
+		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forClass(type), null, null));
 	}
 
 	/**
@@ -176,15 +178,15 @@ public class TypeDescriptor implements Serializable {
 	 */
 	public static TypeDescriptor collection(Class<?> collectionType, @Nullable TypeDescriptor elementTypeDescriptor) {
 		// 确保集合类型不为null
-	    Assert.notNull(collectionType, "Collection type must not be null");
+		Assert.notNull(collectionType, "Collection type must not be null");
 		// 确保类型是Collection的子类
-	    if (!Collection.class.isAssignableFrom(collectionType)) {
-	        throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
-	    }
+		if (!Collection.class.isAssignableFrom(collectionType)) {
+			throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
+		}
 		// 获取元素的可解析类型
-	    ResolvableType element = (elementTypeDescriptor != null ? elementTypeDescriptor.resolvableType : null);
+		ResolvableType element = (elementTypeDescriptor != null ? elementTypeDescriptor.resolvableType : null);
 		// 创建并返回集合类型的描述符
-	    return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null, null);
+		return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null, null);
 	}
 
 	/**
@@ -203,17 +205,17 @@ public class TypeDescriptor implements Serializable {
 	 * @throws IllegalArgumentException 如果 mapType 不是 [java.util.Map] 的子类。
 	 */
 	public static TypeDescriptor map(Class<?> mapType, @Nullable TypeDescriptor keyTypeDescriptor,
-	                                  @Nullable TypeDescriptor valueTypeDescriptor) {
-	    // 确保映射类型不为null，并且确实是Map的子类
-	    Assert.notNull(mapType, "Map type must not be null");
-	    if (!Map.class.isAssignableFrom(mapType)) {
-	        throw new IllegalArgumentException("Map type must be a [java.util.Map]");
-	    }
-	    // 获取键和值的ResolvableType，如果描述符存在的话
-	    ResolvableType key = (keyTypeDescriptor != null ? keyTypeDescriptor.resolvableType : null);
-	    ResolvableType value = (valueTypeDescriptor != null ? valueTypeDescriptor.resolvableType : null);
-	    // 创建并返回一个新的类型描述符，带有映射的泛型参数
-	    return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null, null);
+									 @Nullable TypeDescriptor valueTypeDescriptor) {
+		// 确保映射类型不为null，并且确实是Map的子类
+		Assert.notNull(mapType, "Map type must not be null");
+		if (!Map.class.isAssignableFrom(mapType)) {
+			throw new IllegalArgumentException("Map type must be a [java.util.Map]");
+		}
+		// 获取键和值的ResolvableType，如果描述符存在的话
+		ResolvableType key = (keyTypeDescriptor != null ? keyTypeDescriptor.resolvableType : null);
+		ResolvableType value = (valueTypeDescriptor != null ? valueTypeDescriptor.resolvableType : null);
+		// 创建并返回一个新的类型描述符，带有映射的泛型参数
+		return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null, null);
 	}
 
 	/**
@@ -229,13 +231,22 @@ public class TypeDescriptor implements Serializable {
 	 */
 	@Nullable
 	public static TypeDescriptor array(@Nullable TypeDescriptor elementTypeDescriptor) {
-	    // 当元素类型描述符为null时，直接返回null，否则创建一个新的数组类型描述符
-	    if (elementTypeDescriptor == null) {
-	        return null;
-	    }
-	    return new TypeDescriptor(ResolvableType.forArrayComponent(elementTypeDescriptor.resolvableType),
-	            null, elementTypeDescriptor.getAnnotations()
-	    );
+		// 当元素类型描述符为null时，直接返回null，否则创建一个新的数组类型描述符
+		if (elementTypeDescriptor == null) {
+			return null;
+		}
+		return new TypeDescriptor(ResolvableType.forArrayComponent(elementTypeDescriptor.resolvableType),
+				null, elementTypeDescriptor.getAnnotations()
+		);
+	}
+
+	/**
+	 * Return the annotations associated with this type descriptor, if any.
+	 *
+	 * @return the annotations, or an empty array if none
+	 */
+	public Annotation[] getAnnotations() {
+		return this.annotatedElement.getAnnotations();
 	}
 
 	/**
@@ -251,21 +262,21 @@ public class TypeDescriptor implements Serializable {
 	 * <p>如果无法获取嵌套类型（例如，方法参数是{@code List<?>}），则返回{@code null}。
 	 *
 	 * @param methodParameter 方法参数，其嵌套级别为1
-	 * @param nestingLevel 嵌套类型的级别，在方法参数内的集合/数组元素或
-	 *                     映射键/值声明的嵌套级别
+	 * @param nestingLevel    嵌套类型的级别，在方法参数内的集合/数组元素或
+	 *                        映射键/值声明的嵌套级别
 	 * @return 指定嵌套级别的类型描述符，如果无法获取则返回{@code null}
 	 * @throws IllegalArgumentException 如果输入的{@link MethodParameter}参数的嵌套级别不是1，
 	 *                                  或者指定嵌套级别之前的类型不是集合、数组或映射类型
 	 */
 	@Nullable
 	public static TypeDescriptor nested(MethodParameter methodParameter, int nestingLevel) {
-	    // 校验方法参数的嵌套级别是否为1，不满足则抛出异常
-	    if (methodParameter.getNestingLevel() != 1) {
-	        throw new IllegalArgumentException("MethodParameter nesting level must be 1: " +
-	                "use the nestingLevel parameter to specify the desired nestingLevel for nested type traversal");
-	    }
-	    // 使用给定的方法参数和嵌套级别获取嵌套类型的描述符
-	    return nested(new TypeDescriptor(methodParameter), nestingLevel);
+		// 校验方法参数的嵌套级别是否为1，不满足则抛出异常
+		if (methodParameter.getNestingLevel() != 1) {
+			throw new IllegalArgumentException("MethodParameter nesting level must be 1: " +
+					"use the nestingLevel parameter to specify the desired nestingLevel for nested type traversal");
+		}
+		// 使用给定的方法参数和嵌套级别获取嵌套类型的描述符
+		return nested(new TypeDescriptor(methodParameter), nestingLevel);
 	}
 
 	@Nullable
@@ -285,27 +296,26 @@ public class TypeDescriptor implements Serializable {
 		return getRelatedIfResolvable(typeDescriptor, nested);
 	}
 
+	@Nullable
+	private static TypeDescriptor getRelatedIfResolvable(TypeDescriptor source, ResolvableType type) {
+		if (type.resolve() == null) {
+			return null;
+		}
+		return new TypeDescriptor(type, null, source.getAnnotations());
+	}
+
 	/**
-	 * Create a type descriptor for a nested type declared within the field.
-	 * <p>For example, if the field is a {@code List<String>} and the nesting
-	 * level is 1, the nested type descriptor will be {@code String.class}.
-	 * <p>If the field is a {@code List<List<String>>} and the nesting level is
-	 * 2, the nested type descriptor will also be a {@code String.class}.
-	 * <p>If the field is a {@code Map<Integer, String>} and the nesting level
-	 * is 1, the nested type descriptor will be String, derived from the map value.
-	 * <p>If the field is a {@code List<Map<Integer, String>>} and the nesting
-	 * level is 2, the nested type descriptor will be String, derived from the map value.
-	 * <p>Returns {@code null} if a nested type cannot be obtained because it was not
-	 * declared. For example, if the field is a {@code List<?>}, the nested type
-	 * descriptor returned will be {@code null}.
+	 * 为字段中声明的嵌套类型创建类型描述符。
+	 * <p>例如，如果字段是{@code List<String>}，且嵌套级别为1，则嵌套类型描述符将是{@code String.class}。
+	 * <p>如果字段是{@code List<List<String>>}，且嵌套级别为2，嵌套类型描述符也将是{@code String.class}。
+	 * <p>如果字段是{@code Map<Integer, String>}，且嵌套级别为1，嵌套类型描述符将是从映射值派生出的String。
+	 * <p>如果字段是{@code List<Map<Integer, String>>}，且嵌套级别为2，嵌套类型描述符也将是从映射值派生出的String。
+	 * <p>如果无法获取嵌套类型（例如，如果字段是{@code List<?>}），则返回{@code null}。
 	 *
-	 * @param field        the field
-	 * @param nestingLevel the nesting level of the collection/array element or
-	 *                     map key/value declaration within the field
-	 * @return the nested type descriptor at the specified nesting level,
-	 * or {@code null} if it could not be obtained
-	 * @throws IllegalArgumentException if the types up to the specified nesting
-	 *                                  level are not of collection, array, or map types
+	 * @param field        字段
+	 * @param nestingLevel 嵌套级别的集合/数组元素或映射键/值声明
+	 * @return 指定嵌套级别的嵌套类型描述符，如果无法获取则返回{@code null}
+	 * @throws IllegalArgumentException 如果指定嵌套级别之前的类型不是集合、数组或映射类型
 	 */
 	@Nullable
 	public static TypeDescriptor nested(Field field, int nestingLevel) {
@@ -313,26 +323,18 @@ public class TypeDescriptor implements Serializable {
 	}
 
 	/**
-	 * Create a type descriptor for a nested type declared within the property.
-	 * <p>For example, if the property is a {@code List<String>} and the nesting
-	 * level is 1, the nested type descriptor will be {@code String.class}.
-	 * <p>If the property is a {@code List<List<String>>} and the nesting level
-	 * is 2, the nested type descriptor will also be a {@code String.class}.
-	 * <p>If the property is a {@code Map<Integer, String>} and the nesting level
-	 * is 1, the nested type descriptor will be String, derived from the map value.
-	 * <p>If the property is a {@code List<Map<Integer, String>>} and the nesting
-	 * level is 2, the nested type descriptor will be String, derived from the map value.
-	 * <p>Returns {@code null} if a nested type cannot be obtained because it was not
-	 * declared. For example, if the property is a {@code List<?>}, the nested type
-	 * descriptor returned will be {@code null}.
+	 * 为属性中声明的嵌套类型创建类型描述符。
+	 * <p>例如，如果属性是{@code List<String>}，且嵌套级别为1，则嵌套类型描述符将是{@code String.class}。
+	 * <p>如果属性是{@code List<List<String>>}，且嵌套级别为2，嵌套类型描述符也将是{@code String.class}。
+	 * <p>如果属性是{@code Map<Integer, String>}，且嵌套级别为1，嵌套类型描述符将是从映射值派生出的String类型。
+	 * <p>如果属性是{@code List<Map<Integer, String>>}，且嵌套级别为2，嵌套类型描述符也将是从映射值派生出的String类型。
+	 * <p>如果无法获取嵌套类型（例如，如果属性是{@code List<?>}），则返回{@code null}。
+	 * 嵌套类型描述符返回{@code null}。
 	 *
-	 * @param property     the property
-	 * @param nestingLevel the nesting level of the collection/array element or
-	 *                     map key/value declaration within the property
-	 * @return the nested type descriptor at the specified nesting level, or
-	 * {@code null} if it could not be obtained
-	 * @throws IllegalArgumentException if the types up to the specified nesting
-	 *                                  level are not of collection, array, or map types
+	 * @param property     属性
+	 * @param nestingLevel 属性中集合/数组元素或映射键/值声明的嵌套级别
+	 * @return 指定嵌套级别的嵌套类型描述符，如果无法获取则返回{@code null}
+	 * @throws IllegalArgumentException 如果指定嵌套级别之前的类型不是集合、数组或映射类型
 	 */
 	@Nullable
 	public static TypeDescriptor nested(Property property, int nestingLevel) {
@@ -340,227 +342,209 @@ public class TypeDescriptor implements Serializable {
 	}
 
 	/**
-	 * Variation of {@link #getType()} that accounts for a primitive type by
-	 * returning its object wrapper type.
-	 * <p>This is useful for conversion service implementations that wish to
-	 * normalize to object-based types and not work with primitive types directly.
+	 * 此方法是{@link #getType()}方法的变种，专门用于处理原始类型，会返回原始类型的包装类型。
+	 * <p>这对于那些希望将类型标准化为对象类型，而不直接处理原始类型的转换服务实现非常有用。
+	 *
+	 * @return 返回类型为Class<?>，表示此对象对应的类型，如果对应的是原始类型，则返回其包装类型。
 	 */
 	public Class<?> getObjectType() {
-		return ClassUtils.resolvePrimitiveIfNecessary(getType());
+	    // 将获取到的类型转换为对应的包装类型，如果本身就是包装类型则不变
+	    return ClassUtils.resolvePrimitiveIfNecessary(getType());
 	}
 
 	/**
-	 * Return the underlying source of the descriptor. Will return a {@link Field},
-	 * {@link MethodParameter} or {@link Type} depending on how the {@link TypeDescriptor}
-	 * was constructed. This method is primarily to provide access to additional
-	 * type information or meta-data that alternative JVM languages may provide.
+	 * 获取描述符底层的源信息。根据 {@link TypeDescriptor} 的构造方式，返回值可能是 {@link Field},
+	 * {@link MethodParameter} 或 {@link Type} 中的一个。该方法主要用于访问替代JVM语言可能提供的额外
+	 * 类型信息或元数据。
 	 *
+	 * @return 源信息对象，可能是 {@link Field}, {@link MethodParameter} 或 {@link Type} 中的一个。
 	 * @since 4.0
 	 */
 	public Object getSource() {
-		return this.resolvableType.getSource();
+	    return this.resolvableType.getSource(); // 从可解析类型中获取源信息
 	}
 
 	/**
-	 * Cast this {@link TypeDescriptor} to a superclass or implemented interface
-	 * preserving annotations and nested type context.
+	 * 将此{@link TypeDescriptor}转换为超类或实现的接口，保留注释和嵌套类型上下文。
 	 *
-	 * @param superType the super type to cast to (can be {@code null})
-	 * @return a new TypeDescriptor for the up-cast type
-	 * @throws IllegalArgumentException if this type is not assignable to the super-type
+	 * @param superType 要转换为的超类型（可以为{@code null}）
+	 * @return 转换后的类型的新的TypeDescriptor
+	 * @throws IllegalArgumentException 如果此类型不能分配给超类型
 	 * @since 3.2
 	 */
 	@Nullable
 	public TypeDescriptor upcast(@Nullable Class<?> superType) {
-		if (superType == null) {
-			return null;
-		}
-		Assert.isAssignable(superType, getType());
-		return new TypeDescriptor(getResolvableType().as(superType), superType, getAnnotations());
+	    if (superType == null) {
+	        return null;
+	    }
+	    Assert.isAssignable(superType, getType()); // 确保超类型是可分配的
+	    return new TypeDescriptor(getResolvableType().as(superType), superType, getAnnotations());
 	}
-
 	/**
-	 * The type of the backing class, method parameter, field, or property
-	 * described by this TypeDescriptor.
-	 * <p>Returns primitive types as-is. See {@link #getObjectType()} for a
-	 * variation of this operation that resolves primitive types to their
-	 * corresponding Object types if necessary.
+	 * 返回由此TypeDescriptor描述的底层类、方法参数、字段或属性的类型。
+	 * <p>原生类型将直接返回。如需获取与此操作相关的对象类型变体，请参见{@link #getObjectType()}。
 	 *
 	 * @see #getObjectType()
 	 */
 	public Class<?> getType() {
-		return this.type;
+	    return this.type;
 	}
-
 	/**
-	 * Return the underlying {@link ResolvableType}.
+	 * 返回底层的{@link ResolvableType}。
 	 *
 	 * @since 4.0
 	 */
 	public ResolvableType getResolvableType() {
-		return this.resolvableType;
+	    return this.resolvableType;
 	}
 
 	/**
-	 * Return the annotations associated with this type descriptor, if any.
+	 * 获取此类型的名称：完全限定类名。
 	 *
-	 * @return the annotations, or an empty array if none
-	 */
-	public Annotation[] getAnnotations() {
-		return this.annotatedElement.getAnnotations();
-	}
-
-	/**
-	 * Return the name of this type: the fully qualified class name.
+	 * @return 表示此类型完全限定名的字符串
 	 */
 	public String getName() {
-		return ClassUtils.getQualifiedName(getType());
+	    return ClassUtils.getQualifiedName(getType());
 	}
-
 	/**
-	 * Is this type a primitive type?
+	 * 此类型是否为原始类型？
+	 *
+	 * @return 如果此类型为原始类型，则返回<tt>true</tt>
 	 */
 	public boolean isPrimitive() {
-		return getType().isPrimitive();
+	    return getType().isPrimitive();
 	}
-
 	/**
-	 * Determine if this type descriptor has the specified annotation.
-	 * <p>As of Spring Framework 4.2, this method supports arbitrary levels
-	 * of meta-annotations.
+	 * 判断此类型描述符是否具有指定的注解。
+	 * <p>自Spring Framework 4.2起，此方法支持任意级别的元注解。
 	 *
-	 * @param annotationType the annotation type
-	 * @return <tt>true</tt> if the annotation is present
+	 * @param annotationType 注解类型
+	 * @return 如果注解存在，则返回<tt>true</tt>
 	 */
 	public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
-		if (this.annotatedElement.isEmpty()) {
-			// Shortcut: AnnotatedElementUtils would have to expect AnnotatedElement.getAnnotations()
-			// to return a copy of the array, whereas we can do it more efficiently here.
-			return false;
-		}
-		return AnnotatedElementUtils.isAnnotated(this.annotatedElement, annotationType);
+	    if (this.annotatedElement.isEmpty()) {
+	        // 快捷方式：避免不必要的数组复制，提高效率
+	        return false;
+	    }
+	    return AnnotatedElementUtils.isAnnotated(this.annotatedElement, annotationType);
 	}
 
 	/**
-	 * Obtain the annotation of the specified {@code annotationType} that is on this type descriptor.
-	 * <p>As of Spring Framework 4.2, this method supports arbitrary levels of meta-annotations.
+	 * 获取此类型描述符上指定的{@code annotationType}注解。
+	 * <p>自Spring Framework 4.2起，此方法支持任意级别的元注解。
 	 *
-	 * @param annotationType the annotation type
-	 * @return the annotation, or {@code null} if no such annotation exists on this type descriptor
+	 * @param annotationType 注解类型
+	 * @return 该注解，如果此类型描述符上不存在该注解，则返回{@code null}
 	 */
 	@Nullable
 	public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-		if (this.annotatedElement.isEmpty()) {
-			// Shortcut: AnnotatedElementUtils would have to expect AnnotatedElement.getAnnotations()
-			// to return a copy of the array, whereas we can do it more efficiently here.
-			return null;
-		}
-		return AnnotatedElementUtils.getMergedAnnotation(this.annotatedElement, annotationType);
+	    if (this.annotatedElement.isEmpty()) {
+	        // 如果没有注解元素，则直接返回null，避免不必要的调用
+	        return null;
+	    }
+	    // 使用AnnotatedElementUtils获取合并后的注解
+	    return AnnotatedElementUtils.getMergedAnnotation(this.annotatedElement, annotationType);
 	}
-
 	/**
-	 * Returns true if an object of this type descriptor can be assigned to the location
-	 * described by the given type descriptor.
-	 * <p>For example, {@code valueOf(String.class).isAssignableTo(valueOf(CharSequence.class))}
-	 * returns {@code true} because a String value can be assigned to a CharSequence variable.
-	 * On the other hand, {@code valueOf(Number.class).isAssignableTo(valueOf(Integer.class))}
-	 * returns {@code false} because, while all Integers are Numbers, not all Numbers are Integers.
-	 * <p>For arrays, collections, and maps, element and key/value types are checked if declared.
-	 * For example, a List&lt;String&gt; field value is assignable to a Collection&lt;CharSequence&gt;
-	 * field, but List&lt;Number&gt; is not assignable to List&lt;Integer&gt;.
+	 * 判断此类型描述符的对象是否可以被分配到给定类型描述符的位置。
+	 * <p>例如，{@code valueOf(String.class).isAssignableTo(valueOf(CharSequence.class))}
+	 * 返回{@code true}，因为String值可以被分配给CharSequence类型的变量。
+	 * 反之，{@code valueOf(Number.class).isAssignableTo(valueOf(Integer.class))}
+	 * 返回{@code false}，因为虽然所有的整数都是数字，但不是所有的数字都是整数。
+	 * <p>对于数组、集合和映射，如果声明了，则检查元素和键/值类型。
+	 * 例如，List<String>字段值可以被分配给Collection<CharSequence>字段，
+	 * 但List<Number>不可以用作List<Integer>。
 	 *
-	 * @return {@code true} if this type is assignable to the type represented by the provided
-	 * type descriptor
+	 * @return 如果此类型可以被提供的类型描述符表示的类型分配，则返回{@code true}
 	 * @see #getObjectType()
 	 */
 	public boolean isAssignableTo(TypeDescriptor typeDescriptor) {
-		boolean typesAssignable = typeDescriptor.getObjectType().isAssignableFrom(getObjectType());
-		if (!typesAssignable) {
-			return false;
-		}
-		if (isArray() && typeDescriptor.isArray()) {
-			return isNestedAssignable(getElementTypeDescriptor(), typeDescriptor.getElementTypeDescriptor());
-		} else if (isCollection() && typeDescriptor.isCollection()) {
-			return isNestedAssignable(getElementTypeDescriptor(), typeDescriptor.getElementTypeDescriptor());
-		} else if (isMap() && typeDescriptor.isMap()) {
-			return isNestedAssignable(getMapKeyTypeDescriptor(), typeDescriptor.getMapKeyTypeDescriptor()) &&
-					isNestedAssignable(getMapValueTypeDescriptor(), typeDescriptor.getMapValueTypeDescriptor());
-		} else {
-			return true;
-		}
+	    // 检查基本类型是否兼容
+	    boolean typesAssignable = typeDescriptor.getObjectType().isAssignableFrom(getObjectType());
+	    if (!typesAssignable) {
+	        return false;
+	    }
+	    // 检查数组类型兼容性
+	    if (isArray() && typeDescriptor.isArray()) {
+	        return isNestedAssignable(getElementTypeDescriptor(), typeDescriptor.getElementTypeDescriptor());
+	    // 检查集合类型兼容性
+	    } else if (isCollection() && typeDescriptor.isCollection()) {
+	        return isNestedAssignable(getElementTypeDescriptor(), typeDescriptor.getElementTypeDescriptor());
+	    // 检查映射类型兼容性
+	    } else if (isMap() && typeDescriptor.isMap()) {
+	        return isNestedAssignable(getMapKeyTypeDescriptor(), typeDescriptor.getMapKeyTypeDescriptor()) &&
+	                isNestedAssignable(getMapValueTypeDescriptor(), typeDescriptor.getMapValueTypeDescriptor());
+	    } else {
+	        return true;
+	    }
 	}
-
-	private boolean isNestedAssignable(@Nullable TypeDescriptor nestedTypeDescriptor,
-									   @Nullable TypeDescriptor otherNestedTypeDescriptor) {
-
-		return (nestedTypeDescriptor == null || otherNestedTypeDescriptor == null ||
-				nestedTypeDescriptor.isAssignableTo(otherNestedTypeDescriptor));
-	}
-
 	/**
-	 * Is this type a {@link Collection} type?
+	 * 判断嵌套类型是否兼容。
+	 *
+	 * @param nestedTypeDescriptor 嵌套类型描述符
+	 * @param otherNestedTypeDescriptor 另一个嵌套类型描述符
+	 * @return 如果嵌套类型兼容，则返回{@code true}
+	 */
+	private boolean isNestedAssignable(@Nullable TypeDescriptor nestedTypeDescriptor,
+	                                   @Nullable TypeDescriptor otherNestedTypeDescriptor) {
+	    // 判断类型描述符是否为空或其中一方为空，或判断是否兼容
+	    return (nestedTypeDescriptor == null || otherNestedTypeDescriptor == null ||
+	            nestedTypeDescriptor.isAssignableTo(otherNestedTypeDescriptor));
+	}
+	/**
+	 * 此类型是否为{@link Collection}类型？
 	 */
 	public boolean isCollection() {
-		return Collection.class.isAssignableFrom(getType());
+	    // 判断类型是否为Collection的子类或实现类
+	    return Collection.class.isAssignableFrom(getType());
 	}
 
 	/**
-	 * Is this type an array type?
+	 * 判断当前类型是否为数组类型。
+	 *
+	 * @return 如果当前类型是数组，则返回true，否则返回false。
 	 */
 	public boolean isArray() {
-		return getType().isArray();
+	    return getType().isArray();
 	}
-
 	/**
-	 * If this type is a {@link Collection} or an array, creates a element TypeDescriptor
-	 * from the provided collection or array element.
-	 * <p>Narrows the {@link #getElementTypeDescriptor() elementType} property to the class
-	 * of the provided collection or array element. For example, if this describes a
-	 * {@code java.util.List<java.lang.Number>} and the element argument is a
-	 * {@code java.lang.Integer}, the returned TypeDescriptor will be {@code java.lang.Integer}.
-	 * If this describes a {@code java.util.List<?>} and the element argument is a
-	 * {@code java.lang.Integer}, the returned TypeDescriptor will be {@code java.lang.Integer}
-	 * as well.
-	 * <p>Annotation and nested type context will be preserved in the narrowed
-	 * TypeDescriptor that is returned.
+	 * 如果当前类型是{@link Collection}或数组，则根据提供的集合或数组元素创建一个元素TypeDescriptor。
+	 * <p>此方法会将{@link #getElementTypeDescriptor() elementType}属性缩小为提供的集合或数组元素的类类型。
+	 * 例如，如果此类型描述一个{@code java.util.List<java.lang.Number>}，且元素参数是一个{@code java.lang.Integer}，
+	 * 则返回的TypeDescriptor将是{@code java.lang.Integer}。如果此类型描述一个{@code java.util.List<?>}，
+	 * 且元素参数是一个{@code java.lang.Integer}，返回的TypeDescriptor也将是{@code java.lang.Integer}。
+	 * </p>
+	 * <p>注解和嵌套类型上下文将在返回的缩小的TypeDescriptor中被保留。</p>
 	 *
-	 * @param element the collection or array element
-	 * @return a element type descriptor, narrowed to the type of the provided element
-	 * @see #getElementTypeDescriptor()
-	 * @see #narrow(Object)
+	 * @param element 集合或数组元素，用于确定元素类型。
+	 * @return 一个元素类型的TypeDescriptor，其类型被缩小为提供的元素的类型。如果输入为null，返回null。
+	 * @see #getElementTypeDescriptor() 获取元素类型的TypeDescriptor。
+	 * @see #narrow(Object) 缩小类型描述符的范围。
 	 */
 	@Nullable
 	public TypeDescriptor elementTypeDescriptor(Object element) {
-		return narrow(element, getElementTypeDescriptor());
+	    return narrow(element, getElementTypeDescriptor());
 	}
 
 	/**
-	 * If this type is an array, returns the array's component type.
-	 * If this type is a {@code Stream}, returns the stream's component type.
-	 * If this type is a {@link Collection} and it is parameterized, returns the Collection's element type.
-	 * If the Collection is not parameterized, returns {@code null} indicating the element type is not declared.
+	 * 获取当前类型元素的类型描述符。如果当前类型是数组，则返回数组的组件类型；如果当前类型是{@code Stream}，则返回流的组件类型；
+	 * 如果当前类型是{@link Collection}且已参数化，则返回集合的元素类型。如果集合未参数化，则返回{@code null}，表示元素类型未声明。
 	 *
-	 * @return the array component type or Collection element type, or {@code null} if this type is not
-	 * an array type or a {@code java.util.Collection} or if its element type is not parameterized
+	 * @return 数组组件类型或集合元素类型，如果此类型不是数组类型或{@code java.util.Collection}，或者其元素类型未参数化，则返回{@code null}
 	 * @see #elementTypeDescriptor(Object)
 	 */
 	@Nullable
 	public TypeDescriptor getElementTypeDescriptor() {
-		if (getResolvableType().isArray()) {
-			return new TypeDescriptor(getResolvableType().getComponentType(), null, getAnnotations());
-		}
-		if (Stream.class.isAssignableFrom(getType())) {
-			return getRelatedIfResolvable(this, getResolvableType().as(Stream.class).getGeneric(0));
-		}
-		return getRelatedIfResolvable(this, getResolvableType().asCollection().getGeneric(0));
-	}
-
-	@Nullable
-	private static TypeDescriptor getRelatedIfResolvable(TypeDescriptor source, ResolvableType type) {
-		if (type.resolve() == null) {
-			return null;
-		}
-		return new TypeDescriptor(type, null, source.getAnnotations());
+	    // 判断类型是否为数组，如果是，则返回数组的组件类型
+	    if (getResolvableType().isArray()) {
+	        return new TypeDescriptor(getResolvableType().getComponentType(), null, getAnnotations());
+	    }
+	    // 判断类型是否为Stream，如果是，则返回Stream的组件类型
+	    if (Stream.class.isAssignableFrom(getType())) {
+	        return getRelatedIfResolvable(this, getResolvableType().as(Stream.class).getGeneric(0));
+	    }
+	    // 尝试获取作为集合类型的元素类型，如果集合是参数化的，则返回其元素类型
+	    return getRelatedIfResolvable(this, getResolvableType().asCollection().getGeneric(0));
 	}
 
 	@Nullable
