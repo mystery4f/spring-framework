@@ -578,12 +578,10 @@ public interface MergedAnnotation<A extends Annotation> {
 	MergedAnnotation<A> filterAttributes(Predicate<String> predicate);
 
 	/**
-	 * Create a new view of the annotation that exposes non-merged attribute values.
-	 * <p>Methods from this view will return attribute values with only alias mirroring
-	 * rules applied. Aliases to {@link #getMetaSource() meta-source} attributes will
-	 * not be applied.
+	 * 创建一个新的注解视图，暴露非合并的属性值。
+	 * <p>此视图的方法将只返回应用了别名映射规则的属性值。别名到{@link #getMetaSource() 元数据源}属性将不会被应用。
 	 *
-	 * @return a non-merged view of the annotation
+	 * @return 一个非合并的注解视图
 	 */
 	MergedAnnotation<A> withNonMergedAttributes();
 
