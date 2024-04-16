@@ -543,12 +543,13 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
-	 * Return information about methods to be overridden by the IoC
-	 * container. This will be empty if there are no method overrides.
-	 * <p>Never returns {@code null}.
+	 * 获取被IoC容器覆盖的方法的信息。如果没有方法被覆盖，这将为空。
+	 * <p>永远不会返回{@code null}。
+	 *
+	 * @return MethodOverrides对象，包含被覆盖方法的信息。如果没有被覆盖的方法，则返回一个空的MethodOverrides对象。
 	 */
 	public MethodOverrides getMethodOverrides() {
-		return this.methodOverrides;
+	    return this.methodOverrides;
 	}
 
 	/**
@@ -1211,37 +1212,38 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
-	 * Validate and prepare the method overrides defined for this bean.
-	 * Checks for existence of a method with the specified name.
+	 * 验证并准备此bean定义的方法重写。
+	 * 检查是否存在具有指定名称的方法。
 	 *
-	 * @throws BeanDefinitionValidationException in case of validation failure
+	 * @throws BeanDefinitionValidationException 如果验证失败，则抛出 BeanDefinitionValidationException
 	 */
 	public void prepareMethodOverrides() throws BeanDefinitionValidationException {
-		// Check that lookup methods exist and determine their overloaded status.
-		if (hasMethodOverrides()) {
-			getMethodOverrides().getOverrides().forEach(this::prepareMethodOverride);
-		}
+	    // 检查查找方法是否存在，并确定它们的重载状态。
+	    if (hasMethodOverrides()) {
+	        getMethodOverrides().getOverrides().forEach(this::prepareMethodOverride);
+	    }
 	}
 
 	/**
-	 * Validate and prepare the given method override.
-	 * Checks for existence of a method with the specified name,
-	 * marking it as not overloaded if none found.
+	 * 验证并准备给定的方法覆盖。
+	 * 检查是否存在具有指定名称的方法，如果未找到，则将其标记为未重载。
 	 *
-	 * @param mo the MethodOverride object to validate
-	 * @throws BeanDefinitionValidationException in case of validation failure
+	 * @param mo 要验证的方法覆盖对象
+	 * @throws BeanDefinitionValidationException 如果验证失败，则抛出 BeanDefinitionValidationException
 	 */
 	protected void prepareMethodOverride(MethodOverride mo) throws BeanDefinitionValidationException {
 		int count = ClassUtils.getMethodCountForName(getBeanClass(), mo.getMethodName());
 		if (count == 0) {
+			// 如果找不到具有指定名称的方法，则抛出异常
 			throw new BeanDefinitionValidationException(
 					"Invalid method override: no method with name '" + mo.getMethodName() +
 							"' on class [" + getBeanClassName() + "]");
 		} else if (count == 1) {
-			// Mark override as not overloaded, to avoid the overhead of arg type checking.
+			// 如果找到一个同名方法，标记此覆盖方法为非重载，以避免参数类型检查的开销
 			mo.setOverloaded(false);
 		}
 	}
+
 
 
 	/**

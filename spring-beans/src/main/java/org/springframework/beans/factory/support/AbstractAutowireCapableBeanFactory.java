@@ -509,12 +509,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// 准备方法覆盖
-			mbdToUse.prepareMethodOverrides();
+		    // 准备方法覆盖：此部分代码旨在准备并执行与bean定义相关的方法覆盖处理。
+		    mbdToUse.prepareMethodOverrides();
 		} catch (BeanDefinitionValidationException ex) {
-			// 如果方法覆盖验证失败，则抛出 BeanDefinitionStoreException 异常
-			throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
-					beanName, "Validation of method overrides failed", ex);
+		    // 方法覆盖验证失败处理：当方法覆盖的验证过程中出现错误时，将捕获BeanDefinitionValidationException异常，并转而抛出一个BeanDefinitionStoreException异常。
+		    // 抛出的新异常包含了更具体的上下文信息，如资源描述、bean名称和错误详情，以便于问题定位和处理。
+		    throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
+		            beanName, "Validation of method overrides failed", ex);
 		}
 
 		try {
