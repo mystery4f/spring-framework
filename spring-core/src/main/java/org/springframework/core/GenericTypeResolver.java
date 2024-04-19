@@ -100,20 +100,21 @@ public final class GenericTypeResolver {
 	}
 
 	/**
-	 * Resolve the single type argument of the given generic interface against
-	 * the given target class which is assumed to implement the generic interface
-	 * and possibly declare a concrete type for its type variable.
-	 * @param clazz the target class to check against
-	 * @param genericIfc the generic interface or superclass to resolve the type argument from
-	 * @return the resolved type of the argument, or {@code null} if not resolvable
+	 * 解析给定泛型接口的单个类型参数，相对于给定的目標类，该目标类假定实现泛型接口，并且可能声明其类型变量的具体类型。
+	 * @param clazz 需要检查的目标类
+	 * @param genericIfc 需要解析类型参数的泛型接口或超类
+	 * @return 解析出的类型参数的类类型，如果无法解析则返回null
 	 */
 	@Nullable
 	public static Class<?> resolveTypeArgument(Class<?> clazz, Class<?> genericIfc) {
-		ResolvableType resolvableType = ResolvableType.forClass(clazz).as(genericIfc);
-		if (!resolvableType.hasGenerics()) {
-			return null;
-		}
-		return getSingleGeneric(resolvableType);
+	    // 根据目标类获取泛型接口的可解析类型
+	    ResolvableType resolvableType = ResolvableType.forClass(clazz).as(genericIfc);
+	    // 如果没有泛型参数，则直接返回null
+	    if (!resolvableType.hasGenerics()) {
+	        return null;
+	    }
+	    // 获取并返回单个泛型参数的类型
+	    return getSingleGeneric(resolvableType);
 	}
 
 	@Nullable

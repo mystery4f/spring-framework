@@ -207,12 +207,12 @@ public abstract class ReflectionUtils {
 	// Method handling
 
 	/**
-	 * Attempt to find a {@link Method} on the supplied class with the supplied name
-	 * and no parameters. Searches all superclasses up to {@code Object}.
-	 * <p>Returns {@code null} if no {@link Method} can be found.
-	 * @param clazz the class to introspect
-	 * @param name the name of the method
-	 * @return the Method object, or {@code null} if none found
+	 * 尝试在提供的类中查找具有指定名称且没有参数的{@link Method}。
+	 * 会搜索所有超类直到{@code Object}。
+	 * <p>如果找不到{@link Method}，则返回{@code null}。
+	 * @param clazz 要进行反射的类
+	 * @param name 方法的名称
+	 * @return 方法对象，如果找不到则返回{@code null}
 	 */
 	@Nullable
 	public static Method findMethod(Class<?> clazz, String name) {

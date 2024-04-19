@@ -1506,42 +1506,44 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
-	 * Resolve the bean class for the specified bean definition,
-	 * resolving a bean class name into a Class reference (if necessary)
-	 * and storing the resolved Class in the bean definition for further use.
-	 * @param mbd the merged bean definition to determine the class for
-	 * @param beanName the name of the bean (for error handling purposes)
-	 * @param typesToMatch the types to match in case of internal type matching purposes
-	 * (also signals that the returned {@code Class} will never be exposed to application code)
-	 * @return the resolved bean class (or {@code null} if none)
-	 * @throws CannotLoadBeanClassException if we failed to load the class
+	 * 解析指定bean定义的bean类，如有必要将bean类名解析为Class引用，并将解析的Class存储在bean定义中以供进一步使用。
+	 * @param mbd 要确定类的合并bean定义
+	 * @param beanName bean的名称（用于错误处理目的）
+	 * @param typesToMatch 内部类型匹配的目的时要匹配的类型（也表示返回的{@code Class}永远不会暴露给应用代码）
+	 * @return 解析的bean类（如果没有则为{@code null}）
+	 * @throws CannotLoadBeanClassException 如果加载类失败
 	 */
 	@Nullable
 	protected Class<?> resolveBeanClass(RootBeanDefinition mbd, String beanName, Class<?>... typesToMatch)
-			throws CannotLoadBeanClassException {
-
-		try {
-			if (mbd.hasBeanClass()) {
-				return mbd.getBeanClass();
-			}
-			if (System.getSecurityManager() != null) {
-				return AccessController.doPrivileged((PrivilegedExceptionAction<Class<?>>)
-						() -> doResolveBeanClass(mbd, typesToMatch), getAccessControlContext());
-			}
-			else {
-				return doResolveBeanClass(mbd, typesToMatch);
-			}
-		}
-		catch (PrivilegedActionException pae) {
-			ClassNotFoundException ex = (ClassNotFoundException) pae.getException();
-			throw new CannotLoadBeanClassException(mbd.getResourceDescription(), beanName, mbd.getBeanClassName(), ex);
-		}
-		catch (ClassNotFoundException ex) {
-			throw new CannotLoadBeanClassException(mbd.getResourceDescription(), beanName, mbd.getBeanClassName(), ex);
-		}
-		catch (LinkageError err) {
-			throw new CannotLoadBeanClassException(mbd.getResourceDescription(), beanName, mbd.getBeanClassName(), err);
-		}
+	        throws CannotLoadBeanClassException {
+	    try {
+	        // 如果bean定义中已存在bean类，则直接返回
+	        if (mbd.hasBeanClass()) {
+	            return mbd.getBeanClass();
+	        }
+	        // 如果存在安全管理员，则使用特权动作解析bean类
+	        if (System.getSecurityManager() != null) {
+	            return AccessController.doPrivileged((PrivilegedExceptionAction<Class<?>>)
+	                    () -> doResolveBeanClass(mbd, typesToMatch), getAccessControlContext());
+	        }
+	        else {
+	            // 在无安全管理员的环境中直接解析bean类
+	            return doResolveBeanClass(mbd, typesToMatch);
+	        }
+	    }
+	    catch (PrivilegedActionException pae) {
+	        // 处理在特权动作中抛出的异常
+	        ClassNotFoundException ex = (ClassNotFoundException) pae.getException();
+	        throw new CannotLoadBeanClassException(mbd.getResourceDescription(), beanName, mbd.getBeanClassName(), ex);
+	    }
+	    catch (ClassNotFoundException ex) {
+	        // 处理类NotFoundException，抛出CannotLoadBeanClassException
+	        throw new CannotLoadBeanClassException(mbd.getResourceDescription(), beanName, mbd.getBeanClassName(), ex);
+	    }
+	    catch (LinkageError err) {
+	        // 处理链接错误，抛出CannotLoadBeanClassException
+	        throw new CannotLoadBeanClassException(mbd.getResourceDescription(), beanName, mbd.getBeanClassName(), err);
+	    }
 	}
 
 	@Nullable
@@ -1631,29 +1633,27 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 
 	/**
-	 * Predict the eventual bean type (of the processed bean instance) for the
-	 * specified bean. Called by {@link #getType} and {@link #isTypeMatch}.
-	 * Does not need to handle FactoryBeans specifically, since it is only
-	 * supposed to operate on the raw bean type.
-	 * <p>This implementation is simplistic in that it is not able to
-	 * handle factory methods and InstantiationAwareBeanPostProcessors.
-	 * It only predicts the bean type correctly for a standard bean.
-	 * To be overridden in subclasses, applying more sophisticated type detection.
-	 * @param beanName the name of the bean
-	 * @param mbd the merged bean definition to determine the type for
-	 * @param typesToMatch the types to match in case of internal type matching purposes
-	 * (also signals that the returned {@code Class} will never be exposed to application code)
-	 * @return the type of the bean, or {@code null} if not predictable
+	 * 预测给定bean实例的最终类型。此方法被{@link #getType}和{@link #isTypeMatch}调用。
+	 * 不需要专门处理FactoryBeans，因为它只操作原始bean类型。
+	 * <p>该实现很简单，不能处理工厂方法和InstantiationAwareBeanPostProcessors。
+	 * 它只能正确预测标准bean的类型。在子类中应重写此方法，应用更复杂类型检测。
+	 * @param beanName bean的名称
+	 * @param mbd 用于确定类型的合并bean定义
+	 * @param typesToMatch 内部类型匹配目的时要匹配的类型（也表示返回的{@code Class}永远不会暴露给应用代码）
+	 * @return bean的类型，如果不可预测则返回{@code null}
 	 */
 	@Nullable
 	protected Class<?> predictBeanType(String beanName, RootBeanDefinition mbd, Class<?>... typesToMatch) {
 		Class<?> targetType = mbd.getTargetType();
+		// 如果已经指定了目标类型，则直接返回该类型
 		if (targetType != null) {
 			return targetType;
 		}
+		// 如果存在工厂方法，则预测类型不可用，返回null
 		if (mbd.getFactoryMethodName() != null) {
 			return null;
 		}
+		// 尝试解析bean类
 		return resolveBeanClass(mbd, beanName, typesToMatch);
 	}
 

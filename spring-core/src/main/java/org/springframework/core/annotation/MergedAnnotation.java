@@ -617,41 +617,29 @@ public interface MergedAnnotation<A extends Annotation> {
 	<T extends Map<String, Object>> T asMap(Function<MergedAnnotation<?>, T> factory, Adapt... adaptations);
 
 	/**
-	 * Create a type-safe synthesized version of this merged annotation that can
-	 * be used directly in code.
-	 * <p>The result is synthesized using a JDK {@link Proxy} and as a result may
-	 * incur a computational cost when first invoked.
-	 * <p>If this merged annotation was created {@linkplain #from(Annotation) from}
-	 * an annotation instance, that annotation will be returned unmodified if it is
-	 * not <em>synthesizable</em>. An annotation is considered synthesizable if
-	 * one of the following is true.
+	 * 创建一个类型安全的合并注解的合成版本，可以直接在代码中使用。
+	 * <p>结果是使用JDK的{@link Proxy}合成的，因此首次调用时可能会有计算成本。
+	 * <p>如果这个合并注解是通过{@linkplain #from(Annotation) 从}注解实例创建的，那么如果该注解不<em>可合成</em>，则会返回未修改的原始注解。一个注解被认为是可合成的，如果满足以下任一条件。
 	 * <ul>
-	 * <li>The annotation declares attributes annotated with {@link AliasFor @AliasFor}.</li>
-	 * <li>The annotation is a composed annotation that relies on convention-based
-	 * annotation attribute overrides in meta-annotations.</li>
-	 * <li>The annotation declares attributes that are annotations or arrays of
-	 * annotations that are themselves synthesizable.</li>
+	 * <li>注解声明了带有{@link AliasFor @AliasFor}注解的属性。</li>
+	 * <li>注解是一个依赖于约定为基础的注解属性覆盖的组合注解。</li>
+	 * <li>注解声明了属性，这些属性是注解或注解数组，它们本身是可合成的。</li>
 	 * </ul>
 	 *
-	 * @return a synthesized version of the annotation or the original annotation
-	 * unmodified
-	 * @throws NoSuchElementException on a missing annotation
+	 * @return 合成版本的注解或原始注解（未修改）
+	 * @throws NoSuchElementException 如果注解缺失
 	 */
 	A synthesize() throws NoSuchElementException;
 
 	/**
-	 * Optionally create a type-safe synthesized version of this annotation based
-	 * on a condition predicate.
-	 * <p>The result is synthesized using a JDK {@link Proxy} and as a result may
-	 * incur a computational cost when first invoked.
-	 * <p>Consult the documentation for {@link #synthesize()} for an explanation
-	 * of what is considered synthesizable.
+	 * 根据条件谓词选择性地创建一个类型安全的合成注解版本。
+	 * <p>使用JDK的{@link Proxy}合成结果，因此首次调用时可能会有计算成本。
+	 * <p>请参考{@link #synthesize()}的文档，了解什么是可合成的。
 	 *
-	 * @param condition the test to determine if the annotation can be synthesized
-	 * @return an optional containing the synthesized version of the annotation or
-	 * an empty optional if the condition doesn't match
-	 * @throws NoSuchElementException on a missing annotation
-	 * @see MergedAnnotationPredicates
+	 * @param condition 确定是否可以合成注解的测试条件
+	 * @return 如果条件匹配，则返回包含合成注解版本的Optional；如果不匹配，则返回空的Optional
+	 * @throws NoSuchElementException 当注解缺失时抛出
+	 * @see MergedAnnotationPredicates 可用于构建条件谓词的工具类
 	 */
 	Optional<A> synthesize(Predicate<? super MergedAnnotation<A>> condition) throws NoSuchElementException;
 
