@@ -34,17 +34,13 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Abstract base class for {@link Environment} implementations. Supports the notion of
- * reserved default profile names and enables specifying active and default profiles
- * through the {@link #ACTIVE_PROFILES_PROPERTY_NAME} and
- * {@link #DEFAULT_PROFILES_PROPERTY_NAME} properties.
+ * {@link Environment} 实现的抽象基类。支持保留的默认配置文件名称的概念，并通过 {@link #ACTIVE_PROFILES_PROPERTY_NAME}
+ * 和 {@link #DEFAULT_PROFILES_PROPERTY_NAME} 属性来指定激活和默认的配置文件。
  *
- * <p>Concrete subclasses differ primarily on which {@link PropertySource} objects they
- * add by default. {@code AbstractEnvironment} adds none. Subclasses should contribute
- * property sources through the protected {@link #customizePropertySources(MutablePropertySources)}
- * hook, while clients should customize using {@link ConfigurableEnvironment#getPropertySources()}
- * and working against the {@link MutablePropertySources} API.
- * See {@link ConfigurableEnvironment} javadoc for usage examples.
+ * <p>具体子类主要区别在于它们默认添加的 {@link PropertySource} 对象。{@code AbstractEnvironment} 默认不添加任何。
+ * 子类应通过受保护的 {@link #customizePropertySources(MutablePropertySources)} 方法来贡献属性源，
+ * 而客户端应使用 {@link ConfigurableEnvironment#getPropertySources()} 并操作 {@link MutablePropertySources} API 来进行自定义。
+ * 有关使用示例，请参见 {@link ConfigurableEnvironment} 的 JavaDoc。
  *
  * @author Chris Beams
  * @author Juergen Hoeller
@@ -53,46 +49,41 @@ import org.springframework.util.StringUtils;
  * @see ConfigurableEnvironment
  * @see StandardEnvironment
  */
+
 public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	/**
-	 * System property that instructs Spring to ignore system environment variables,
-	 * i.e. to never attempt to retrieve such a variable via {@link System#getenv()}.
-	 * <p>The default is "false", falling back to system environment variable checks if a
-	 * Spring environment property (e.g. a placeholder in a configuration String) isn't
-	 * resolvable otherwise. Consider switching this flag to "true" if you experience
-	 * log warnings from {@code getenv} calls coming from Spring, e.g. on WebSphere
-	 * with strict SecurityManager settings and AccessControlExceptions warnings.
+	 * 定义一个系统属性，用于指示Spring忽略系统环境变量，
+	 * 即Spring永远不通过 {@link System#getenv()} 方法尝试获取此类变量。
+	 * <p>默认值为 "false"，如果无法解析Spring环境属性（例如配置字符串中的占位符），
+	 * 则会回退到检查系统环境变量。如果你遇到由Spring发起的 {@code getenv} 调用产生的日志警告，
+	 * 例如在具有严格 SecurityManager 设置和 AccessControlExceptions 警告的 WebSphere 上，
+	 * 可以考虑将此标志设置为 "true"。
 	 * @see #suppressGetenvAccess()
 	 */
 	public static final String IGNORE_GETENV_PROPERTY_NAME = "spring.getenv.ignore";
 
 	/**
-	 * Name of property to set to specify active profiles: {@value}. Value may be comma
-	 * delimited.
-	 * <p>Note that certain shell environments such as Bash disallow the use of the period
-	 * character in variable names. Assuming that Spring's {@link SystemEnvironmentPropertySource}
-	 * is in use, this property may be specified as an environment variable as
-	 * {@code SPRING_PROFILES_ACTIVE}.
+	 * 指定激活的配置文件名称的属性名：{@value}。值可以是逗号分隔的。
+	 * <p>请注意，某些shell环境（如Bash）不允许在变量名称中使用句点字符。
+	 * 假设使用了Spring的 {@link SystemEnvironmentPropertySource}，此属性可以作为环境变量
+	 * 通过 {@code SPRING_PROFILES_ACTIVE} 来指定。
 	 * @see ConfigurableEnvironment#setActiveProfiles
 	 */
 	public static final String ACTIVE_PROFILES_PROPERTY_NAME = "spring.profiles.active";
 
 	/**
-	 * Name of property to set to specify profiles active by default: {@value}. Value may
-	 * be comma delimited.
-	 * <p>Note that certain shell environments such as Bash disallow the use of the period
-	 * character in variable names. Assuming that Spring's {@link SystemEnvironmentPropertySource}
-	 * is in use, this property may be specified as an environment variable as
-	 * {@code SPRING_PROFILES_DEFAULT}.
+	 * 指定默认激活的配置文件名称的属性名：{@value}。值可以是逗号分隔的。
+	 * <p>请注意，某些shell环境（如Bash）不允许在变量名称中使用句点字符。
+	 * 假设使用了Spring的 {@link SystemEnvironmentPropertySource}，此属性可以作为环境变量
+	 * 通过 {@code SPRING_PROFILES_DEFAULT} 来指定。
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 */
 	public static final String DEFAULT_PROFILES_PROPERTY_NAME = "spring.profiles.default";
 
 	/**
-	 * Name of reserved default profile name: {@value}. If no default profile names are
-	 * explicitly and no active profile names are explicitly set, this profile will
-	 * automatically be activated by default.
+	 * 保留的默认配置文件名称：{@value}。如果没有显式设置默认配置文件名称并且没有显式设置激活的配置文件名称，
+	 * 则此配置文件会自动默认激活。
 	 * @see #getReservedDefaultProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see ConfigurableEnvironment#setActiveProfiles
@@ -108,9 +99,18 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	private final Set<String> defaultProfiles = new LinkedHashSet<>(getReservedDefaultProfiles());
 
-	private final MutablePropertySources propertySources;
+	/**
+	 * MutablePropertySources是一个可变的属性源容器，用于存储和管理属性源。属性源是Spring框架中用于提供配置属性的关键组件。
+	 * 它们可以被用来从不同的来源（例如，配置文件，环境变量，系统属性等）加载配置属性，并提供给Spring应用程序使用。
+	 */
+		private final MutablePropertySources propertySources;
 
-	private final ConfigurablePropertyResolver propertyResolver;
+	/**
+	 * ConfigurablePropertyResolver是一个可配置的属性解析器接口，提供了更灵活的方式来解析属性值。
+	 * 它可以被用来从不同的属性源中解析属性值，支持占位符的解析和递归解析。这个属性解析器是高度可配置的，
+	 * 允许开发者根据自己的需求定制属性解析的逻辑。
+	 */
+		private final ConfigurablePropertyResolver propertyResolver;
 
 
 	/**
@@ -417,24 +417,24 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 				(currentActiveProfiles.isEmpty() && doGetDefaultProfiles().contains(profile)));
 	}
 
-	/**
-	 * Validate the given profile, called internally prior to adding to the set of
-	 * active or default profiles.
-	 * <p>Subclasses may override to impose further restrictions on profile syntax.
-	 * @throws IllegalArgumentException if the profile is null, empty, whitespace-only or
-	 * begins with the profile NOT operator (!).
-	 * @see #acceptsProfiles
-	 * @see #addActiveProfile
-	 * @see #setDefaultProfiles
-	 */
+    /**
+     * 验证给定的profile是否有效，这个方法会在将profile添加到激活或默认profile集之前被内部调用。
+     * <p>子类可以通过重写此方法来施加对profile语法的进一步限制。
+     * @param profile 待验证的profile字符串。
+     * @throws IllegalArgumentException 如果profile为null、空、仅包含空白字符，或者以profile NOT操作符(!)开头，则抛出此异常。
+     * @see #acceptsProfiles
+     * @see #addActiveProfile
+     * @see #setDefaultProfiles
+     */
 	protected void validateProfile(String profile) {
-		if (!StringUtils.hasText(profile)) {
+		if (!StringUtils.hasText(profile)) { // 验证profile是否有文本内容
 			throw new IllegalArgumentException("Invalid profile [" + profile + "]: must contain text");
 		}
-		if (profile.charAt(0) == '!') {
+		if (profile.charAt(0) == '!') { // 验证profile是否以'!'开头
 			throw new IllegalArgumentException("Invalid profile [" + profile + "]: must not begin with ! operator");
 		}
 	}
+
 
 	@Override
 	public MutablePropertySources getPropertySources() {
