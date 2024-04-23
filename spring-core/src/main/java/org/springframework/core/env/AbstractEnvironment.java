@@ -16,22 +16,17 @@
 
 package org.springframework.core.env;
 
-import java.security.AccessControlException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.SpringProperties;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.security.AccessControlException;
+import java.util.*;
 
 /**
  * {@link Environment} 实现的抽象基类。支持保留的默认配置文件名称的概念，并通过 {@link #ACTIVE_PROFILES_PROPERTY_NAME}
@@ -45,9 +40,9 @@ import org.springframework.util.StringUtils;
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Phillip Webb
- * @since 3.1
  * @see ConfigurableEnvironment
  * @see StandardEnvironment
+ * @since 3.1
  */
 
 public abstract class AbstractEnvironment implements ConfigurableEnvironment {
@@ -59,6 +54,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * 则会回退到检查系统环境变量。如果你遇到由Spring发起的 {@code getenv} 调用产生的日志警告，
 	 * 例如在具有严格 SecurityManager 设置和 AccessControlExceptions 警告的 WebSphere 上，
 	 * 可以考虑将此标志设置为 "true"。
+	 *
 	 * @see #suppressGetenvAccess()
 	 */
 	public static final String IGNORE_GETENV_PROPERTY_NAME = "spring.getenv.ignore";
@@ -68,6 +64,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * <p>请注意，某些shell环境（如Bash）不允许在变量名称中使用句点字符。
 	 * 假设使用了Spring的 {@link SystemEnvironmentPropertySource}，此属性可以作为环境变量
 	 * 通过 {@code SPRING_PROFILES_ACTIVE} 来指定。
+	 *
 	 * @see ConfigurableEnvironment#setActiveProfiles
 	 */
 	public static final String ACTIVE_PROFILES_PROPERTY_NAME = "spring.profiles.active";
@@ -77,6 +74,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * <p>请注意，某些shell环境（如Bash）不允许在变量名称中使用句点字符。
 	 * 假设使用了Spring的 {@link SystemEnvironmentPropertySource}，此属性可以作为环境变量
 	 * 通过 {@code SPRING_PROFILES_DEFAULT} 来指定。
+	 *
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 */
 	public static final String DEFAULT_PROFILES_PROPERTY_NAME = "spring.profiles.default";
@@ -84,6 +82,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	/**
 	 * 保留的默认配置文件名称：{@value}。如果没有显式设置默认配置文件名称并且没有显式设置激活的配置文件名称，
 	 * 则此配置文件会自动默认激活。
+	 *
 	 * @see #getReservedDefaultProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see ConfigurableEnvironment#setActiveProfiles
@@ -103,14 +102,14 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * MutablePropertySources是一个可变的属性源容器，用于存储和管理属性源。属性源是Spring框架中用于提供配置属性的关键组件。
 	 * 它们可以被用来从不同的来源（例如，配置文件，环境变量，系统属性等）加载配置属性，并提供给Spring应用程序使用。
 	 */
-		private final MutablePropertySources propertySources;
+	private final MutablePropertySources propertySources;
 
 	/**
 	 * ConfigurablePropertyResolver是一个可配置的属性解析器接口，提供了更灵活的方式来解析属性值。
 	 * 它可以被用来从不同的属性源中解析属性值，支持占位符的解析和递归解析。这个属性解析器是高度可配置的，
 	 * 允许开发者根据自己的需求定制属性解析的逻辑。
 	 */
-		private final ConfigurablePropertyResolver propertyResolver;
+	private final ConfigurablePropertyResolver propertyResolver;
 
 
 	/**
@@ -118,6 +117,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * {@link #customizePropertySources(MutablePropertySources)} during construction to
 	 * allow subclasses to contribute or manipulate {@link PropertySource} instances as
 	 * appropriate.
+	 *
 	 * @see #customizePropertySources(MutablePropertySources)
 	 */
 	public AbstractEnvironment() {
@@ -130,9 +130,10 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * {@link #customizePropertySources(MutablePropertySources)} during
 	 * construction to allow subclasses to contribute or manipulate
 	 * {@link PropertySource} instances as appropriate.
+	 *
 	 * @param propertySources property sources to use
-	 * @since 5.3.4
 	 * @see #customizePropertySources(MutablePropertySources)
+	 * @since 5.3.4
 	 */
 	protected AbstractEnvironment(MutablePropertySources propertySources) {
 		this.propertySources = propertySources;
@@ -144,21 +145,12 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	/**
 	 * Factory method used to create the {@link ConfigurablePropertyResolver}
 	 * instance used by the Environment.
-	 * @since 5.3.4
+	 *
 	 * @see #getPropertyResolver()
+	 * @since 5.3.4
 	 */
 	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
 		return new PropertySourcesPropertyResolver(propertySources);
-	}
-
-	/**
-	 * Return the {@link ConfigurablePropertyResolver} being used by the
-	 * {@link Environment}.
-	 * @since 5.3.4
-	 * @see #createPropertyResolver(MutablePropertySources)
-	 */
-	protected final ConfigurablePropertyResolver getPropertyResolver() {
-		return this.propertyResolver;
 	}
 
 	/**
@@ -236,6 +228,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * property source manipulation and instance variable access directly within the
 	 * subclass constructor. Note that <em>assigning</em> values to instance variables is
 	 * not problematic; it is only attempting to read default values that must be avoided.
+	 *
 	 * @see MutablePropertySources
 	 * @see PropertySourcesPropertyResolver
 	 * @see org.springframework.context.ApplicationContextInitializer
@@ -244,14 +237,19 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	}
 
 	/**
-	 * Return the set of reserved default profile names. This implementation returns
-	 * {@value #RESERVED_DEFAULT_PROFILE_NAME}. Subclasses may override in order to
-	 * customize the set of reserved names.
-	 * @see #RESERVED_DEFAULT_PROFILE_NAME
-	 * @see #doGetDefaultProfiles()
+	 * Return the {@link ConfigurablePropertyResolver} being used by the
+	 * {@link Environment}.
+	 *
+	 * @see #createPropertyResolver(MutablePropertySources)
+	 * @since 5.3.4
 	 */
-	protected Set<String> getReservedDefaultProfiles() {
-		return Collections.singleton(RESERVED_DEFAULT_PROFILE_NAME);
+	protected final ConfigurablePropertyResolver getPropertyResolver() {
+		return this.propertyResolver;
+	}
+
+	@Override
+	public String[] getActiveProfiles() {
+		return StringUtils.toStringArray(doGetActiveProfiles());
 	}
 
 
@@ -259,16 +257,12 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	// Implementation of ConfigurableEnvironment interface
 	//---------------------------------------------------------------------
 
-	@Override
-	public String[] getActiveProfiles() {
-		return StringUtils.toStringArray(doGetActiveProfiles());
-	}
-
 	/**
 	 * Return the set of active profiles as explicitly set through
 	 * {@link #setActiveProfiles} or if the current set of active profiles
 	 * is empty, check for the presence of {@link #doGetActiveProfilesProperty()}
 	 * and assign its value to the set of active profiles.
+	 *
 	 * @see #getActiveProfiles()
 	 * @see #doGetActiveProfilesProperty()
 	 */
@@ -287,12 +281,19 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	/**
 	 * Return the property value for the active profiles.
-	 * @since 5.3.4
+	 *
 	 * @see #ACTIVE_PROFILES_PROPERTY_NAME
+	 * @since 5.3.4
 	 */
 	@Nullable
 	protected String doGetActiveProfilesProperty() {
 		return getProperty(ACTIVE_PROFILES_PROPERTY_NAME);
+	}
+
+	@Override
+	@Nullable
+	public String getProperty(String key) {
+		return this.propertyResolver.getProperty(key);
 	}
 
 	@Override
@@ -310,6 +311,25 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		}
 	}
 
+	/**
+	 * 验证给定的profile是否有效，这个方法会在将profile添加到激活或默认profile集之前被内部调用。
+	 * <p>子类可以通过重写此方法来施加对profile语法的进一步限制。
+	 *
+	 * @param profile 待验证的profile字符串。
+	 * @throws IllegalArgumentException 如果profile为null、空、仅包含空白字符，或者以profile NOT操作符(!)开头，则抛出此异常。
+	 * @see #acceptsProfiles
+	 * @see #addActiveProfile
+	 * @see #setDefaultProfiles
+	 */
+	protected void validateProfile(String profile) {
+		if (!StringUtils.hasText(profile)) { // 验证profile是否有文本内容
+			throw new IllegalArgumentException("Invalid profile [" + profile + "]: must contain text");
+		}
+		if (profile.charAt(0) == '!') { // 验证profile是否以'!'开头
+			throw new IllegalArgumentException("Invalid profile [" + profile + "]: must not begin with ! operator");
+		}
+	}
+
 	@Override
 	public void addActiveProfile(String profile) {
 		if (logger.isDebugEnabled()) {
@@ -322,7 +342,6 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		}
 	}
 
-
 	@Override
 	public String[] getDefaultProfiles() {
 		return StringUtils.toStringArray(doGetDefaultProfiles());
@@ -334,6 +353,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * consists only of {@linkplain #getReservedDefaultProfiles() reserved default
 	 * profiles}, then check for the presence of {@link #doGetActiveProfilesProperty()}
 	 * and assign its value (if any) to the set of default profiles.
+	 *
 	 * @see #AbstractEnvironment()
 	 * @see #getDefaultProfiles()
 	 * @see #getReservedDefaultProfiles()
@@ -353,9 +373,22 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	}
 
 	/**
+	 * Return the set of reserved default profile names. This implementation returns
+	 * {@value #RESERVED_DEFAULT_PROFILE_NAME}. Subclasses may override in order to
+	 * customize the set of reserved names.
+	 *
+	 * @see #RESERVED_DEFAULT_PROFILE_NAME
+	 * @see #doGetDefaultProfiles()
+	 */
+	protected Set<String> getReservedDefaultProfiles() {
+		return Collections.singleton(RESERVED_DEFAULT_PROFILE_NAME);
+	}
+
+	/**
 	 * Return the property value for the default profiles.
-	 * @since 5.3.4
+	 *
 	 * @see #DEFAULT_PROFILES_PROPERTY_NAME
+	 * @since 5.3.4
 	 */
 	@Nullable
 	protected String doGetDefaultProfilesProperty() {
@@ -367,6 +400,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * are explicitly made active through {@link #setActiveProfiles}.
 	 * <p>Calling this method removes overrides any reserved default profiles
 	 * that may have been added during construction of the environment.
+	 *
 	 * @see #AbstractEnvironment()
 	 * @see #getReservedDefaultProfiles()
 	 */
@@ -391,23 +425,17 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 				if (!isProfileActive(profile.substring(1))) {
 					return true;
 				}
-			}
-			else if (isProfileActive(profile)) {
+			} else if (isProfileActive(profile)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	@Override
-	public boolean acceptsProfiles(Profiles profiles) {
-		Assert.notNull(profiles, "Profiles must not be null");
-		return profiles.matches(this::isProfileActive);
-	}
-
 	/**
 	 * Return whether the given profile is active, or if active profiles are empty
 	 * whether the profile should be active by default.
+	 *
 	 * @throws IllegalArgumentException per {@link #validateProfile(String)}
 	 */
 	protected boolean isProfileActive(String profile) {
@@ -417,24 +445,11 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 				(currentActiveProfiles.isEmpty() && doGetDefaultProfiles().contains(profile)));
 	}
 
-    /**
-     * 验证给定的profile是否有效，这个方法会在将profile添加到激活或默认profile集之前被内部调用。
-     * <p>子类可以通过重写此方法来施加对profile语法的进一步限制。
-     * @param profile 待验证的profile字符串。
-     * @throws IllegalArgumentException 如果profile为null、空、仅包含空白字符，或者以profile NOT操作符(!)开头，则抛出此异常。
-     * @see #acceptsProfiles
-     * @see #addActiveProfile
-     * @see #setDefaultProfiles
-     */
-	protected void validateProfile(String profile) {
-		if (!StringUtils.hasText(profile)) { // 验证profile是否有文本内容
-			throw new IllegalArgumentException("Invalid profile [" + profile + "]: must contain text");
-		}
-		if (profile.charAt(0) == '!') { // 验证profile是否以'!'开头
-			throw new IllegalArgumentException("Invalid profile [" + profile + "]: must not begin with ! operator");
-		}
+	@Override
+	public boolean acceptsProfiles(Profiles profiles) {
+		Assert.notNull(profiles, "Profiles must not be null");
+		return profiles.matches(this::isProfileActive);
 	}
-
 
 	@Override
 	public MutablePropertySources getPropertySources() {
@@ -446,16 +461,14 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	public Map<String, Object> getSystemProperties() {
 		try {
 			return (Map) System.getProperties();
-		}
-		catch (AccessControlException ex) {
+		} catch (AccessControlException ex) {
 			return (Map) new ReadOnlySystemAttributesMap() {
 				@Override
 				@Nullable
 				protected String getSystemAttribute(String attributeName) {
 					try {
 						return System.getProperty(attributeName);
-					}
-					catch (AccessControlException ex) {
+					} catch (AccessControlException ex) {
 						if (logger.isInfoEnabled()) {
 							logger.info("Caught AccessControlException when accessing system property '" +
 									attributeName + "'; its value will be returned [null]. Reason: " + ex.getMessage());
@@ -475,16 +488,14 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		}
 		try {
 			return (Map) System.getenv();
-		}
-		catch (AccessControlException ex) {
+		} catch (AccessControlException ex) {
 			return (Map) new ReadOnlySystemAttributesMap() {
 				@Override
 				@Nullable
 				protected String getSystemAttribute(String attributeName) {
 					try {
 						return System.getenv(attributeName);
-					}
-					catch (AccessControlException ex) {
+					} catch (AccessControlException ex) {
 						if (logger.isInfoEnabled()) {
 							logger.info("Caught AccessControlException when accessing system environment variable '" +
 									attributeName + "'; its value will be returned [null]. Reason: " + ex.getMessage());
@@ -504,12 +515,18 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * and therefore avoiding security manager warnings (if any).
 	 * <p>The default implementation checks for the "spring.getenv.ignore" system property,
 	 * returning {@code true} if its value equals "true" in any case.
+	 *
 	 * @see #IGNORE_GETENV_PROPERTY_NAME
 	 * @see SpringProperties#getFlag
 	 */
 	protected boolean suppressGetenvAccess() {
 		return SpringProperties.getFlag(IGNORE_GETENV_PROPERTY_NAME);
 	}
+
+
+	//---------------------------------------------------------------------
+	// Implementation of ConfigurablePropertyResolver interface
+	//---------------------------------------------------------------------
 
 	@Override
 	public void merge(ConfigurableEnvironment parent) {
@@ -532,11 +549,6 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 			}
 		}
 	}
-
-
-	//---------------------------------------------------------------------
-	// Implementation of ConfigurablePropertyResolver interface
-	//---------------------------------------------------------------------
 
 	@Override
 	public ConfigurableConversionService getConversionService() {
@@ -573,25 +585,19 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		this.propertyResolver.setRequiredProperties(requiredProperties);
 	}
 
-	@Override
-	public void validateRequiredProperties() throws MissingRequiredPropertiesException {
-		this.propertyResolver.validateRequiredProperties();
-	}
-
 
 	//---------------------------------------------------------------------
 	// Implementation of PropertyResolver interface
 	//---------------------------------------------------------------------
 
 	@Override
-	public boolean containsProperty(String key) {
-		return this.propertyResolver.containsProperty(key);
+	public void validateRequiredProperties() throws MissingRequiredPropertiesException {
+		this.propertyResolver.validateRequiredProperties();
 	}
 
 	@Override
-	@Nullable
-	public String getProperty(String key) {
-		return this.propertyResolver.getProperty(key);
+	public boolean containsProperty(String key) {
+		return this.propertyResolver.containsProperty(key);
 	}
 
 	@Override
