@@ -9,14 +9,10 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation(project(':spring-context'), {
-        transitive = true
-    })
-
+    implementation(project(':spring-context'), { transitive = true })
     implementation(project(':spring-webmvc'), {
         transitive = true
     })
-
     implementation 'cn.hutool:hutool-all:5.8.15', {
         transitive = true
     }
@@ -38,6 +34,9 @@ dependencies {
     implementation 'javax.annotation:javax.annotation-api'
     implementation "javax.el:javax.el-api"
     implementation "org.glassfish:javax.el"
+    testImplementation('org.junit:junit-bom:5.8.2')
+    testImplementation(project(':spring-test'), { transitive = true })
+    testImplementation('org.junit.jupiter:junit-jupiter-api') { transitive = true }
 }
 
 sourceCompatibility = 11
