@@ -63,7 +63,7 @@ final class PostProcessorRegistrationDelegate {
 		// 在提交更改此方法的拉取请求（PR）之前，请查看所有已拒绝的与PostProcessorRegistrationDelegate相关的更改的PR列表，以确保您的提案不会导致破坏性更改：
 		// https://github.com/spring-projects/spring-framework/issues?q=PostProcessorRegistrationDelegate+is%3Aclosed+label%3A%22status%3A+declined%22
 
-		// 如果有的话，首先调用BeanDefinitionRegistryPostProcessors。
+		// 如果有的话，首先调用 BeanDefinitionRegistryPostProcessors。
 		Set<String> processedBeans = new HashSet<>();
 
 		if (beanFactory instanceof BeanDefinitionRegistry) {
@@ -83,8 +83,8 @@ final class PostProcessorRegistrationDelegate {
 				}
 			}
 
-			// 不要在这里初始化FactoryBeans：我们需要保留所有常规bean未初始化，以便让bean工厂后处理器应用于它们！
-			// 区分实现PriorityOrdered、Ordered和其他的BeanDefinitionRegistryPostProcessors。
+			// 不要在这里初始化 FactoryBeans：我们需要保留所有常规 bean 未初始化，以便让 bean 工厂后处理器应用于它们！
+			// 区分实现 PriorityOrdered、Ordered 和其他的 BeanDefinitionRegistryPostProcessors。
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// 首先调用实现 PriorityOrdered 接口的 BeanDefinitionRegistryPostProcessors。
