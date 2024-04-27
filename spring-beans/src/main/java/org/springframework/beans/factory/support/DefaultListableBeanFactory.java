@@ -975,9 +975,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * 预先实例化所有单例bean的方法。
+	 * 预先实例化所有单例bean的方法。此方法会遍历所有已注册的bean定义，对于那些非懒加载的单例bean，
+	 * 不管它们是否由FactoryBean创建，都会预先实例化。这个过程对于确保在依赖注入过程中能正确处理循环依赖很有用。
 	 *
-	 * @throws BeansException 如果预先实例化失败，抛出异常。
+	 * @throws BeansException 如果预先实例化过程中遇到错误，抛出BeansException异常。
 	 */
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
@@ -1028,7 +1029,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			Object singletonInstance = getSingleton(beanName);
 			// 如果当前bean是SmartInitializingSingleton的实例。
 			if (singletonInstance instanceof SmartInitializingSingleton) {
-				StartupStep smartInitialize = this.getApplicationStartup() // 记录应用程序启动的性能指标
+				// 记录应用程序启动的性能指标，初始化智能单例
+				StartupStep smartInitialize = this.getApplicationStartup()
 						.start("spring.beans.smart-initialize")
 						.tag("beanName", beanName);
 				SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;
@@ -1037,10 +1039,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						smartSingleton.afterSingletonsInstantiated();
 						return null;
 					}, getAccessControlContext());
-				} else { // 否则直接进行操作
+				} else { // 否则直接调用 afterSingletonsInstantiated 方法
 					smartSingleton.afterSingletonsInstantiated();
 				}
-				smartInitialize.end(); // 结束性能指标的记录
+				// 结束性能指标的记录
+				smartInitialize.end();
 			}
 		}
 	}

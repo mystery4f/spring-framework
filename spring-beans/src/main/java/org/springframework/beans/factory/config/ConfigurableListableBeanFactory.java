@@ -43,10 +43,10 @@ public interface ConfigurableListableBeanFactory
 		extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
 
 	/**
-	 * Ignore the given dependency type for autowiring:
-	 * for example, String. Default is none.
+	 * 忽略自动装配中的给定依赖类型。
+	 * 例如，String。默认情况下没有忽略任何类型。
 	 *
-	 * @param type the dependency type to ignore
+	 * @param type 要忽略的依赖类型
 	 */
 	void ignoreDependencyType(Class<?> type);
 
@@ -81,27 +81,25 @@ public interface ConfigurableListableBeanFactory
 	void registerResolvableDependency(Class<?> dependencyType, @Nullable Object autowiredValue);
 
 	/**
-	 * Determine whether the specified bean qualifies as an autowire candidate,
-	 * to be injected into other beans which declare a dependency of matching type.
-	 * <p>This method checks ancestor factories as well.
+	 * 确定指定的bean是否符合条件作为自动装配候选对象，
+	 * 以被其他声明了匹配依赖类型的bean注入。
+	 * <p>此方法也会检查父工厂。
 	 *
-	 * @param beanName   the name of the bean to check
-	 * @param descriptor the descriptor of the dependency to resolve
-	 * @return whether the bean should be considered as autowire candidate
-	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
+	 * @param beanName   要检查的bean的名称
+	 * @param descriptor 依赖的描述符
+	 * @return 该bean是否应被视为自动装配候选对象
+	 * @throws NoSuchBeanDefinitionException 如果没有找到给定名称的bean的定义
 	 */
 	boolean isAutowireCandidate(String beanName, DependencyDescriptor descriptor)
 			throws NoSuchBeanDefinitionException;
 
 	/**
-	 * Return the registered BeanDefinition for the specified bean, allowing access
-	 * to its property values and constructor argument value (which can be
-	 * modified during bean factory post-processing).
-	 * <p>A returned BeanDefinition object should not be a copy but the original
-	 * definition object as registered in the factory. This means that it should
-	 * be castable to a more specific implementation type, if necessary.
-	 * <p><b>NOTE:</b> This method does <i>not</i> consider ancestor factories.
-	 * It is only meant for accessing local bean definitions of this factory.
+	 * 返回注册的BeanDefinition，允许访问其属性值和构造函数参数值
+	 * （在bean工厂后处理期间可以修改）。
+	 * <p>返回的BeanDefinition对象不应该是复制后的对象，而应该是工厂中注册的原始定义对象。
+	 * 这意味着应该可以将其强制转换为更特定的实现类型，如果有必要的话。
+	 * <p><b>注意：</b>此方法 <i>不</i> 考虑父工厂。
+	 * 它仅用于访问此工厂的本地bean定义。
 	 *
 	 * @param beanName the name of the bean
 	 * @return the registered BeanDefinition
@@ -111,10 +109,9 @@ public interface ConfigurableListableBeanFactory
 	BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 
 	/**
-	 * Return a unified view over all bean names managed by this factory.
-	 * <p>Includes bean definition names as well as names of manually registered
-	 * singleton instances, with bean definition names consistently coming first,
-	 * analogous to how type/annotation specific retrieval of bean names works.
+	 * 返回一个统一视图，包含此工厂管理的所有bean名称。
+	 * <p>包括bean定义名称以及手动注册的单例实例名称，其中bean定义名称始终首先出现，
+	 * 类似于按类型/注解特定检索bean名称的工作方式。
 	 *
 	 * @return the composite iterator for the bean names view
 	 * @see #containsBeanDefinition
@@ -126,11 +123,8 @@ public interface ConfigurableListableBeanFactory
 	Iterator<String> getBeanNamesIterator();
 
 	/**
-	 * Clear the merged bean definition cache, removing entries for beans
-	 * which are not considered eligible for full metadata caching yet.
-	 * <p>Typically triggered after changes to the original bean definitions,
-	 * e.g. after applying a {@link BeanFactoryPostProcessor}. Note that metadata
-	 * for beans which have already been created at this point will be kept around.
+	 * 清除合并的bean定义缓存，移除尚未被认为适合完整元数据缓存的bean的条目。
+	 * <p>通常在应用{@link BeanFactoryPostProcessor}后触发。请注意，此时已经创建的bean的元数据将被保留。
 	 *
 	 * @see #getBeanDefinition
 	 * @see #getMergedBeanDefinition
@@ -139,17 +133,16 @@ public interface ConfigurableListableBeanFactory
 	void clearMetadataCache();
 
 	/**
-	 * Freeze all bean definitions, signalling that the registered bean definitions
-	 * will not be modified or post-processed any further.
-	 * <p>This allows the factory to aggressively cache bean definition metadata.
+	 * 冻结所有bean定义，表示注册的bean定义不会被进一步修改或后处理。
+	 * <p>这允许工厂积极缓存bean定义元数据。
 	 */
 	void freezeConfiguration();
 
 	/**
-	 * Return whether this factory's bean definitions are frozen,
-	 * i.e. are not supposed to be modified or post-processed any further.
+	 * 返回此工厂的bean定义是否被冻结，
+	 * 即是否不应该再修改或后处理bean定义。
 	 *
-	 * @return {@code true} if the factory's configuration is considered frozen
+	 * @return 如果工厂的配置被认为是冻结的，则为{@code true}
 	 */
 	boolean isConfigurationFrozen();
 
@@ -163,5 +156,6 @@ public interface ConfigurableListableBeanFactory
 	 * @see #destroySingletons()
 	 */
 	void preInstantiateSingletons() throws BeansException;
+
 
 }

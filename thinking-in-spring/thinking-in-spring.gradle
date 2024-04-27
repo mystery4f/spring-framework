@@ -34,7 +34,6 @@ dependencies {
     implementation 'javax.annotation:javax.annotation-api'
     implementation "javax.el:javax.el-api"
     implementation "org.glassfish:javax.el"
-    testImplementation('org.junit:junit-bom:5.8.2')
     testImplementation(project(':spring-test'), { transitive = true })
     testImplementation('org.junit.jupiter:junit-jupiter-api') { transitive = true }
 }

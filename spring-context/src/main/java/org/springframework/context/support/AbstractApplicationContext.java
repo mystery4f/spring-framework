@@ -496,18 +496,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				// 初始化该上下文的消息源，用于国际化。
 				initMessageSource();
 
-				// * 7.初始化内建 Bean：Spring 事件广播器：用于该上下文的应用程序事件的多路广播器初始化。
+				// * 7. 初始化内建 Bean：Spring 事件广播器：用于该上下文的应用程序事件的多路广播器初始化。
 				initApplicationEventMulticaster();
 
-				// * 8.Spring 应用上下文刷新阶段
+				// * 8. Spring 应用上下文刷新阶段
 				// 由子类实现
 				// 在特定的应用程序上下文子类中初始化其他特殊的 Bean 对象。
 				onRefresh();
 
-				// * 9.Spring 事件监听器注册阶段
+				// * 9. Spring 事件监听器注册阶段
 				// 检查是否存在监听器 Bean 对象并注册它们。
 				registerListeners();
 
+				// * 10. BeanFactory 初始化完成阶段
 				// 实例化所有剩余的（非懒加载的）单例 Bean 对象。
 				// SmartInitializingSingleton
 				finishBeanFactoryInitialization(beanFactory);
@@ -855,9 +856,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
 	/**
 	 * 完成此上下文的bean工厂的初始化，初始化所有剩余的单例bean。
+	 * 这个方法执行一系列步骤来完成bean工厂的初始化过程，包括：
+	 * 1. 初始化转换服务，如果已定义。
+	 * 2. 注册默认的嵌入值解析器，如果之前没有注册BeanFactoryPostProcessor。
+	 * 3. 提前初始化LoadTimeWeaverAware类型的bean，以注册它们的转换器。
+	 * 4. 停止使用临时ClassLoader进行类型匹配。
+	 * 5. 冻结bean定义的配置，防止进一步更改。
+	 * 6. 实例化所有剩余的非延迟初始化单例bean。
+	 *
+	 * @param beanFactory 要初始化的bean工厂，不允许为null。
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
-		// 初始化此上下文的转换服务。
+		// 初始化转换服务，如果已定义并匹配ConversionService类型。
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) && beanFactory.isTypeMatch(
 				CONVERSION_SERVICE_BEAN_NAME,
 				ConversionService.class
@@ -867,25 +877,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 			));
 		}
 
-		// 如果没有BeanFactoryPostProcessor（如PropertySourcesPlaceholderConfigurer bean）在此之前注册任何BeanFactoryPostProcessor，则注册默认的嵌入值解析器：
-		// 此时，主要用于解析注解属性值。
+		// 注册默认的嵌入值解析器，用于解析注解属性值，仅当之前没有注册BeanFactoryPostProcessor时。
 		if (!beanFactory.hasEmbeddedValueResolver()) {
 			beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
 		}
 
-		// 尽早初始化LoadTimeWeaverAware bean，以便尽早注册它们的转换器。
+		// 提前初始化LoadTimeWeaverAware类型的bean，以注册它们可能提供的转换器。
 		String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, false, false);
 		for (String weaverAwareName : weaverAwareNames) {
 			getBean(weaverAwareName);
 		}
 
-		// 停止使用临时ClassLoader进行类型匹配。
+		// 清理临时ClassLoader，准备进行bean实例化。
 		beanFactory.setTempClassLoader(null);
 
-		// 允许缓存所有bean定义元数据，不期望进一步更改。
+		// 冻结bean定义的配置，防止后续修改。
 		beanFactory.freezeConfiguration();
 
-		// 实例化所有剩余的（非延迟初始化）单例。
+		// 实例化所有剩余的非延迟初始化单例bean。
 		beanFactory.preInstantiateSingletons();
 	}
 
