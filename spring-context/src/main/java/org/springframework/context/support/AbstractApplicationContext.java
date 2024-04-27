@@ -464,22 +464,25 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 			// 使用 Spring Boot 的模块，该模块维护 Spring Boot 应用程序的启动性能数据，可以调用 start() 方法开始记录性能数据。
 			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
 
-			// 在刷新应用程序上下文之前，该方法准备该上下文的刷新。
+			// 启动准备阶段：在刷新应用程序上下文之前，该方法准备该上下文的刷新。
 			prepareRefresh();
 
-			// 用于获取新鲜的 Bean 工厂。该工厂负责应用程序上下文内所有的 Bean 对象的创建、配置和管理。
+			// BeanFactory 创建阶段：用于获取新鲜的 Bean 工厂。该工厂负责应用程序上下文内所有的 Bean 对象的创建、配置和管理。
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
-			// 为应用程序上下文的使用准备 Bean 工厂。
+			// BeanFactory 准备阶段：为应用程序上下文的使用准备 Bean 工厂。
 			prepareBeanFactory(beanFactory);
 
 			try {
+				//region BeanFactory 后置处理阶段
+				// * 由子类实现
 				// 允许应用程序上下文的子类对 Bean 工厂进行后处理。
 				postProcessBeanFactory(beanFactory);
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
 				// 调用在应用程序上下文中注册为 Bean 的工厂处理器。
 				invokeBeanFactoryPostProcessors(beanFactory);
+				//endregion
 
 				// 注册 registerBeanPostProcessors
 				registerBeanPostProcessors(beanFactory);
@@ -597,9 +600,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * 检测和配置 LoadTimeWeaver、注册默认环境 Bean 等。
 	 *
 	 * @param beanFactory 要配置的 BeanFactory, 用于 Spring 容器中管理 Bean 的实例。
+	 *                    通过配置该 BeanFactory, 可以定制 Spring 容器的行为和特性。
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-		// 设置 Bean 工厂的类装载器
+		// 设置 Bean 工厂的类装载器，用于加载 Bean 的类和其他资源
 		beanFactory.setBeanClassLoader(getClassLoader());
 
 		// 根据是否忽略 SpEL 来决定是否设置 Bean 表达式解析器
@@ -614,6 +618,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 
 		// 忽略一系列接口，这些接口在依赖注入时不需要考虑
+		// 这样做可以优化依赖注入的过程，避免不必要的检查
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -623,15 +628,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		beanFactory.ignoreDependencyInterface(ApplicationStartupAware.class);
 
 		// 注册 BeanFactory 和其他依赖项，以供依赖注入使用
+		// 这些注册操作使得 Spring 容器在需要时可以自动注入相应的实例
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
 		// 为内部 Bean 注册 ApplicationListenerDetector，以便在后处理时检测 ApplicationListener 实例
+		// 这有助于管理应用事件的监听器
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
 		// 检测 LoadTimeWeaver 并准备编织，如果运行在原生图像中则不进行操作
+		// LoadTimeWeaver 用于在类加载时进行代码修改，以实现某些动态功能
 		if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			// 添加 LoadTimeWeaverAwareProcessor 并设置临时 ClassLoader 以进行类型匹配
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
@@ -639,6 +647,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		}
 
 		// 注册默认的环境 Bean，如果它们还没有被注册的话
+		// 这些 Bean 提供了与环境相关的信息和功能，如环境变量、系统属性等
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
@@ -653,15 +662,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		}
 	}
 
+
 	/**
-	 * Modify the application context's internal bean factory after its standard
-	 * initialization. All bean definitions will have been loaded, but no beans
-	 * will have been instantiated yet. This allows for registering special
-	 * BeanPostProcessors etc in certain ApplicationContext implementations.
+	 * 在应用程序上下文的标准初始化之后修改其内部的bean工厂。所有bean定义都将被加载，但还没有任何bean被实例化。这允许在某些应用程序上下文实现中注册特殊的BeanPostProcessors等。
 	 *
-	 * @param beanFactory the bean factory used by the application context
+	 * @param beanFactory 应用程序上下文使用的bean工厂。
 	 */
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+	    // 此方法为框架预留的扩展点，用于在bean实例化之前对bean工厂进行后处理。
+	    // 子类可以通过重写此方法来实现特定的逻辑，例如注册自定义的BeanPostProcessor。
 	}
 
 	/**

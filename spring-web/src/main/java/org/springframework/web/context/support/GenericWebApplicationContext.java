@@ -143,16 +143,23 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 	}
 
 	/**
-	 * Register ServletContextAwareProcessor.
-	 * @see ServletContextAwareProcessor
+	 * 注册 ServletContextAwareProcessor。
+	 * 该方法会在 Spring 容器初始化完成后执行，用于向 BeanFactory 中添加 ServletContext 相关的处理器和注册特定的 Bean。
+	 *
+	 * @param beanFactory 允许配置的可列表 BeanFactory，用于 Spring Bean 的管理。
+	 * @see ServletContextAwareProcessor 用于处理实现了 ServletContextAware 接口的 Bean，将其与 ServletContext 绑定。
 	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 如果 ServletContext 不为空，则向 BeanFactory 中添加 ServletContextAwareProcessor 作为 Bean 后处理器
 		if (this.servletContext != null) {
 			beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext));
+			// 告诉 BeanFactory 忽略 ServletContextAware 接口，因为已经通过 ServletContextAwareProcessor 处理了
 			beanFactory.ignoreDependencyInterface(ServletContextAware.class);
 		}
+		// 注册 Web 应用上下文相关的作用域
 		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
+		// 注册与环境相关的 Bean，如 ServletContext
 		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext);
 	}
 
