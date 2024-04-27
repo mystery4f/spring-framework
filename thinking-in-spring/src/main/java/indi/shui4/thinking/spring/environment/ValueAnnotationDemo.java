@@ -6,7 +6,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 /**
  * {@link Value @Value } 注解示例
  *
- * @author xdc
+ * @author shui4
  */
 public class ValueAnnotationDemo {
 

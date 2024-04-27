@@ -118,23 +118,33 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 
 
 	/**
-	 * 此实现对该上下文的底层 bean 工厂执行实际的刷新操作，
-	 * 关闭之前的 bean 工厂（如果有）并为上下文的生命周期的下一阶段初始化一个新的 bean 工厂。
+	 * 刷新当前应用上下文的bean工厂。首先，如果已经存在bean工厂，则会销毁所有单例bean并关闭bean工厂。
+	 * 然后，创建一个新的bean工厂，加载bean定义，并将其设置为当前的bean工厂。
+	 *
+	 * @throws BeansException              如果在刷新过程中遇到任何bean相关的错误。
+	 * @throws ApplicationContextException 如果在加载bean定义时发生IO错误。
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		// 如果当前已有bean工厂，则先销毁bean并关闭工厂
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
 		}
 		try {
+			// 创建一个新的bean工厂，设置序列化ID，并进行自定义配置
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
 			customizeBeanFactory(beanFactory);
+
+			// 加载bean定义到工厂中
 			loadBeanDefinitions(beanFactory);
 			this.beanFactory = beanFactory;
 		} catch (IOException ex) {
-			throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
+			// 处理加载bean定义时发生的IO异常
+			throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(),
+					ex
+			);
 		}
 	}
 
@@ -175,41 +185,40 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	}
 
 	/**
-	 * Customize the internal bean factory used by this context.
-	 * Called for each {@link #refresh()} attempt.
-	 * <p>The default implementation applies this context's
-	 * {@linkplain #setAllowBeanDefinitionOverriding "allowBeanDefinitionOverriding"}
-	 * and {@linkplain #setAllowCircularReferences "allowCircularReferences"} settings,
-	 * if specified. Can be overridden in subclasses to customize any of
-	 * {@link DefaultListableBeanFactory}'s settings.
+	 * 自定义内部bean工厂，该工厂被此上下文使用。
+	 * 每次调用{@link #refresh()}时都会调用此方法。
+	 * <p>默认实现应用此上下文的{@linkplain #setAllowBeanDefinitionOverriding "allowBeanDefinitionOverriding"}
+	 * 和 {@linkplain #setAllowCircularReferences "allowCircularReferences"}设置（如果已指定）。
+	 * 子类可以重写此方法以自定义{@link DefaultListableBeanFactory}的任何设置。
 	 *
-	 * @param beanFactory the newly created bean factory for this context
+	 * @param beanFactory 为这个上下文新创建的bean工厂。
 	 * @see DefaultListableBeanFactory#setAllowBeanDefinitionOverriding
 	 * @see DefaultListableBeanFactory#setAllowCircularReferences
 	 * @see DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
 	 * @see DefaultListableBeanFactory#setAllowEagerClassLoading
 	 */
 	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
-		if (this.allowBeanDefinitionOverriding != null) {
-			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
-		}
-		if (this.allowCircularReferences != null) {
-			beanFactory.setAllowCircularReferences(this.allowCircularReferences);
-		}
+	    // 应用bean定义覆盖设置，如果已指定
+	    if (this.allowBeanDefinitionOverriding != null) {
+	        beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+	    }
+	    // 应用允许循环引用的设置，如果已指定
+	    if (this.allowCircularReferences != null) {
+	        beanFactory.setAllowCircularReferences(this.allowCircularReferences);
+	    }
 	}
 
 	/**
-	 * Load bean definitions into the given bean factory, typically through
-	 * delegating to one or more bean definition readers.
+	 * 将bean定义加载到给定的bean工厂中，通常通过委托给一个或多个bean定义读取器来完成。
+	 * 这是一个抽象方法，需要在子类中实现具体的加载逻辑。
 	 *
-	 * @param beanFactory the bean factory to load bean definitions into
-	 * @throws BeansException if parsing of the bean definitions failed
-	 * @throws IOException    if loading of bean definition files failed
-	 * @see org.springframework.beans.factory.support.PropertiesBeanDefinitionReader
-	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
+	 * @param beanFactory 要加载bean定义的bean工厂
+	 * @throws BeansException 如果bean定义的解析失败
+	 * @throws IOException    如果bean定义文件的加载失败
+	 * @see org.springframework.beans.factory.support.PropertiesBeanDefinitionReader 使用Properties文件加载bean定义的示例
+	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader 使用XML文件加载bean定义的示例
 	 */
-	protected abstract void loadBeanDefinitions(DefaultListableBeanFactory beanFactory)
-			throws BeansException, IOException;
+	protected abstract void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException;
 
 	@Override
 	protected void cancelRefresh(BeansException ex) {
@@ -224,8 +233,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	public final ConfigurableListableBeanFactory getBeanFactory() {
 		DefaultListableBeanFactory beanFactory = this.beanFactory;
 		if (beanFactory == null) {
-			throw new IllegalStateException("BeanFactory not initialized or already closed - " +
-					"call 'refresh' before accessing beans via the ApplicationContext");
+			throw new IllegalStateException("BeanFactory not initialized or already closed - " + "call 'refresh' before accessing beans via the ApplicationContext");
 		}
 		return beanFactory;
 	}

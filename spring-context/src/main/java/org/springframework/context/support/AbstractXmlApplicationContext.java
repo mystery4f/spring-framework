@@ -72,26 +72,30 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 
 
 	/**
-	 * Loads the bean definitions via an XmlBeanDefinitionReader.
+	 * 通过 XmlBeanDefinitionReader 加载 bean 定义。
+	 * 本方法首先创建一个 XmlBeanDefinitionReader 实例，然后配置该实例，使其能够加载本上下文的 bean 定义。
+	 * 配置完成后，调用子类可能提供的自定义初始化方法，最后实际加载 bean 定义。
+	 *
+	 * @param beanFactory 要加载 bean 定义的 DefaultListableBeanFactory 实例。
+	 * @throws BeansException 如果在加载 bean 定义时发生错误。
+	 * @throws IOException 如果在读取资源时发生IO异常。
 	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
-	 * @see #initBeanDefinitionReader
-	 * @see #loadBeanDefinitions
+	 * @see #initBeanDefinitionReader 用于自定义初始化 XmlBeanDefinitionReader 的方法。
+	 * @see #loadBeanDefinitions 实际加载 bean 定义的方法。
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
-		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
-		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+	    // 创建一个新的 XmlBeanDefinitionReader 用于给定的 BeanFactory。
+	    XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
-		// Configure the bean definition reader with this context's
-		// resource loading environment.
-		beanDefinitionReader.setEnvironment(this.getEnvironment());
-		beanDefinitionReader.setResourceLoader(this);
-		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
+	    // 配置 bean 定义读取器，使其使用本上下文的资源加载环境。
+	    beanDefinitionReader.setEnvironment(this.getEnvironment());
+	    beanDefinitionReader.setResourceLoader(this);
+	    beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
-		// Allow a subclass to provide custom initialization of the reader,
-		// then proceed with actually loading the bean definitions.
-		initBeanDefinitionReader(beanDefinitionReader);
-		loadBeanDefinitions(beanDefinitionReader);
+	    // 允许子类对读取器进行定制初始化，然后继续实际加载 bean 定义。
+	    initBeanDefinitionReader(beanDefinitionReader);
+	    loadBeanDefinitions(beanDefinitionReader);
 	}
 
 	/**

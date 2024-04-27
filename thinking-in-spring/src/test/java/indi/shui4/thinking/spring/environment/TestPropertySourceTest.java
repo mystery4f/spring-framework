@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /**
  * {@link org.springframework.test.context.TestPropertySource} 示例
  *
- * @author xdc
+ * @author shui4
  */
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "user.name=test", locations = "classpath:/META-INF/test.properties")
