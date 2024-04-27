@@ -353,39 +353,43 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	}
 
 	/**
-	 * Publish the given event to all listeners.
+	 * 发布给定的事件到所有监听器。
 	 *
-	 * @param event     the event to publish (may be an {@link ApplicationEvent}
-	 *                  or a payload object to be turned into a {@link PayloadApplicationEvent})
-	 * @param eventType the resolved event type, if known
+	 * @param event     要发布的时间，可以是{@link ApplicationEvent}的一个实例，或者一个负载对象，
+	 *                  该对象将被转换为{@link PayloadApplicationEvent}
+	 * @param eventType 已解析的事件类型，如果已知
 	 * @since 4.2
 	 */
 	protected void publishEvent(Object event, @Nullable ResolvableType eventType) {
+		// 确保事件不为null
 		Assert.notNull(event, "Event must not be null");
 
-		// Decorate event as an ApplicationEvent if necessary
+		// 如果需要，将事件装饰为ApplicationEvent
 		ApplicationEvent applicationEvent;
 		if (event instanceof ApplicationEvent) {
 			applicationEvent = (ApplicationEvent) event;
 		} else {
 			applicationEvent = new PayloadApplicationEvent<>(this, event);
+			// 如果eventType为null，则从PayloadApplicationEvent获取
 			if (eventType == null) {
 				eventType = ((PayloadApplicationEvent<?>) applicationEvent).getResolvableType();
 			}
 		}
 
-		// Multicast right now if possible - or lazily once the multicaster is initialized
+		// 如果可能，立即进行事件多播 - 或者在多播器初始化后延迟进行
 		if (this.earlyApplicationEvents != null) {
 			this.earlyApplicationEvents.add(applicationEvent);
 		} else {
+			// 使用事件多播器广播事件
 			getApplicationEventMulticaster().multicastEvent(applicationEvent, eventType);
 		}
-
-		// Publish event via parent context as well...
+		// 通过父上下文也发布事件...
 		if (this.parent != null) {
+			// 如果父上下文是AbstractApplicationContext的实例，则使用给定的eventType发布事件
 			if (this.parent instanceof AbstractApplicationContext) {
 				((AbstractApplicationContext) this.parent).publishEvent(event, eventType);
 			} else {
+				// 否则，只发布事件
 				this.parent.publishEvent(event);
 			}
 		}
@@ -492,12 +496,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				// 初始化该上下文的消息源，用于国际化。
 				initMessageSource();
 
-				// *7.初始化内建 Bean：Spring 事件广播器：用于该上下文的应用程序事件的多路广播器初始化。
+				// * 7.初始化内建 Bean：Spring 事件广播器：用于该上下文的应用程序事件的多路广播器初始化。
 				initApplicationEventMulticaster();
 
+				// * 8.Spring 应用上下文刷新阶段
+				// 由子类实现
 				// 在特定的应用程序上下文子类中初始化其他特殊的 Bean 对象。
 				onRefresh();
 
+				// * 9.Spring 事件监听器注册阶段
 				// 检查是否存在监听器 Bean 对象并注册它们。
 				registerListeners();
 
@@ -808,35 +815,35 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	}
 
 	/**
-	 * Template method which can be overridden to add context-specific refresh work.
-	 * Called on initialization of special beans, before instantiation of singletons.
-	 * <p>This implementation is empty.
+	 * 此方法为模板方法，子类可以重写以添加特定上下文的刷新逻辑。
+	 * 在特定bean的初始化过程中调用，即在单例实例化之前。
+	 * <p>此实现为空。
 	 *
-	 * @throws BeansException in case of errors
-	 * @see #refresh()
+	 * @throws BeansException 如果发生错误
+	 * @see #refresh() 可以参考refresh()方法
 	 */
 	protected void onRefresh() throws BeansException {
-		// For subclasses: do nothing by default.
+		// 默认情况下子类无需执行任何操作。
 	}
 
 	/**
-	 * Add beans that implement ApplicationListener as listeners.
-	 * Doesn't affect other listeners, which can be added without being beans.
+	 * 注册实现ApplicationListener接口的bean作为监听器。
+	 * 此操作不影响通过其他方式添加的监听器。
 	 */
 	protected void registerListeners() {
-		// Register statically specified listeners first.
+		// 首先注册静态指定的监听器。
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
 			getApplicationEventMulticaster().addApplicationListener(listener);
 		}
 
-		// Do not initialize FactoryBeans here: We need to leave all regular beans
-		// uninitialized to let post-processors apply to them!
+		// 此处不初始化 FactoryBeans：需要让所有常规 bean 保持未初始化状态，
+		// 以便后处理器能够应用到它们！
 		String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
 		for (String listenerBeanName : listenerBeanNames) {
 			getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
 		}
 
-		// Publish early application events now that we finally have a multicaster...
+		// 现在终于有了一个多播器，可以发布早期应用事件了...
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
 		this.earlyApplicationEvents = null;
 		if (!CollectionUtils.isEmpty(earlyEventsToProcess)) {
