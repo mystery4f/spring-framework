@@ -45,6 +45,15 @@ final class PostProcessorRegistrationDelegate {
 	}
 
 
+	/**
+	 * 调用给定的 BeanFactoryPostProcessor 实例列表中的所有处理器的 postProcessBeanFactory 方法。
+	 * 此方法负责按正确的顺序调用 BeanFactoryPostProcessor，包括实现 PriorityOrdered、Ordered 接口的处理器。
+	 *
+	 * @param beanFactory               待处理的 BeanFactory 实例，必须是 ConfigurableListableBeanFactory 接口的实现。
+	 * @param beanFactoryPostProcessors 要调用 postProcessBeanFactory 方法的 BeanFactoryPostProcessor 实例列表。
+	 *                                  <p>
+	 *                                  注意：此方法包含对 BeanDefinitionRegistryPostProcessor 的特殊处理逻辑，以确保它们按照 Spring 容器初始化的特定顺序被调用。
+	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
@@ -62,6 +71,7 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
+			// 首先，处理所有实现 BeanDefinitionRegistryPostProcessor 接口的处理器。
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
@@ -77,100 +87,127 @@ final class PostProcessorRegistrationDelegate {
 			// 区分实现PriorityOrdered、Ordered和其他的BeanDefinitionRegistryPostProcessors。
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
-			// 首先，调用实现PriorityOrdered的BeanDefinitionRegistryPostProcessors。
+			// 首先调用实现 PriorityOrdered 接口的 BeanDefinitionRegistryPostProcessors。
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
-					currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+					currentRegistryProcessors.add(beanFactory.getBean(ppName,
+							BeanDefinitionRegistryPostProcessor.class
+					));
 					processedBeans.add(ppName);
 				}
 			}
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
-			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
+			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors,
+					registry,
+					beanFactory.getApplicationStartup()
+			);
 			currentRegistryProcessors.clear();
 
-			// 接下来，调用实现Ordered的BeanDefinitionRegistryPostProcessors。
-			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+			// 接下来，调用实现 Ordered 接口的 BeanDefinitionRegistryPostProcessors。
+			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class,
+					true,
+					false
+			);
 			for (String ppName : postProcessorNames) {
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
-					currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+					currentRegistryProcessors.add(beanFactory.getBean(ppName,
+							BeanDefinitionRegistryPostProcessor.class
+					));
 					processedBeans.add(ppName);
 				}
 			}
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
-			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
+			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors,
+					registry,
+					beanFactory.getApplicationStartup()
+			);
 			currentRegistryProcessors.clear();
 
-			// 最后，调用所有其他BeanDefinitionRegistryPostProcessors，直到再没有出现新的。
+			// 最后，调用所有其他 BeanDefinitionRegistryPostProcessors，直到再没有出现新的。
 			boolean reiterate = true;
 			while (reiterate) {
 				reiterate = false;
-				postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+				postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class,
+						true,
+						false
+				);
 				for (String ppName : postProcessorNames) {
 					if (!processedBeans.contains(ppName)) {
-						currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+						currentRegistryProcessors.add(beanFactory.getBean(ppName,
+								BeanDefinitionRegistryPostProcessor.class
+						));
 						processedBeans.add(ppName);
 						reiterate = true;
 					}
 				}
 				sortPostProcessors(currentRegistryProcessors, beanFactory);
 				registryProcessors.addAll(currentRegistryProcessors);
-				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
+				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors,
+						registry,
+						beanFactory.getApplicationStartup()
+				);
 				currentRegistryProcessors.clear();
 			}
 
-			// 现在，调用到目前为止处理的所有处理器的postProcessBeanFactory回调。
+			// 现在，调用所有已处理的 BeanDefinitionRegistryPostProcessor 的 postProcessBeanFactory 方法。
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		} else {
-			// 调用通过上下文实例注册的工厂处理器。
+			// 如果 beanFactory 不是 BeanDefinitionRegistry 实例，直接调用所有处理器的 postProcessBeanFactory 方法。
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
 		}
 
-		// 不要在这里初始化FactoryBeans：我们需要保留所有常规bean未初始化，以便让bean工厂后处理器应用于它们！
-		String[] postProcessorNames =
-				beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class, true, false);
-
-		// 区分实现PriorityOrdered、Ordered和其他的BeanFactoryPostProcessors。
-		List<BeanFactoryPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
-		List<String> orderedPostProcessorNames = new ArrayList<>();
-		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
-		for (String ppName : postProcessorNames) {
-			if (processedBeans.contains(ppName)) {
-				// 跳过 - 已在上面的第一阶段中处理过
-			} else if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
-				priorityOrderedPostProcessors.add(beanFactory.getBean(ppName, BeanFactoryPostProcessor.class));
-			} else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
-				orderedPostProcessorNames.add(ppName);
-			} else {
-				nonOrderedPostProcessorNames.add(ppName);
-			}
-		}
-
-		// 首先，调用实现PriorityOrdered的BeanFactoryPostProcessors。
-		sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
-		invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);
-
-		// 接下来，调用实现Ordered的BeanFactoryPostProcessors。
-		List<BeanFactoryPostProcessor> orderedPostProcessors = new ArrayList<>(orderedPostProcessorNames.size());
-		for (String postProcessorName : orderedPostProcessorNames) {
-			orderedPostProcessors.add(beanFactory.getBean(postProcessorName, BeanFactoryPostProcessor.class));
-		}
-		sortPostProcessors(orderedPostProcessors, beanFactory);
-		invokeBeanFactoryPostProcessors(orderedPostProcessors, beanFactory);
-
-		// 最后，调用所有其他BeanFactoryPostProcessors。
-		List<BeanFactoryPostProcessor> nonOrderedPostProcessors = new ArrayList<>(nonOrderedPostProcessorNames.size());
-		for (String postProcessorName : nonOrderedPostProcessorNames) {
-			nonOrderedPostProcessors.add(beanFactory.getBean(postProcessorName, BeanFactoryPostProcessor.class));
-		}
-		invokeBeanFactoryPostProcessors(nonOrderedPostProcessors, beanFactory);
-
-		// 清除缓存的合并bean定义，因为后处理器可能已修改原始元数据，例如替换值中的占位符...
+		// 清理 FactoryBean 缓存，因为 BeanFactoryPostProcessor 可能已经修改了原始元数据，例如占位符的替换。
 		beanFactory.clearMetadataCache();
+	}
+
+	private static void sortPostProcessors(List<?> postProcessors, ConfigurableListableBeanFactory beanFactory) {
+		// Nothing to sort?
+		if (postProcessors.size() <= 1) {
+			return;
+		}
+		Comparator<Object> comparatorToUse = null;
+		if (beanFactory instanceof DefaultListableBeanFactory) {
+			comparatorToUse = ((DefaultListableBeanFactory) beanFactory).getDependencyComparator();
+		}
+		if (comparatorToUse == null) {
+			comparatorToUse = OrderComparator.INSTANCE;
+		}
+		postProcessors.sort(comparatorToUse);
+	}
+
+	/**
+	 * Invoke the given BeanDefinitionRegistryPostProcessor beans.
+	 */
+	private static void invokeBeanDefinitionRegistryPostProcessors(
+			Collection<? extends BeanDefinitionRegistryPostProcessor> postProcessors, BeanDefinitionRegistry registry, ApplicationStartup applicationStartup) {
+
+		for (BeanDefinitionRegistryPostProcessor postProcessor : postProcessors) {
+			StartupStep postProcessBeanDefRegistry = applicationStartup.start(
+							"spring.context.beandef-registry.post-process")
+					.tag("postProcessor", postProcessor::toString);
+			postProcessor.postProcessBeanDefinitionRegistry(registry);
+			postProcessBeanDefRegistry.end();
+		}
+	}
+
+	/**
+	 * Invoke the given BeanFactoryPostProcessor beans.
+	 */
+	private static void invokeBeanFactoryPostProcessors(
+			Collection<? extends BeanFactoryPostProcessor> postProcessors, ConfigurableListableBeanFactory beanFactory) {
+
+		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
+			StartupStep postProcessBeanFactory = beanFactory.getApplicationStartup()
+					.start("spring.context.bean-factory.post-process")
+					.tag("postProcessor", postProcessor::toString);
+			postProcessor.postProcessBeanFactory(beanFactory);
+			postProcessBeanFactory.end();
+		}
 	}
 
 	public static void registerBeanPostProcessors(
@@ -251,49 +288,6 @@ final class PostProcessorRegistrationDelegate {
 		// Re-register post-processor for detecting inner beans as ApplicationListeners,
 		// moving it to the end of the processor chain (for picking up proxies etc).
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(applicationContext));
-	}
-
-	private static void sortPostProcessors(List<?> postProcessors, ConfigurableListableBeanFactory beanFactory) {
-		// Nothing to sort?
-		if (postProcessors.size() <= 1) {
-			return;
-		}
-		Comparator<Object> comparatorToUse = null;
-		if (beanFactory instanceof DefaultListableBeanFactory) {
-			comparatorToUse = ((DefaultListableBeanFactory) beanFactory).getDependencyComparator();
-		}
-		if (comparatorToUse == null) {
-			comparatorToUse = OrderComparator.INSTANCE;
-		}
-		postProcessors.sort(comparatorToUse);
-	}
-
-	/**
-	 * Invoke the given BeanDefinitionRegistryPostProcessor beans.
-	 */
-	private static void invokeBeanDefinitionRegistryPostProcessors(
-			Collection<? extends BeanDefinitionRegistryPostProcessor> postProcessors, BeanDefinitionRegistry registry, ApplicationStartup applicationStartup) {
-
-		for (BeanDefinitionRegistryPostProcessor postProcessor : postProcessors) {
-			StartupStep postProcessBeanDefRegistry = applicationStartup.start("spring.context.beandef-registry.post-process")
-					.tag("postProcessor", postProcessor::toString);
-			postProcessor.postProcessBeanDefinitionRegistry(registry);
-			postProcessBeanDefRegistry.end();
-		}
-	}
-
-	/**
-	 * Invoke the given BeanFactoryPostProcessor beans.
-	 */
-	private static void invokeBeanFactoryPostProcessors(
-			Collection<? extends BeanFactoryPostProcessor> postProcessors, ConfigurableListableBeanFactory beanFactory) {
-
-		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
-			StartupStep postProcessBeanFactory = beanFactory.getApplicationStartup().start("spring.context.bean-factory.post-process")
-					.tag("postProcessor", postProcessor::toString);
-			postProcessor.postProcessBeanFactory(beanFactory);
-			postProcessBeanFactory.end();
-		}
 	}
 
 	/**
