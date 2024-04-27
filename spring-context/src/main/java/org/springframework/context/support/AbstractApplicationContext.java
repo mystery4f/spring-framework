@@ -487,7 +487,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				// * 5. BeanFactory 注册 BeanPostProcessor 阶段（注册 registerBeanPostProcessors）
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
-
+				// * 6. 初始化内建 Bean：MessageSource
 				// 初始化该上下文的消息源，用于国际化。
 				initMessageSource();
 
@@ -711,6 +711,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		// 获取Bean工厂
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		// 如果Bean工厂包含名为MESSAGE_SOURCE_BEAN_NAME的本地Bean
+		// 在 spring boot 中，如果没有配置 messageSource Bean，则会使用默认的 ResourceBundleMessageSource 的 BeanDefinition，会走到这里
 		if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
 			// 从Bean工厂获取消息源
 			this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
