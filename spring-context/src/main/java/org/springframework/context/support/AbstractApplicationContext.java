@@ -484,14 +484,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				invokeBeanFactoryPostProcessors(beanFactory);
 				//endregion
 
-				// * 5. BeanFactory 注册 BeanPostProcessor 阶段（注册 registerBeanPostProcessors）
+				// * 5. BeanFactory 注册 BeanPostProcessor 阶段
+				// 注册 registerBeanPostProcessors
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 				// * 6. 初始化内建 Bean：MessageSource
 				// 初始化该上下文的消息源，用于国际化。
 				initMessageSource();
 
-				// 用于该上下文的应用程序事件的多路广播器初始化。
+				// *7.初始化内建 Bean：Spring 事件广播器：用于该上下文的应用程序事件的多路广播器初始化。
 				initApplicationEventMulticaster();
 
 				// 在特定的应用程序上下文子类中初始化其他特殊的 Bean 对象。
@@ -742,29 +743,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	}
 
 	/**
-	 * 初始化 ApplicationEventMulticaster。
-	 * 如果上下文中没有定义 ApplicationEventMulticaster，
-	 * 那么将使用 SimpleApplicationEventMulticaster。
+	 * 初始化 ApplicationEventMulticaster，负责管理应用程序事件的广播。
+	 * 如果当前上下文中已经定义了 ApplicationEventMulticaster，则使用已有的定义；
+	 * 如果未定义，则默认使用 SimpleApplicationEventMulticaster。
 	 *
 	 * @see org.springframework.context.event.SimpleApplicationEventMulticaster
 	 */
 	protected void initApplicationEventMulticaster() {
-		// 获取 BeanFactory
+		// 获取当前环境的 BeanFactory
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-		// 如果 BeanFactory 中包含 APPLICATION_EVENT_MULTICASTER_BEAN_NAME 的本地 bean
+
+		// 检查 BeanFactory 是否包含已定义的 ApplicationEventMulticaster
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
-			// 从 BeanFactory 中获取 ApplicationEventMulticaster 类型的 bean
+			// 从 BeanFactory 中获取 ApplicationEventMulticaster 实例
 			this.applicationEventMulticaster = beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
 					ApplicationEventMulticaster.class
 			);
+			// 日志记录：使用的 ApplicationEventMulticaster
 			if (logger.isTraceEnabled()) {
 				logger.trace("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}
 		} else {
-			// 创建 SimpleApplicationEventMulticaster
+			// 创建并使用默认的 SimpleApplicationEventMulticaster
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
-			// 将 SimpleApplicationEventMulticaster 注册到 BeanFactory 中
+			// 将新创建的 SimpleApplicationEventMulticaster 注册到 BeanFactory 中
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
+			// 日志记录：未找到定义，使用默认的 SimpleApplicationEventMulticaster
 			if (logger.isTraceEnabled()) {
 				logger.trace("No '" + APPLICATION_EVENT_MULTICASTER_BEAN_NAME + "' bean, using " + "[" + this.applicationEventMulticaster.getClass()
 						.getSimpleName() + "]");
