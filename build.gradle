@@ -318,9 +318,10 @@ configure([rootProject] + javaProjects) { project ->
 
 		compileKotlin {
 			kotlinOptions {
-				languageVersion = "1.3"
-				apiVersion = "1.3"
-				freeCompilerArgs = ["-Xjsr305=strict", "-Xsuppress-version-warnings", "-Xopt-in=kotlin.RequiresOptIn"]
+				languageVersion = "1.4"
+				apiVersion = "1.4"
+//				freeCompilerArgs = ["-Xjsr305=strict", "-Xsuppress-version-warnings", "-opt-in=kotlin.RequiresOptIn","-Xincremental=false"]
+				freeCompilerArgs = ["-Xjsr305=strict", "-Xsuppress-version-warnings"]
 				allWarningsAsErrors = true
 			}
 		}
