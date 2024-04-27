@@ -103,8 +103,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @see org.springframework.context.MessageSource
  * @since January 21, 2001
  */
-public abstract class AbstractApplicationContext extends DefaultResourceLoader
-		implements ConfigurableApplicationContext {
+public abstract class AbstractApplicationContext extends DefaultResourceLoader implements ConfigurableApplicationContext {
 
 	/**
 	 * Name of the MessageSource bean in the factory.
@@ -275,43 +274,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return new PathMatchingResourcePatternResolver(this);
 	}
 
-	/**
-	 * Return the {@code Environment} for this application context in configurable
-	 * form, allowing for further customization.
-	 * <p>If none specified, a default environment will be initialized via
-	 * {@link #createEnvironment()}.
-	 */
-	@Override
-	public ConfigurableEnvironment getEnvironment() {
-		if (this.environment == null) {
-			this.environment = createEnvironment();
-		}
-		return this.environment;
-	}
-
-	/**
-	 * Set the {@code Environment} for this application context.
-	 * <p>Default value is determined by {@link #createEnvironment()}. Replacing the
-	 * default with this method is one option but configuration through {@link
-	 * #getEnvironment()} should also be considered. In either case, such modifications
-	 * should be performed <em>before</em> {@link #refresh()}.
-	 *
-	 * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
-	 */
-	@Override
-	public void setEnvironment(ConfigurableEnvironment environment) {
-		this.environment = environment;
-	}
-
-	/**
-	 * Create and return a new {@link StandardEnvironment}.
-	 * <p>Subclasses may override this method in order to supply
-	 * a custom {@link ConfigurableEnvironment} implementation.
-	 */
-	protected ConfigurableEnvironment createEnvironment() {
-		return new StandardEnvironment();
-	}
-
 	@Override
 	public String getId() {
 		return this.id;
@@ -437,8 +399,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	ApplicationEventMulticaster getApplicationEventMulticaster() throws IllegalStateException {
 		if (this.applicationEventMulticaster == null) {
-			throw new IllegalStateException("ApplicationEventMulticaster not initialized - " +
-					"call 'refresh' before multicasting events via the context: " + this);
+			throw new IllegalStateException("ApplicationEventMulticaster not initialized - " + "call 'refresh' before multicasting events via the context: " + this);
 		}
 		return this.applicationEventMulticaster;
 	}
@@ -462,8 +423,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	LifecycleProcessor getLifecycleProcessor() throws IllegalStateException {
 		if (this.lifecycleProcessor == null) {
-			throw new IllegalStateException("LifecycleProcessor not initialized - " +
-					"call 'refresh' before invoking lifecycle methods via the context: " + this);
+			throw new IllegalStateException("LifecycleProcessor not initialized - " + "call 'refresh' before invoking lifecycle methods via the context: " + this);
 		}
 		return this.lifecycleProcessor;
 	}
@@ -490,11 +450,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 		this.applicationListeners.add(listener);
 	}
-
-
-	// ---------------------------------------------------------------------
-	// Implementation of ConfigurableApplicationContext interface
-	// ---------------------------------------------------------------------
 
 	/**
 	 * Return the list of statically specified ApplicationListeners.
@@ -552,8 +507,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// 如果在刷新应用程序上下文时出现 BeansException 异常，则抛出异常，并重置 'active' 标志。
 			catch (BeansException ex) {
 				if (logger.isWarnEnabled()) {
-					logger.warn("Exception encountered during context initialization - " +
-							"cancelling refresh attempt: " + ex);
+					logger.warn("Exception encountered during context initialization - " + "cancelling refresh attempt: " + ex);
 				}
 
 				// 销毁已创建的单例 Bean 对象，以避免留下未释放的资源。
@@ -609,6 +563,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		this.earlyApplicationEvents = new LinkedHashSet<>();
 	}
 
+
+	// ---------------------------------------------------------------------
+	// Implementation of ConfigurableApplicationContext interface
+	// ---------------------------------------------------------------------
+
 	/**
 	 * <p>Replace any stub property sources with actual instances.
 	 *
@@ -630,7 +589,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		refreshBeanFactory();
 		return getBeanFactory();
 	}
-
 
 	/**
 	 * 配置工厂的标准上下文特性，例如上下文的类装载器和后处理器。
@@ -695,8 +653,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 	}
 
-
-
 	/**
 	 * Modify the application context's internal bean factory after its standard
 	 * initialization. All bean definitions will have been loaded, but no beans
@@ -708,26 +664,26 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 	}
 
-    /**
-     * 实例化并调用所有已注册的BeanFactoryPostProcessor Bean,
-     * 尊重给定的明确顺序。
-     * <p>必须在单例实例化之前调用。
-     *
-     * @param beanFactory 可配置的列表 BeanFactory，提供 Bean 实例化和管理功能。
-     */
+	/**
+	 * 实例化并调用所有已注册的BeanFactoryPostProcessor Bean,
+	 * 尊重给定的明确顺序。
+	 * <p>必须在单例实例化之前调用。
+	 *
+	 * @param beanFactory 可配置的列表 BeanFactory，提供 Bean 实例化和管理功能。
+	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		// 调用所有注册的 BeanFactoryPostProcessor
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// 检测 LoadTimeWeaver 并准备进行编织，如果在此期间找到（例如，通过 ConfigurationClassPostProcessor 注册的 @Bean 方法）
-		if (!NativeDetector.inNativeImage() && beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
+		if (!NativeDetector.inNativeImage() && beanFactory.getTempClassLoader() == null && beanFactory.containsBean(
+				LOAD_TIME_WEAVER_BEAN_NAME)) {
 			// 为 BeanFactory 添加 BeanPostProcessor 以支持 LoadTimeWeaver
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			// 设置临时类加载器以匹配上下文类型
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
 		}
 	}
-
 
 	/**
 	 * Instantiate and register all BeanPostProcessor beans,
@@ -775,7 +731,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 	}
 
-
 	/**
 	 * 初始化 ApplicationEventMulticaster。
 	 * 如果上下文中没有定义 ApplicationEventMulticaster，
@@ -789,8 +744,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// 如果 BeanFactory 中包含 APPLICATION_EVENT_MULTICASTER_BEAN_NAME 的本地 bean
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
 			// 从 BeanFactory 中获取 ApplicationEventMulticaster 类型的 bean
-			this.applicationEventMulticaster =
-					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
+			this.applicationEventMulticaster = beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
+					ApplicationEventMulticaster.class
+			);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}
@@ -800,8 +756,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// 将 SimpleApplicationEventMulticaster 注册到 BeanFactory 中
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
 			if (logger.isTraceEnabled()) {
-				logger.trace("No '" + APPLICATION_EVENT_MULTICASTER_BEAN_NAME + "' bean, using " +
-						"[" + this.applicationEventMulticaster.getClass().getSimpleName() + "]");
+				logger.trace("No '" + APPLICATION_EVENT_MULTICASTER_BEAN_NAME + "' bean, using " + "[" + this.applicationEventMulticaster.getClass()
+						.getSimpleName() + "]");
 			}
 		}
 	}
@@ -813,29 +769,28 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see org.springframework.context.support.DefaultLifecycleProcessor
 	 */
 	protected void initLifecycleProcessor() {
-	    ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-	    // 检查是否在上下文中定义了 LifecycleProcessor
-	    if (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) {
-	        // 从上下文中获取 LifecycleProcessor 实例
-	        this.lifecycleProcessor =
-	                beanFactory.getBean(LIFECYCLE_PROCESSOR_BEAN_NAME, LifecycleProcessor.class);
-	        if (logger.isTraceEnabled()) {
-	            // 记录使用的 LifecycleProcessor 实例
-	            logger.trace("Using LifecycleProcessor [" + this.lifecycleProcessor + "]");
-	        }
-	    } else {
-	        // 创建 DefaultLifecycleProcessor 实例
-	        DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
-	        defaultProcessor.setBeanFactory(beanFactory);
-	        this.lifecycleProcessor = defaultProcessor;
-	        // 将 DefaultLifecycleProcessor 注册为单例 bean
-	        beanFactory.registerSingleton(LIFECYCLE_PROCESSOR_BEAN_NAME, this.lifecycleProcessor);
-	        if (logger.isTraceEnabled()) {
-	            // 记录使用了默认的 LifecycleProcessor 实例
-	            logger.trace("No '" + LIFECYCLE_PROCESSOR_BEAN_NAME + "' bean, using " +
-	                    "[" + this.lifecycleProcessor.getClass().getSimpleName() + "]");
-	        }
-	    }
+		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 检查是否在上下文中定义了 LifecycleProcessor
+		if (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) {
+			// 从上下文中获取 LifecycleProcessor 实例
+			this.lifecycleProcessor = beanFactory.getBean(LIFECYCLE_PROCESSOR_BEAN_NAME, LifecycleProcessor.class);
+			if (logger.isTraceEnabled()) {
+				// 记录使用的 LifecycleProcessor 实例
+				logger.trace("Using LifecycleProcessor [" + this.lifecycleProcessor + "]");
+			}
+		} else {
+			// 创建 DefaultLifecycleProcessor 实例
+			DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
+			defaultProcessor.setBeanFactory(beanFactory);
+			this.lifecycleProcessor = defaultProcessor;
+			// 将 DefaultLifecycleProcessor 注册为单例 bean
+			beanFactory.registerSingleton(LIFECYCLE_PROCESSOR_BEAN_NAME, this.lifecycleProcessor);
+			if (logger.isTraceEnabled()) {
+				// 记录使用了默认的 LifecycleProcessor 实例
+				logger.trace("No '" + LIFECYCLE_PROCESSOR_BEAN_NAME + "' bean, using " + "[" + this.lifecycleProcessor.getClass()
+						.getSimpleName() + "]");
+			}
+		}
 	}
 
 	/**
@@ -882,10 +837,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// 初始化此上下文的转换服务。
-		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
-				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
-			beanFactory.setConversionService(
-					beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
+		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) && beanFactory.isTypeMatch(
+				CONVERSION_SERVICE_BEAN_NAME,
+				ConversionService.class
+		)) {
+			beanFactory.setConversionService(beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME,
+					ConversionService.class
+			));
 		}
 
 		// 如果没有BeanFactoryPostProcessor（如PropertySourcesPlaceholderConfigurer bean）在此之前注册任何BeanFactoryPostProcessor，则注册默认的嵌入值解析器：
@@ -1169,11 +1127,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		this.displayName = displayName;
 	}
 
-
-	// ---------------------------------------------------------------------
-	// Implementation of BeanFactory interface
-	// ---------------------------------------------------------------------
-
 	@Override
 	public Object getBean(String name, Object... args) throws BeansException {
 		assertBeanFactoryActive();
@@ -1191,6 +1144,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		assertBeanFactoryActive();
 		return getBeanFactory().getBean(requiredType, args);
 	}
+
+
+	// ---------------------------------------------------------------------
+	// Implementation of BeanFactory interface
+	// ---------------------------------------------------------------------
 
 	@Override
 	public <T> ObjectProvider<T> getBeanProvider(Class<T> requiredType) {
@@ -1262,11 +1220,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return getBeanFactory().getBeanDefinitionCount();
 	}
 
-
-	// ---------------------------------------------------------------------
-	// Implementation of ListableBeanFactory interface
-	// ---------------------------------------------------------------------
-
 	@Override
 	public String[] getBeanDefinitionNames() {
 		return getBeanFactory().getBeanDefinitionNames();
@@ -1283,6 +1236,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		assertBeanFactoryActive();
 		return getBeanFactory().getBeanProvider(requiredType, allowEagerInit);
 	}
+
+
+	// ---------------------------------------------------------------------
+	// Implementation of ListableBeanFactory interface
+	// ---------------------------------------------------------------------
 
 	@Override
 	public String[] getBeanNamesForType(ResolvableType type) {
@@ -1315,9 +1273,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	@Override
-	public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type, boolean includeNonSingletons,
-											 boolean allowEagerInit)
-			throws BeansException {
+	public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type, boolean includeNonSingletons, boolean allowEagerInit) throws BeansException {
 
 		assertBeanFactoryActive();
 		return getBeanFactory().getBeansOfType(type, includeNonSingletons, allowEagerInit);
@@ -1330,8 +1286,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	@Override
-	public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType)
-			throws BeansException {
+	public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) throws BeansException {
 
 		assertBeanFactoryActive();
 		return getBeanFactory().getBeansWithAnnotation(annotationType);
@@ -1339,8 +1294,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	@Override
 	@Nullable
-	public <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
-			throws NoSuchBeanDefinitionException {
+	public <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType) throws NoSuchBeanDefinitionException {
 
 		assertBeanFactoryActive();
 		return getBeanFactory().findAnnotationOnBean(beanName, annotationType);
@@ -1362,11 +1316,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return this.parent;
 	}
 
-
-	// ---------------------------------------------------------------------
-	// Implementation of HierarchicalBeanFactory interface
-	// ---------------------------------------------------------------------
-
 	/**
 	 * Set the parent of this application context.
 	 * <p>The parent {@linkplain ApplicationContext#getEnvironment() environment} is
@@ -1387,6 +1336,48 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 	}
 
+	/**
+	 * Return the {@code Environment} for this application context in configurable
+	 * form, allowing for further customization.
+	 * <p>If none specified, a default environment will be initialized via
+	 * {@link #createEnvironment()}.
+	 */
+	@Override
+	public ConfigurableEnvironment getEnvironment() {
+		if (this.environment == null) {
+			this.environment = createEnvironment();
+		}
+		return this.environment;
+	}
+
+	/**
+	 * Set the {@code Environment} for this application context.
+	 * <p>Default value is determined by {@link #createEnvironment()}. Replacing the
+	 * default with this method is one option but configuration through {@link
+	 * #getEnvironment()} should also be considered. In either case, such modifications
+	 * should be performed <em>before</em> {@link #refresh()}.
+	 *
+	 * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
+	 */
+	@Override
+	public void setEnvironment(ConfigurableEnvironment environment) {
+		this.environment = environment;
+	}
+
+
+	// ---------------------------------------------------------------------
+	// Implementation of HierarchicalBeanFactory interface
+	// ---------------------------------------------------------------------
+
+	/**
+	 * Create and return a new {@link StandardEnvironment}.
+	 * <p>Subclasses may override this method in order to supply
+	 * a custom {@link ConfigurableEnvironment} implementation.
+	 */
+	protected ConfigurableEnvironment createEnvironment() {
+		return new StandardEnvironment();
+	}
+
 	@Override
 	public boolean containsLocalBean(String name) {
 		return getBeanFactory().containsLocalBean(name);
@@ -1400,8 +1391,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	@Nullable
 	protected BeanFactory getInternalParentBeanFactory() {
-		return (getParent() instanceof ConfigurableApplicationContext ?
-				((ConfigurableApplicationContext) getParent()).getBeanFactory() : getParent());
+		return (getParent() instanceof ConfigurableApplicationContext ? ((ConfigurableApplicationContext) getParent()).getBeanFactory() : getParent());
 	}
 
 
@@ -1422,8 +1412,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	private MessageSource getMessageSource() throws IllegalStateException {
 		if (this.messageSource == null) {
-			throw new IllegalStateException("MessageSource not initialized - " +
-					"call 'refresh' before accessing messages via the context: " + this);
+			throw new IllegalStateException("MessageSource not initialized - " + "call 'refresh' before accessing messages via the context: " + this);
 		}
 		return this.messageSource;
 	}
@@ -1444,8 +1433,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	@Nullable
 	protected MessageSource getInternalParentMessageSource() {
-		return (getParent() instanceof AbstractApplicationContext ?
-				((AbstractApplicationContext) getParent()).messageSource : getParent());
+		return (getParent() instanceof AbstractApplicationContext ? ((AbstractApplicationContext) getParent()).messageSource : getParent());
 	}
 
 
