@@ -17,32 +17,25 @@
 package org.springframework.core;
 
 /**
- * Extension of the {@link Ordered} interface, expressing a <em>priority</em>
- * ordering: {@code PriorityOrdered} objects are always applied before
- * <em>plain</em> {@link Ordered} objects regardless of their order values.
+ * 此接口扩展自{@link Ordered}接口，表达了优先级排序的含义：{@code PriorityOrdered}对象总是优先于
+ * “普通”的{@link Ordered}对象，无论它们的顺序值如何。
  *
- * <p>When sorting a set of {@code Ordered} objects, {@code PriorityOrdered}
- * objects and <em>plain</em> {@code Ordered} objects are effectively treated as
- * two separate subsets, with the set of {@code PriorityOrdered} objects preceding
- * the set of <em>plain</em> {@code Ordered} objects and with relative
- * ordering applied within those subsets.
+ * <p>在排序一组{@code Ordered}对象时，{@code PriorityOrdered}对象和“普通”的{@code Ordered}
+ * 对象实际上被视为两个不同的子集，其中{@code PriorityOrdered}对象子集先于“普通”的{@code Ordered}
+ * 对象子集，且在这些子集内部应用相对排序。
  *
- * <p>This is primarily a special-purpose interface, used within the framework
- * itself for objects where it is particularly important to recognize
- * <em>prioritized</em> objects first, potentially without even obtaining the
- * remaining objects. A typical example: prioritized post-processors in a Spring
- * {@link org.springframework.context.ApplicationContext}.
+ * <p>此接口主要用作特殊用途，特别在Spring框架内部，用于需要首先识别“优先级”对象的场景。
+ * 一个典型的例子是Spring的{@link org.springframework.context.ApplicationContext}中的优先级后处理器。
  *
- * <p>Note: {@code PriorityOrdered} post-processor beans are initialized in
- * a special phase, ahead of other post-processor beans. This subtly
- * affects their autowiring behavior: they will only be autowired against
- * beans which do not require eager initialization for type matching.
+ * <p>注意：{@code PriorityOrdered}后处理器 Bean 在一个特殊阶段进行初始化，早于其他后处理器 Bean。
+ * 这微妙地影响了它们的自动装配行为：它们仅会与不需要热切初始化来进行类型匹配的 Bean 进行自动装配。
  *
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 2.5
  * @see org.springframework.beans.factory.config.PropertyOverrideConfigurer
  * @see org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
+ * @since 2.5
  */
 public interface PriorityOrdered extends Ordered {
 }
+

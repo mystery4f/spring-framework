@@ -464,18 +464,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 			// 使用 Spring Boot 的模块，该模块维护 Spring Boot 应用程序的启动性能数据，可以调用 start() 方法开始记录性能数据。
 			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
 
-			// 启动准备阶段：在刷新应用程序上下文之前，该方法准备该上下文的刷新。
+			// * 1. 启动准备阶段：在刷新应用程序上下文之前，该方法准备该上下文的刷新。
 			prepareRefresh();
 
-			// BeanFactory 创建阶段：用于获取新鲜的 Bean 工厂。该工厂负责应用程序上下文内所有的 Bean 对象的创建、配置和管理。
+			// * 2. BeanFactory 创建阶段：用于获取新鲜的 Bean 工厂。该工厂负责应用程序上下文内所有的 Bean 对象的创建、配置和管理。
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
-			// BeanFactory 准备阶段：为应用程序上下文的使用准备 Bean 工厂。
+			// * 3. BeanFactory 准备阶段：为应用程序上下文的使用准备 Bean 工厂。
 			prepareBeanFactory(beanFactory);
 
 			try {
-				//region BeanFactory 后置处理阶段
-				// * 由子类实现
+				// region * 4.BeanFactory  后置处理阶段
+				// 由子类实现
 				// 允许应用程序上下文的子类对 Bean 工厂进行后处理。
 				postProcessBeanFactory(beanFactory);
 
@@ -484,7 +484,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				invokeBeanFactoryPostProcessors(beanFactory);
 				//endregion
 
-				// 注册 registerBeanPostProcessors
+				// * 5. BeanFactory 注册 BeanPostProcessor 阶段（注册 registerBeanPostProcessors）
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 
@@ -669,8 +669,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * @param beanFactory 应用程序上下文使用的bean工厂。
 	 */
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-	    // 此方法为框架预留的扩展点，用于在bean实例化之前对bean工厂进行后处理。
-	    // 子类可以通过重写此方法来实现特定的逻辑，例如注册自定义的BeanPostProcessor。
+		// 此方法为框架预留的扩展点，用于在bean实例化之前对bean工厂进行后处理。
+		// 子类可以通过重写此方法来实现特定的逻辑，例如注册自定义的BeanPostProcessor。
 	}
 
 	/**
