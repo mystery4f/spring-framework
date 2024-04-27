@@ -573,16 +573,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * Prepare this context for refreshing, setting its startup date and
-	 * active flag as well as performing any initialization of property sources.
+	 * 准备刷新当前上下文，包括设置启动日期、激活标志以及初始化属性源。
+	 * 该操作将上下文状态设置为活动状态，并执行必要的初始化工作。
 	 */
 	protected void prepareRefresh() {
-		// 将上下文状态切换为活动状态
+		// 设置上下文启动时间并激活上下文
 		this.startupDate = System.currentTimeMillis();
 		this.closed.set(false);
 		this.active.set(true);
 
-		// 根据日志级别输出准备刷新操作的日志信息
+		// 根据日志级别输出不同级别的日志信息
 		if (logger.isDebugEnabled()) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Refreshing " + this);
@@ -591,22 +591,21 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 
-		// 初始化环境中的占位符属性源，例如从外部配置文件中解析占位符
+		// 初始化属性源，例如解析外部配置文件中的占位符
 		initPropertySources();
 
-		// 校验所有标记为必需的属性是否可解析，如果校验失败则抛出异常
+		// 验证所有必需的属性是否可以被解析，不满足则抛出异常
 		getEnvironment().validateRequiredProperties();
 
-		// 存储先前的 ApplicationListeners，以便于在引导过程中发布早期 ApplicationEvents
+		// 备份或重置 ApplicationListeners 以发布早期的 ApplicationEvents
 		if (this.earlyApplicationListeners == null) {
 			this.earlyApplicationListeners = new LinkedHashSet<>(this.applicationListeners);
 		} else {
-			// 如果之前已经存储了 ApplicationListeners，将当前 ApplicationListeners 重置为先前的状态
 			this.applicationListeners.clear();
 			this.applicationListeners.addAll(this.earlyApplicationListeners);
 		}
 
-		// 创建一个 LinkedHashSet 用于存储早期 ApplicationEvents，以便在持有多路广播器时发布这些事件
+		// 创建并初始化一个集合来存储早期的 ApplicationEvents，便于后续发布
 		this.earlyApplicationEvents = new LinkedHashSet<>();
 	}
 

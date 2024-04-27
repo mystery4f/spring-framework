@@ -202,13 +202,18 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 	}
 
 	/**
+	 * 初始化属性源。
+	 * 该方法重写了父类的initPropertySources方法，用于替换与Servlet相关的属性源。
 	 * {@inheritDoc}
-	 * <p>Replace {@code Servlet}-related property sources.
+	 * <p>此实现专门针对ConfigurableWebEnvironment环境，通过初始化servlet上下文和servlet配置来替换或添加属性源。
 	 */
 	@Override
 	protected void initPropertySources() {
+		// 获取当前环境实例
 		ConfigurableEnvironment env = getEnvironment();
+		// 检查环境是否为可配置的Web环境
 		if (env instanceof ConfigurableWebEnvironment) {
+			// 如果是，针对Web环境初始化属性源
 			((ConfigurableWebEnvironment) env).initPropertySources(this.servletContext, this.servletConfig);
 		}
 	}
