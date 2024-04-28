@@ -1242,29 +1242,30 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * Update the factory's internal set of manual singleton names.
+	 * 更新工厂内部的手动单例名称集合。
 	 *
-	 * @param action    the modification action
-	 * @param condition a precondition for the modification action
-	 *                  (if this condition does not apply, the action can be skipped)
+	 * @param action    对集合进行修改的操作，是一个消费者接口，接受一个集合类型的参数。
+	 * @param condition 修改操作的前置条件，是一个断言接口，根据集合当前状态决定是否执行修改操作。
 	 */
 	private void updateManualSingletonNames(Consumer<Set<String>> action, Predicate<Set<String>> condition) {
 		if (hasBeanCreationStarted()) {
-			// Cannot modify startup-time collection elements anymore (for stable iteration)
+			// 如果Bean创建已经启动，不能再修改启动时集合元素，需要加锁保证迭代的稳定性
 			synchronized (this.beanDefinitionMap) {
 				if (condition.test(this.manualSingletonNames)) {
+					// 拷贝当前手动单例名称集合，以支持线程安全的修改
 					Set<String> updatedSingletons = new LinkedHashSet<>(this.manualSingletonNames);
-					action.accept(updatedSingletons);
-					this.manualSingletonNames = updatedSingletons;
+					action.accept(updatedSingletons); // 执行修改操作
+					this.manualSingletonNames = updatedSingletons; // 更新手动单例名称集合
 				}
 			}
 		} else {
-			// Still in startup registration phase
+			// 如果还处于启动注册阶段，可以直接修改集合
 			if (condition.test(this.manualSingletonNames)) {
-				action.accept(this.manualSingletonNames);
+				action.accept(this.manualSingletonNames); // 执行修改操作
 			}
 		}
 	}
+
 
 	@Override
 	public void destroySingletons() {

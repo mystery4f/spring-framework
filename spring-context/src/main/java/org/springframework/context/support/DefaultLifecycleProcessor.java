@@ -91,31 +91,29 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 	// Lifecycle implementation
 
 	/**
-	 * Start all registered beans that implement {@link Lifecycle} and are <i>not</i>
-	 * already running. Any bean that implements {@link SmartLifecycle} will be
-	 * started within its 'phase', and all phases will be ordered from lowest to
-	 * highest value. All beans that do not implement {@link SmartLifecycle} will be
-	 * started in the default phase 0. A bean declared as a dependency of another bean
-	 * will be started before the dependent bean regardless of the declared phase.
+	 * 启动所有已注册的实现了{@link Lifecycle}接口的bean，并且这些bean还没有在运行中。
+	 * 任何实现了{@link SmartLifecycle}的bean都将按照其'phase'值启动，所有的phase值都将从最低到最高进行排序。
+	 * 所有没有实现{@link SmartLifecycle}的bean都将默认在phase 0启动。
+	 * 一个bean如果作为另一个bean的依赖，不论其声明的phase为何，都将先于依赖它的bean启动。
 	 */
 	@Override
 	public void start() {
-		startBeans(false);
-		this.running = true;
+	    // 启动beans，但不强制停止已经启动的beans
+	    startBeans(false);
+	    this.running = true; // 标记为正在运行状态
 	}
 
 	/**
-	 * Stop all registered beans that implement {@link Lifecycle} and <i>are</i>
-	 * currently running. Any bean that implements {@link SmartLifecycle} will be
-	 * stopped within its 'phase', and all phases will be ordered from highest to
-	 * lowest value. All beans that do not implement {@link SmartLifecycle} will be
-	 * stopped in the default phase 0. A bean declared as dependent on another bean
-	 * will be stopped before the dependency bean regardless of the declared phase.
+	 * 停止所有已注册的实现了{@link Lifecycle}接口的bean，并且当前正在运行的bean。任何实现了{@link SmartLifecycle}的bean都将在其
+	 * 'phase'内停止，所有phase将按照从高到低的值进行排序。所有不实现{@link SmartLifecycle}的bean都将在默认phase 0停止。
+	 * 一个bean如果被声明为依赖于另一个bean，那么它将在依赖的bean之前停止，无论声明的phase是怎样的。
 	 */
 	@Override
 	public void stop() {
-		stopBeans();
-		this.running = false;
+	    // 停止所有符合条件的bean
+	    stopBeans();
+	    // 将运行状态标记为false
+	    this.running = false;
 	}
 
 	@Override

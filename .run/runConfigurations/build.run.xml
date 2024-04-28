@@ -4,12 +4,13 @@
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="-x test --scan --debug -x checkstyleNohttp --stacktrace" />
+      <option name="scriptParameters" value="-x test -x checkstyleNohttp --scan --debug --stacktrace" />
       <option name="taskDescriptions">
         <list />
       </option>
       <option name="taskNames">
         <list>
+          <option value="clean" />
           <option value="build" />
         </list>
       </option>

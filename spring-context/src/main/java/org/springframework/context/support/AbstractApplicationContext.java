@@ -513,6 +513,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				// SmartInitializingSingleton
 				finishBeanFactoryInitialization(beanFactory);
 
+				// * 11. Spring 应用上下刷新完成阶段
 				// 最后一步是发布相应的事件。
 				finishRefresh();
 			}
@@ -899,25 +900,25 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	}
 
 	/**
-	 * Finish the refresh of this context, invoking the LifecycleProcessor's
-	 * onRefresh() method and publishing the
-	 * {@link org.springframework.context.event.ContextRefreshedEvent}.
+	 * 完成上下文的刷新，调用LifecycleProcessor的onRefresh()方法，
+	 * 并发布{@link org.springframework.context.event.ContextRefreshedEvent}事件。
+	 * 此方法不接受参数且无返回值。
 	 */
 	@SuppressWarnings("deprecation")
 	protected void finishRefresh() {
-		// Clear context-level resource caches (such as ASM metadata from scanning).
+		// 清除上下文级别的资源缓存（如扫描时的ASM元数据）。
 		clearResourceCaches();
 
-		// Initialize lifecycle processor for this context.
+		// 初始化此上下文的生命周期处理器。
 		initLifecycleProcessor();
 
-		// Propagate refresh to lifecycle processor first.
+		// 首先向生命周期处理器传播刷新操作。
 		getLifecycleProcessor().onRefresh();
 
-		// Publish the final event.
+		// 发布最终事件。
 		publishEvent(new ContextRefreshedEvent(this));
 
-		// Participate in LiveBeansView MBean, if active.
+		// 如果NativeBeansView MBean处于活动状态，则参与其中。
 		if (!NativeDetector.inNativeImage()) {
 			LiveBeansView.registerApplicationContext(this);
 		}
@@ -952,29 +953,27 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	}
 
 	/**
-	 * Register a shutdown hook {@linkplain Thread#getName() named}
-	 * {@code SpringContextShutdownHook} with the JVM runtime, closing this
-	 * context on JVM shutdown unless it has already been closed at that time.
-	 * <p>Delegates to {@code doClose()} for the actual closing procedure.
+	 * 注册一个名为{@code SpringContextShutdownHook}的JVM关闭钩子线程，以便在JVM关闭时关闭此上下文，
+	 * 除非在那时它已经被关闭。 <p>将关闭操作委托给{@code doClose()}方法执行实际的关闭过程。
 	 *
-	 * @see Runtime#addShutdownHook
-	 * @see ConfigurableApplicationContext#SHUTDOWN_HOOK_THREAD_NAME
-	 * @see #close()
-	 * @see #doClose()
+	 * @see Runtime#addShutdownHook          提供添加关闭钩子线程的能力
+	 * @see ConfigurableApplicationContext#SHUTDOWN_HOOK_THREAD_NAME  定义关闭钩子线程的名称
+	 * @see #close()                         关闭上下文的方法，此方法在关闭钩子线程中被调用
+	 * @see #doClose()                        执行关闭上下文的实际逻辑的方法
 	 */
 	@Override
 	public void registerShutdownHook() {
 		if (this.shutdownHook == null) {
-			// No shutdown hook registered yet.
+			// 尚未注册关闭钩子线程。
 			this.shutdownHook = new Thread(SHUTDOWN_HOOK_THREAD_NAME) {
 				@Override
 				public void run() {
 					synchronized (startupShutdownMonitor) {
-						doClose();
+						doClose();  // 在关闭钩子线程中同步调用doClose方法，确保上下文安全关闭
 					}
 				}
 			};
-			Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+			Runtime.getRuntime().addShutdownHook(this.shutdownHook);  // 向JVM注册关闭钩子线程
 		}
 	}
 
@@ -991,6 +990,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		close();
 	}
 
+	// * 14. Spring 应用上下文关闭阶段
 	/**
 	 * 关闭此应用程序上下文，销毁其 bean 工厂中的所有 bean。
 	 * <p> 委托给 {@code doClose()} 进行实际的关闭过程。
@@ -1074,19 +1074,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	}
 
 	/**
-	 * Template method for destroying all beans that this context manages.
-	 * The default implementation destroy all cached singletons in this context,
-	 * invoking {@code DisposableBean.destroy()} and/or the specified
-	 * "destroy-method".
-	 * <p>Can be overridden to add context-specific bean destruction steps
-	 * right before or right after standard singleton destruction,
-	 * while the context's BeanFactory is still active.
+	 * 此方法为销毁上下文管理的所有bean的模板方法。
+	 * 默认实现销毁上下文中缓存的所有单例，调用{@code DisposableBean.destroy()}和/或指定的"destroy-method"。
+	 * <p>可以重写此方法，在标准单例销毁之前或之后添加特定于上下文的bean销毁步骤，
+	 * 而此时上下文的BeanFactory仍处于活动状态。
 	 *
-	 * @see #getBeanFactory()
-	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons()
+	 * @see #getBeanFactory() 用于获取BeanFactory的方法。
+	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons() 用于销毁所有单例的方法。
 	 */
 	protected void destroyBeans() {
-		getBeanFactory().destroySingletons();
+	    // 销毁所有单例
+	    getBeanFactory().destroySingletons();
 	}
 
 	/**
@@ -1481,12 +1479,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	// Implementation of Lifecycle interface
 	// ---------------------------------------------------------------------
 
+	// * 12. Spring 应用上下文启动阶段
 	@Override
 	public void start() {
 		getLifecycleProcessor().start();
 		publishEvent(new ContextStartedEvent(this));
 	}
-
+	// * 13. Spring 应用上下文停止阶段
 	@Override
 	public void stop() {
 		// 获取生命周期处理器并停止
