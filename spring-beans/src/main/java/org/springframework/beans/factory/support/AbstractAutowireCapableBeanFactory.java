@@ -520,7 +520,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// 给 BeanPostProcessors 一个返回代理而不是目标 bean 实例的机会。
-			// InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
+			// * BeanPostProcessor - 1. InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
+			// * BeanPostProcessor - 2. InstantiationAwareBeanPostProcessor#postProcessAfterInitialization
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			// ? 返回了一个非空的对象：跳出方法
 			if (bean != null) {
@@ -585,6 +586,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 如果该bean还没有被postProcessed，那么执行所有的MergedBeanDefinitionPostProcessor
 			if (!mbd.postProcessed) {
 				try {
+					// * BeanPostProcessor - 3. MergedBeanDefinitionPostProcessor.postProcessMergedBeanDefinition
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				} catch (Throwable ex) {
 					throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Post-processing of merged bean definition failed", ex);
@@ -1387,6 +1389,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// 使用 InstantiationAwareBeanPostProcessors 对 Bean 实例进行感知处理（可能对其进行改变）
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
+				// * BeanPostProcessor - 4. InstantiationAwareBeanPostProcessor.postProcessAfterInstantiation
+				// 用于在 Bean 实例化后对 Bean 进行处理
+				// ? false：不会对 Bean 的属性进行填充，跳过后续的 populateBean 操作
 				if (!bp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
 					return;
 				}
@@ -1793,6 +1798,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
+			// * BeanPostProcessor - 5. BeanPostProcessor.postProcessBeforeInitialization
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
@@ -1804,6 +1810,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
+			// * BeanPostProcessor - 6. BeanPostProcessor#postProcessAfterInitialization
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 
