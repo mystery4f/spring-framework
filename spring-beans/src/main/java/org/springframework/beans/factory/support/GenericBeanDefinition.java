@@ -29,9 +29,9 @@ import org.springframework.util.ObjectUtils;
  * 建议使用此类。如果 bean 的父/子关系已经预先确定，则应使用 {@code RootBeanDefinition} 或 {@code ChildBeanDefinition}。
  *
  * @author Juergen Hoeller
- * @see #setParentName 用于设置父 bean 的名称。
- * @see RootBeanDefinition 用于定义没有父 bean 的根 bean。
- * @see ChildBeanDefinition 用于定义有明确父 bean 的子 bean。
+ * @see #setParentName
+ * @see RootBeanDefinition
+ * @see ChildBeanDefinition
  * @since 2.5
  */
 @SuppressWarnings("serial")
