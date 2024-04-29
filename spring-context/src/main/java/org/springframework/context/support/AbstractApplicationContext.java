@@ -587,6 +587,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * @see org.springframework.core.env.PropertySource.StubPropertySource
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#initServletPropertySources
 	 */
+	@SuppressWarnings("JavadocReference")
 	protected void initPropertySources() {
 		// For subclasses: do nothing by default.
 	}
@@ -1365,31 +1366,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	}
 
 	/**
-	 * Return the {@code Environment} for this application context in configurable
-	 * form, allowing for further customization.
-	 * <p>If none specified, a default environment will be initialized via
-	 * {@link #createEnvironment()}.
+	 * 获取此应用程序上下文的可配置环境，允许进一步自定义。
+	 * <p>如果没有指定，将通过调用 {@link #createEnvironment()} 初始化一个默认环境。
+	 *
+	 * @return ConfigurableEnvironment 应用程序的环境实例，允许进一步配置。
 	 */
 	@Override
 	public ConfigurableEnvironment getEnvironment() {
-		if (this.environment == null) {
-			this.environment = createEnvironment();
-		}
-		return this.environment;
+	    // 如果环境未被初始化，则调用createEnvironment方法来初始化
+	    if (this.environment == null) {
+	        this.environment = createEnvironment();
+	    }
+	    return this.environment;
 	}
 
 	/**
-	 * Set the {@code Environment} for this application context.
-	 * <p>Default value is determined by {@link #createEnvironment()}. Replacing the
-	 * default with this method is one option but configuration through {@link
-	 * #getEnvironment()} should also be considered. In either case, such modifications
-	 * should be performed <em>before</em> {@link #refresh()}.
+	 * 设置此应用程序上下文的 {@code Environment}。
+	 * <p>默认值由 {@link #createEnvironment()} 决定。可以通过此方法替换默认值，但也可以考虑通过 {@link #getEnvironment()}
+	 * 进行配置。无论哪种情况，此类修改都应在 {@link #refresh()} 之前进行。
 	 *
+	 * @param environment 要设置的 {@code ConfigurableEnvironment} 实例。
+	 *                    这允许应用程序上下文使用自定义的环境配置。
 	 * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
 	 */
 	@Override
 	public void setEnvironment(ConfigurableEnvironment environment) {
-		this.environment = environment;
+	    this.environment = environment;
 	}
 
 
@@ -1398,9 +1400,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	// ---------------------------------------------------------------------
 
 	/**
-	 * Create and return a new {@link StandardEnvironment}.
-	 * <p>Subclasses may override this method in order to supply
-	 * a custom {@link ConfigurableEnvironment} implementation.
+	 * 创建并返回一个新的{@link StandardEnvironment}实例。
+	 * <p>子类可以通过重写此方法来提供一个自定义的{@link ConfigurableEnvironment}实现。
+	 *
+	 * @return ConfigurableEnvironment 新的环境实例，默认为 StandardEnvironment。
 	 */
 	protected ConfigurableEnvironment createEnvironment() {
 		return new StandardEnvironment();
