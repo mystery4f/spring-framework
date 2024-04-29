@@ -468,17 +468,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 			// 使用 Spring Boot 的模块，该模块维护 Spring Boot 应用程序的启动性能数据，可以调用 start() 方法开始记录性能数据。
 			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
 
-			// * 1. 启动准备阶段：在刷新应用程序上下文之前，该方法准备该上下文的刷新。
+			// * ApplicationContext - 1. 启动准备阶段：在刷新应用程序上下文之前，该方法准备该上下文的刷新。
 			prepareRefresh();
 
-			// * 2. BeanFactory 创建阶段：用于获取新鲜的 Bean 工厂。该工厂负责应用程序上下文内所有的 Bean 对象的创建、配置和管理。
+			// * ApplicationContext - 2. BeanFactory 创建阶段：用于获取新鲜的 Bean 工厂。该工厂负责应用程序上下文内所有的 Bean 对象的创建、配置和管理。
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// * 3. BeanFactory 准备阶段：为应用程序上下文的使用准备 Bean 工厂。
 			prepareBeanFactory(beanFactory);
 
 			try {
-				// region * 4.BeanFactory  后置处理阶段
+				// region * ApplicationContext - 4.BeanFactory  后置处理阶段
 				// 由子类实现
 				// 允许应用程序上下文的子类对 Bean 工厂进行后处理。
 				postProcessBeanFactory(beanFactory);
@@ -488,32 +488,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				invokeBeanFactoryPostProcessors(beanFactory);
 				//endregion
 
-				// * 5. BeanFactory 注册 BeanPostProcessor 阶段
+				// * ApplicationContext - 5. BeanFactory 注册 BeanPostProcessor 阶段
 				// 注册 registerBeanPostProcessors
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
-				// * 6. 初始化内建 Bean：MessageSource
+				// * ApplicationContext - 6. 初始化内建 Bean：MessageSource
 				// 初始化该上下文的消息源，用于国际化。
 				initMessageSource();
 
-				// * 7. 初始化内建 Bean：Spring 事件广播器：用于该上下文的应用程序事件的多路广播器初始化。
+				// * ApplicationContext - 7. 初始化内建 Bean：Spring 事件广播器：用于该上下文的应用程序事件的多路广播器初始化。
 				initApplicationEventMulticaster();
 
-				// * 8. Spring 应用上下文刷新阶段
+				// * ApplicationContext - 8. Spring 应用上下文刷新阶段
 				// 由子类实现
 				// 在特定的应用程序上下文子类中初始化其他特殊的 Bean 对象。
 				onRefresh();
 
-				// * 9. Spring 事件监听器注册阶段
+				// * ApplicationContext - 9. Spring 事件监听器注册阶段
 				// 检查是否存在监听器 Bean 对象并注册它们。
 				registerListeners();
 
-				// * 10. BeanFactory 初始化完成阶段
+				// * ApplicationContext - 10. BeanFactory 初始化完成阶段
 				// 实例化所有剩余的（非懒加载的）单例 Bean 对象。
 				// SmartInitializingSingleton
 				finishBeanFactoryInitialization(beanFactory);
 
-				// * 11. Spring 应用上下刷新完成阶段
+				// * ApplicationContext - 11. Spring 应用上下刷新完成阶段
 				// 最后一步是发布相应的事件。
 				finishRefresh();
 			}
@@ -1482,13 +1482,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	// Implementation of Lifecycle interface
 	// ---------------------------------------------------------------------
 
-	// * 12. Spring 应用上下文启动阶段
+	// * ApplicationContext - 12. Spring 应用上下文启动阶段
 	@Override
 	public void start() {
 		getLifecycleProcessor().start();
 		publishEvent(new ContextStartedEvent(this));
 	}
-	// * 13. Spring 应用上下文停止阶段
+	// * ApplicationContext - 13. Spring 应用上下文停止阶段
 	@Override
 	public void stop() {
 		// 获取生命周期处理器并停止

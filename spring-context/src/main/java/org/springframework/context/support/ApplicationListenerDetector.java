@@ -30,14 +30,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@code BeanPostProcessor} that detects beans which implement the {@code ApplicationListener}
- * interface. This catches beans that can't reliably be detected by {@code getBeanNamesForType}
- * and related operations which only work against top-level beans.
+ * 此类是一个{@code BeanPostProcessor}的实现，用于检测实现{@code ApplicationListener}接口的bean。
+ * 它可以发现那些不能被{@code getBeanNamesForType}等操作可靠检测到的bean，这些操作通常只适用于顶级bean。
  *
- * <p>With standard Java serialization, this post-processor won't get serialized as part of
- * {@code DisposableBeanAdapter} to begin with. However, with alternative serialization
- * mechanisms, {@code DisposableBeanAdapter.writeReplace} might not get used at all, so we
- * defensively mark this post-processor's field state as {@code transient}.
+ * <p>在标准的Java序列化中，这个后处理器不会作为{@code DisposableBeanAdapter}的一部分被序列化。
+ * 然而，使用替代的序列化机制时，{@code DisposableBeanAdapter.writeReplace}可能根本不会被使用，
+ * 所以我们防御性地将这个后处理器的字段状态标记为{@code transient}。
  *
  * @author Juergen Hoeller
  * @since 4.3.4
