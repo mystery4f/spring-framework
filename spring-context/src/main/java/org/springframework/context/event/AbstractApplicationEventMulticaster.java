@@ -176,65 +176,80 @@ public abstract class AbstractApplicationEventMulticaster
 	}
 
 	/**
-	 * Return a Collection of ApplicationListeners matching the given
-	 * event type. Non-matching listeners get excluded early.
-	 * @param event the event to be propagated. Allows for excluding
-	 * non-matching listeners early, based on cached matching information.
-	 * @param eventType the event type
-	 * @return a Collection of ApplicationListeners
+	 * 获取与给定事件类型匹配的应用程序监听器集合。
+	 * 非匹配的监听器会在早期被排除。
+	 *
+	 * @param event     需要传播的事件。允许基于缓存的匹配信息早期排除非匹配的监听器。
+	 * @param eventType 事件的类型。
+	 * @return 应用程序监听器的集合。
 	 * @see org.springframework.context.ApplicationListener
 	 */
 	protected Collection<ApplicationListener<?>> getApplicationListeners(
 			ApplicationEvent event, ResolvableType eventType) {
 
+		// 获取事件的源对象和源对象的类类型
 		Object source = event.getSource();
 		Class<?> sourceType = (source != null ? source.getClass() : null);
+		// 创建缓存键，用于查找已缓存的监听器检索器
 		ListenerCacheKey cacheKey = new ListenerCacheKey(eventType, sourceType);
 
-		// Potential new retriever to populate
+		// 新的监听器检索器，用于缓存
 		CachedListenerRetriever newRetriever = null;
 
+		// 尝试从缓存中获取已存在的检索器
 		// Quick check for existing entry on ConcurrentHashMap
 		CachedListenerRetriever existingRetriever = this.retrieverCache.get(cacheKey);
 		if (existingRetriever == null) {
+			// 如果当前bean类加载器为空，或者事件和源类型都可以安全缓存
 			// Caching a new ListenerRetriever if possible
 			if (this.beanClassLoader == null ||
 					(ClassUtils.isCacheSafe(event.getClass(), this.beanClassLoader) &&
 							(sourceType == null || ClassUtils.isCacheSafe(sourceType, this.beanClassLoader)))) {
 				newRetriever = new CachedListenerRetriever();
+				// 尝试添加新的检索器到缓存，如果成功则返回它的引用
 				existingRetriever = this.retrieverCache.putIfAbsent(cacheKey, newRetriever);
 				if (existingRetriever != null) {
-					newRetriever = null;  // no need to populate it in retrieveApplicationListeners
+					// 如果另一个线程已经添加了检索器，则取消当前新的检索器的使用
+					newRetriever = null;
 				}
 			}
 		}
 
+		// 如果存在已缓存的检索器，尝试从它获取监听器集合
 		if (existingRetriever != null) {
 			Collection<ApplicationListener<?>> result = existingRetriever.getApplicationListeners();
 			if (result != null) {
+				// 如果监听器集合不为空，直接返回它
 				return result;
 			}
+			// 如果监听器集合为空，说明缓存的检索器尚未完全填充，需要像缓存不存在时那样处理
 			// If result is null, the existing retriever is not fully populated yet by another thread.
 			// Proceed like caching wasn't possible for this current local attempt.
 		}
 
+		// 如果没有缓存的监听器检索器，或者缓存的监听器集合为空，则调用方法进行检索并可能缓存结果
 		return retrieveApplicationListeners(eventType, sourceType, newRetriever);
 	}
 
 	/**
-	 * Actually retrieve the application listeners for the given event and source type.
-	 * @param eventType the event type
-	 * @param sourceType the event source type
-	 * @param retriever the ListenerRetriever, if supposed to populate one (for caching purposes)
-	 * @return the pre-filtered list of application listeners for the given event and source type
+	 * 根据给定的事件类型和源类型，实际检索应用监听器。
+	 * 此方法负责从注册的监听器中筛选出适用于特定事件和源的监听器。
+	 * 它还处理缓存机制，以优化重复检索。
+	 *
+	 * @param eventType  事件类型
+	 * @param sourceType 事件源类型
+	 * @param retriever  用于缓存监听器检索结果的监听器检索器，如果不需要缓存，则可以为null
+	 * @return 给定事件和源类型的预过滤应用监听器列表
 	 */
 	private Collection<ApplicationListener<?>> retrieveApplicationListeners(
 			ResolvableType eventType, @Nullable Class<?> sourceType, @Nullable CachedListenerRetriever retriever) {
 
+		// 初始化所有监听器列表和过滤后的监听器集合（如果需要缓存）
 		List<ApplicationListener<?>> allListeners = new ArrayList<>();
 		Set<ApplicationListener<?>> filteredListeners = (retriever != null ? new LinkedHashSet<>() : null);
 		Set<String> filteredListenerBeans = (retriever != null ? new LinkedHashSet<>() : null);
 
+		// 同步获取默认监听器检索器中的监听器和监听器bean名称集合
 		Set<ApplicationListener<?>> listeners;
 		Set<String> listenerBeans;
 		synchronized (this.defaultRetriever) {
@@ -242,6 +257,7 @@ public abstract class AbstractApplicationEventMulticaster
 			listenerBeans = new LinkedHashSet<>(this.defaultRetriever.applicationListenerBeans);
 		}
 
+		// 遍历监听器集合，筛选出支持当前事件类型的监听器
 		// Add programmatically registered listeners, including ones coming
 		// from ApplicationListenerDetector (singleton beans and inner beans).
 		for (ApplicationListener<?> listener : listeners) {
@@ -253,6 +269,8 @@ public abstract class AbstractApplicationEventMulticaster
 			}
 		}
 
+		// 根据监听器bean名称，获取并添加监听器
+		// 这可能与上面编程注册的监听器重叠，但可能带有额外的元数据
 		// Add listeners by bean name, potentially overlapping with programmatically
 		// registered listeners above - but here potentially with additional metadata.
 		if (!listenerBeans.isEmpty()) {
@@ -262,19 +280,19 @@ public abstract class AbstractApplicationEventMulticaster
 					if (supportsEvent(beanFactory, listenerBeanName, eventType)) {
 						ApplicationListener<?> listener =
 								beanFactory.getBean(listenerBeanName, ApplicationListener.class);
+						// 如果该监听器尚未添加到所有监听器列表中，并且支持当前的事件和源类型，则添加它
 						if (!allListeners.contains(listener) && supportsEvent(listener, eventType, sourceType)) {
 							if (retriever != null) {
 								if (beanFactory.isSingleton(listenerBeanName)) {
 									filteredListeners.add(listener);
-								}
-								else {
+								} else {
 									filteredListenerBeans.add(listenerBeanName);
 								}
 							}
 							allListeners.add(listener);
 						}
-					}
-					else {
+					} else {
+						// 如果当前bean名称对应的监听器不再支持事件，则从列表中移除
 						// Remove non-matching listeners that originally came from
 						// ApplicationListenerDetector, possibly ruled out by additional
 						// BeanDefinition metadata (e.g. factory method generics) above.
@@ -284,21 +302,20 @@ public abstract class AbstractApplicationEventMulticaster
 						}
 						allListeners.remove(listener);
 					}
-				}
-				catch (NoSuchBeanDefinitionException ex) {
-					// Singleton listener instance (without backing bean definition) disappeared -
-					// probably in the middle of the destruction phase
+				} catch (NoSuchBeanDefinitionException ex) {
+					// 单例监听器实例（没有背靠的bean定义）可能在销毁阶段消失了
 				}
 			}
 		}
 
+		// 对所有监听器进行排序，确保它们按照正确的顺序被调用
 		AnnotationAwareOrderComparator.sort(allListeners);
+		// 如果提供了缓存检索器，则根据是否存在bean名称监听器来更新缓存
 		if (retriever != null) {
 			if (filteredListenerBeans.isEmpty()) {
 				retriever.applicationListeners = new LinkedHashSet<>(allListeners);
 				retriever.applicationListenerBeans = filteredListenerBeans;
-			}
-			else {
+			} else {
 				retriever.applicationListeners = filteredListeners;
 				retriever.applicationListenerBeans = filteredListenerBeans;
 			}
