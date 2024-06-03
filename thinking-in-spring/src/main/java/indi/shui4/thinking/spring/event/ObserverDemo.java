@@ -31,7 +31,6 @@ public class ObserverDemo {
 		public void notifyObservers(Object arg) {
 			setChanged();
 			super.notifyObservers(new EventObject(arg));
-			clearChanged();
 		}
 	}
 }
