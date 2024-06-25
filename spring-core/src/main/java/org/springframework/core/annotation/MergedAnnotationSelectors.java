@@ -24,9 +24,9 @@ import java.util.function.Predicate;
  * for {@link MergedAnnotation} instances.
  *
  * @author Phillip Webb
- * @since 5.2
  * @see MergedAnnotations#get(Class, Predicate, MergedAnnotationSelector)
  * @see MergedAnnotations#get(String, Predicate, MergedAnnotationSelector)
+ * @since 5.2
  */
 public abstract class MergedAnnotationSelectors {
 
@@ -40,8 +40,14 @@ public abstract class MergedAnnotationSelectors {
 
 
 	/**
-	 * Select the nearest annotation, i.e. the one with the lowest distance.
-	 * @return a selector that picks the annotation with the lowest distance
+	 * 选择最近的注解，即具有最低距离的注解。
+	 * 提供一个静态方法以获取选择最近注解的选取器。
+	 * <p>
+	 * 此方法旨在提供一种简单的方法来获取选取器实例，该实例优先选择注解层级中距离最近的注解。
+	 * 当处理多层继承或覆盖的注解时，此功能尤为有用，应用程序希望优先选择与目标最直接相关的注解。
+	 *
+	 * @param <A> 类型参数，表示要被选择的注解类型。
+	 * @return 返回一个优先选取最近注解的选取器实例。
 	 */
 	@SuppressWarnings("unchecked")
 	public static <A extends Annotation> MergedAnnotationSelector<A> nearest() {
@@ -49,9 +55,14 @@ public abstract class MergedAnnotationSelectors {
 	}
 
 	/**
-	 * Select the first directly declared annotation when possible. If no direct
-	 * annotations are declared then the nearest annotation is selected.
-	 * @return a selector that picks the first directly declared annotation whenever possible
+	 * 尽可能选择首个直接声明的注解。如果没有直接声明的注解，则选择最近的注解。
+	 * 提供一个静态方法以获取优先选择首个直接声明注解的选取器。
+	 * <p>
+	 * 此方法旨在提供一种方式，专门用于选择直接在目标元素上声明的注解，而非从超类或接口继承的注解。
+	 * 在处理注解继承时，当应用程序希望明确使用定义在目标元素上的注解，而非继承来的注解时，此功能尤为重要。
+	 *
+	 * @param <A> 类型参数，表示要被选择的注解类型。
+	 * @return 返回一个优先选取首个直接声明注解的选取器实例。
 	 */
 	@SuppressWarnings("unchecked")
 	public static <A extends Annotation> MergedAnnotationSelector<A> firstDirectlyDeclared() {

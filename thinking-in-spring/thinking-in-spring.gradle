@@ -35,7 +35,7 @@ dependencies {
     implementation "javax.el:javax.el-api"
     implementation "org.glassfish:javax.el"
     testImplementation(project(':spring-test'), { transitive = true })
-    testImplementation('org.junit.jupiter:junit-jupiter-api') { transitive = true }
+    implementation('org.junit.jupiter:junit-jupiter-api') { transitive = true }
 }
 
 sourceCompatibility = 11
