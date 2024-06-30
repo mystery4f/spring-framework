@@ -7,6 +7,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * {@link org.springframework.beans.factory.ObjectFactory} 延迟依赖查找示例
@@ -30,7 +31,7 @@ public class ObjectFactoryLazyLookupDemo {
 		Console.log("equals:{}", bean.objectFactory == bean.objectProvider);
 		// true
 		Console.log("class equals:{}", bean.objectFactory.getClass() == bean.objectProvider.getClass());
-		// hashcode 一致
+		// hashcode 一致3
 		Console.log("objectFactory:{}", bean.objectFactory.getObject().hashCode());
 		Console.log("objectProvider:{}", bean.objectProvider.getObject().hashCode());
 		Console.log("applicationContext:{}", applicationContext.getBean(User.class).hashCode());
@@ -39,6 +40,7 @@ public class ObjectFactoryLazyLookupDemo {
 	}
 
 	@Bean
+	@Lazy
 	public User user() {
 		final var user = new User();
 		user.setId(1L);
