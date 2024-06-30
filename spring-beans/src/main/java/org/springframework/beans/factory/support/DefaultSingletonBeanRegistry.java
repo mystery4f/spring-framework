@@ -136,18 +136,22 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
-	 * Add the given singleton object to the singleton cache of this factory.
-	 * <p>To be called for eager registration of singletons.
+	 * 将给定的单例对象添加到工厂的单例缓存中。
+	 * <p> 用于提前注册单例。
 	 *
-	 * @param beanName        the name of the bean
-	 * @param singletonObject the singleton object
+	 * @param beanName        bean 的名称
+	 * @param singletonObject 单例对象
 	 */
 	protected void addSingleton(String beanName, Object singletonObject) {
+		// 对 singletonObjects 集合进行同步，确保线程安全
 		synchronized (this.singletonObjects) {
+			// 将单例对象添加到单例缓存中
 			this.singletonObjects.put(beanName, singletonObject);
+			// 移除对应的单例工厂和提前曝光的单例对象，因为已经添加了实际的单例对象
 			// 互斥
 			this.singletonFactories.remove(beanName);
 			this.earlySingletonObjects.remove(beanName);
+			// 标记该单例已经注册
 			this.registeredSingletons.add(beanName);
 		}
 	}
@@ -215,44 +219,50 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
-	 * Return the (raw) singleton object registered under the given name,
-	 * creating and registering a new one if none registered yet.
+	 * 获取注册的单例对象，如果尚未注册则创建并注册新对象。
 	 *
-	 * @param beanName         the name of the bean
-	 * @param singletonFactory the ObjectFactory to lazily create the singleton
-	 *                         with, if necessary
-	 * @return the registered singleton object
+	 * @param beanName         bean的名称
+	 * @param singletonFactory 用于懒惰创建单例对象的ObjectFactory，如果需要
+	 * @return 注册的单例对象
 	 */
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
+		// 确保bean名称不为空
 		Assert.notNull(beanName, "Bean name must not be null");
+		// 同步对singletonObjects的操作
 		synchronized (this.singletonObjects) {
+			// 尝试从已创建的单例对象中获取
 			Object singletonObject = this.singletonObjects.get(beanName);
 			if (singletonObject == null) {
+				// 如果当前正在销毁单例，则不允许创建新的单例
 				if (this.singletonsCurrentlyInDestruction) {
 					throw new BeanCreationNotAllowedException(beanName,
 							"Singleton bean creation not allowed while singletons of this factory are in destruction " +
 									"(Do not request a bean from a BeanFactory in a destroy method implementation!)");
 				}
+				// 日志记录创建单例的开始
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
+				// 在单例创建前执行的准备工作
 				beforeSingletonCreation(beanName);
 				boolean newSingleton = false;
+				// 判断是否需要记录被抑制的异常
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
 				if (recordSuppressedExceptions) {
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					// 实际创建单例对象
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				} catch (IllegalStateException ex) {
-					// Has the singleton object implicitly appeared in the meantime ->
-					// if yes, proceed with it since the exception indicates that state.
+					// 检查是否有单例对象在创建过程中被隐式创建
 					singletonObject = this.singletonObjects.get(beanName);
 					if (singletonObject == null) {
 						throw ex;
 					}
 				} catch (BeanCreationException ex) {
+					// 如果需要记录被抑制的异常，则进行记录
 					if (recordSuppressedExceptions) {
 						for (Exception suppressedException : this.suppressedExceptions) {
 							ex.addRelatedCause(suppressedException);
@@ -260,15 +270,18 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					}
 					throw ex;
 				} finally {
+					// 完成单例创建后的清理工作
 					if (recordSuppressedExceptions) {
 						this.suppressedExceptions = null;
 					}
 					afterSingletonCreation(beanName);
 				}
+				// 如果是新创建的单例，则进行注册
 				if (newSingleton) {
 					addSingleton(beanName, singletonObject);
 				}
 			}
+			// 返回单例对象
 			return singletonObject;
 		}
 	}
